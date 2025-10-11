@@ -4,6 +4,8 @@ export interface TierInfo {
   id: 1 | 2 | 3;
   name: string;
   description: string;
+  anchorPrice: number;
+  pilotPrice: number;
 }
 
 export interface UploadedFile {

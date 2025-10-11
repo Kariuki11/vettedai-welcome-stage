@@ -11,9 +11,6 @@ interface PricingSummaryStepProps {
   onComplete: () => void;
 }
 
-const ANCHOR_PRICE = 200;
-const PILOT_PRICE = 20;
-
 export const PricingSummaryStep = ({ 
   candidateCount, 
   tier,
@@ -42,7 +39,7 @@ export const PricingSummaryStep = ({
                 <div>
                   <p className="text-sm text-muted-foreground mb-1">Regular Price</p>
                   <p className="text-3xl text-muted-foreground line-through">
-                    ${ANCHOR_PRICE}
+                    ${tier.anchorPrice}
                   </p>
                 </div>
                 
@@ -50,7 +47,7 @@ export const PricingSummaryStep = ({
                   <p className="text-sm font-medium mb-2">Your Pilot Price</p>
                   <div className="flex items-baseline justify-center gap-2">
                     <p className="text-6xl font-bold text-primary">
-                      ${PILOT_PRICE}
+                      ${tier.pilotPrice}
                     </p>
                     <span className="text-sm text-muted-foreground">(one-time)</span>
                   </div>

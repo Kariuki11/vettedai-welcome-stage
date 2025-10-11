@@ -44,8 +44,16 @@ const Workspace = () => {
     updateSelectedTier(tier);
   };
 
-  const handleCheckoutComplete = () => {
-    navigate('/workspace');
+  const handleProceedToCheckout = () => {
+    navigate('/checkout', {
+      state: {
+        tier: state.selectedTier,
+        jobTitle: state.jobTitle,
+        candidateCount: state.candidateCount,
+        candidateSource: state.candidateSource,
+        uploadedResumes: state.uploadedResumes,
+      },
+    });
   };
 
   return (
@@ -105,12 +113,8 @@ const Workspace = () => {
             tier={state.selectedTier}
             jobTitle={state.jobTitle || 'Role Title'}
             candidateSource={state.candidateSource}
-            onComplete={proceedToCheckout}
+            onComplete={handleProceedToCheckout}
           />
-        )}
-
-        {state.currentStep === 6 && (
-          <CheckoutStep onComplete={handleCheckoutComplete} />
         )}
       </ChatContainer>
 

@@ -16,16 +16,22 @@ const tiers: TierInfo[] = [
     id: 1,
     name: "Quick Fit Screen",
     description: "5-minute async video response to key questions about their experience and approach.",
+    anchorPrice: 150,
+    pilotPrice: 15,
   },
   {
     id: 2,
     name: "Scenario Fit",
     description: "Real work scenario with evaluation. Candidates solve a realistic problem from your domain.",
+    anchorPrice: 200,
+    pilotPrice: 20,
   },
   {
     id: 3,
     name: "Role Simulation",
     description: "Full role simulation with TI Matrix. Comprehensive assessment across all key competencies.",
+    anchorPrice: 300,
+    pilotPrice: 30,
   },
 ];
 
