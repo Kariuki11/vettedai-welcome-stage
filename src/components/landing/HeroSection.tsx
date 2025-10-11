@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
-
 interface HeroSectionProps {
   onCtaClick: () => void;
 }
-
-export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
-  return (
-    <section className="relative min-h-[90vh] flex items-center justify-center px-6 py-20 overflow-hidden">
+export const HeroSection = ({
+  onCtaClick
+}: HeroSectionProps) => {
+  return <section className="relative min-h-[90vh] flex items-center justify-center px-6 py-20 overflow-hidden">
       {/* Background Gradient */}
       <div className="absolute inset-0 gradient-subtle -z-10" />
       
@@ -20,18 +19,11 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
         </h1>
         
         {/* Subheadline */}
-        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">
-          Paste your JD, upload resumes, and let Recruiter GPT do the rest.
-        </p>
+        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">Paste your JD, upload resumes, and let vettedAI do the rest.</p>
         
         {/* CTA Button */}
         <div className="pt-6 animate-slide-in-up">
-          <Button 
-            variant="hero" 
-            size="lg"
-            onClick={onCtaClick}
-            className="text-base px-8 py-6 h-auto"
-          >
+          <Button variant="hero" size="lg" onClick={onCtaClick} className="text-base px-8 py-6 h-auto">
             Create My Recruiter Workspace
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
@@ -42,6 +34,5 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
           No credit card required • 48-hour delivery • Proof-of-work validated
         </p>
       </div>
-    </section>
-  );
+    </section>;
 };
