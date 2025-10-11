@@ -14,16 +14,383 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      analytics_events: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          project_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          project_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evaluations: {
+        Row: {
+          evaluated_at: string | null
+          evaluated_by: string | null
+          evaluation_notes: string | null
+          id: string
+          project_id: string
+          shortlist_file_path: string | null
+          talent_profile_id: string | null
+        }
+        Insert: {
+          evaluated_at?: string | null
+          evaluated_by?: string | null
+          evaluation_notes?: string | null
+          id?: string
+          project_id: string
+          shortlist_file_path?: string | null
+          talent_profile_id?: string | null
+        }
+        Update: {
+          evaluated_at?: string | null
+          evaluated_by?: string | null
+          evaluation_notes?: string | null
+          id?: string
+          project_id?: string
+          shortlist_file_path?: string | null
+          talent_profile_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluations_talent_profile_id_fkey"
+            columns: ["talent_profile_id"]
+            isOneToOne: false
+            referencedRelation: "talent_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string | null
+          id: string
+          paid_at: string | null
+          payment_provider: string | null
+          project_id: string
+          provider_reference: string | null
+          recruiter_id: string
+          status: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_provider?: string | null
+          project_id: string
+          provider_reference?: string | null
+          recruiter_id: string
+          status?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_provider?: string | null
+          project_id?: string
+          provider_reference?: string | null
+          recruiter_id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "recruiters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          anchor_price: number | null
+          candidate_count: number | null
+          candidate_source: string
+          completed_at: string | null
+          created_at: string | null
+          hours_elapsed: number | null
+          id: string
+          job_description: string | null
+          job_summary: string | null
+          organization_id: string | null
+          payment_status: string
+          pilot_price: number | null
+          project_code: string
+          recruiter_id: string
+          role_title: string
+          sla_deadline: string | null
+          status: string
+          tier_id: number
+          tier_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          anchor_price?: number | null
+          candidate_count?: number | null
+          candidate_source: string
+          completed_at?: string | null
+          created_at?: string | null
+          hours_elapsed?: number | null
+          id?: string
+          job_description?: string | null
+          job_summary?: string | null
+          organization_id?: string | null
+          payment_status?: string
+          pilot_price?: number | null
+          project_code: string
+          recruiter_id: string
+          role_title: string
+          sla_deadline?: string | null
+          status?: string
+          tier_id: number
+          tier_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          anchor_price?: number | null
+          candidate_count?: number | null
+          candidate_source?: string
+          completed_at?: string | null
+          created_at?: string | null
+          hours_elapsed?: number | null
+          id?: string
+          job_description?: string | null
+          job_summary?: string | null
+          organization_id?: string | null
+          payment_status?: string
+          pilot_price?: number | null
+          project_code?: string
+          recruiter_id?: string
+          role_title?: string
+          sla_deadline?: string | null
+          status?: string
+          tier_id?: number
+          tier_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_recruiter_id_fkey"
+            columns: ["recruiter_id"]
+            isOneToOne: false
+            referencedRelation: "recruiters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recruiters: {
+        Row: {
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          organization_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          organization_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          organization_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recruiters_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      talent_profiles: {
+        Row: {
+          evaluated_at: string | null
+          file_name: string
+          file_path: string | null
+          file_size: number | null
+          id: string
+          parsed_email: string | null
+          parsed_name: string | null
+          project_id: string
+          score: number | null
+          shortlisted: boolean | null
+          status: string | null
+          uploaded_at: string | null
+        }
+        Insert: {
+          evaluated_at?: string | null
+          file_name: string
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          parsed_email?: string | null
+          parsed_name?: string | null
+          project_id: string
+          score?: number | null
+          shortlisted?: boolean | null
+          status?: string | null
+          uploaded_at?: string | null
+        }
+        Update: {
+          evaluated_at?: string | null
+          file_name?: string
+          file_path?: string | null
+          file_size?: number | null
+          id?: string
+          parsed_email?: string | null
+          parsed_name?: string | null
+          project_id?: string
+          score?: number | null
+          shortlisted?: boolean | null
+          status?: string | null
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "talent_profiles_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      grant_admin_role: {
+        Args: { _email: string }
+        Returns: undefined
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "ops_manager" | "recruiter"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +517,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "ops_manager", "recruiter"],
+    },
   },
 } as const
