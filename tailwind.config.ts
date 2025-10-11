@@ -114,6 +114,16 @@ export default {
           "0%": { opacity: "0", transform: "translateY(30px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        "draw-polygon": {
+          "0%": { 
+            strokeDashoffset: "1000",
+            opacity: "0.3"
+          },
+          "100%": { 
+            strokeDashoffset: "0",
+            opacity: "1"
+          }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -124,6 +134,7 @@ export default {
         "float": "float 6s ease-in-out infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",
         "fade-in-up": "fade-in-up 0.6s ease-out",
+        "draw-polygon": "draw-polygon 0.8s ease-out forwards",
       },
       boxShadow: {
         'elegant': '0 4px 12px -2px hsl(var(--primary) / 0.08)',
