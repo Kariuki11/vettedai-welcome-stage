@@ -5,7 +5,7 @@ import { ChatMessage } from "../ChatMessage";
 import { Loader2, Check, Edit } from "lucide-react";
 
 interface JobDescriptionStepProps {
-  onComplete: (jd: string, summary: string) => void;
+  onComplete: (jd: string, summary: string, jobTitle: string) => void;
   onAddMessage: (msg: { type: 'user' | 'assistant'; content: string | React.ReactNode }) => void;
   onSetTyping: (isTyping: boolean) => void;
 }
@@ -31,6 +31,7 @@ export const JobDescriptionStep = ({ onComplete, onAddMessage, onSetTyping }: Jo
     onSetTyping(false);
     
     const generatedSummary = "Senior Full-Stack Engineer role requiring 5+ years experience with React, Node.js, and cloud infrastructure. Focus on building scalable systems and mentoring junior developers. Remote-friendly position with competitive compensation.";
+    const extractedJobTitle = "Senior Full-Stack Engineer"; // Extract from first part of summary
     
     setSummary(generatedSummary);
     setSummaryGenerated(true);
@@ -51,6 +52,8 @@ export const JobDescriptionStep = ({ onComplete, onAddMessage, onSetTyping }: Jo
   };
 
   const handleConfirm = () => {
+    const extractedJobTitle = summary.split(' ').slice(0, 3).join(' '); // Extract first 3 words as title
+    
     onAddMessage({
       type: 'user',
       content: "Looks right! Let's proceed."
@@ -61,7 +64,7 @@ export const JobDescriptionStep = ({ onComplete, onAddMessage, onSetTyping }: Jo
       content: "Perfect! Now let's find your candidates."
     });
     
-    onComplete(jd, summary);
+    onComplete(jd, summary, extractedJobTitle);
   };
 
   const handleEdit = () => {
@@ -71,36 +74,32 @@ export const JobDescriptionStep = ({ onComplete, onAddMessage, onSetTyping }: Jo
 
   return (
     <div className="space-y-6">
-      <ChatMessage
-        type="assistant"
-        content="Let's start by understanding the role you're hiring for. Paste your Job Description below."
-        delay={0}
-      />
-
-      <div className="space-y-4">
-        <Textarea
-          value={jd}
-          onChange={(e) => setJd(e.target.value)}
-          placeholder="Paste or type the full job description here..."
-          className="min-h-[200px] text-base resize-none"
-        />
-        
-        <Button
-          onClick={handleGenerate}
-          disabled={jd.length < 50 || isGenerating}
-          className="w-full sm:w-auto"
-          size="lg"
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Generating Summary...
-            </>
-          ) : (
-            'Generate Summary'
-          )}
-        </Button>
-      </div>
+      {!summaryGenerated && (
+        <div className="space-y-4">
+          <Textarea
+            value={jd}
+            onChange={(e) => setJd(e.target.value)}
+            placeholder="Paste or type the full job description here..."
+            className="min-h-[200px] text-base resize-none"
+          />
+          
+          <Button
+            onClick={handleGenerate}
+            disabled={jd.length < 50 || isGenerating}
+            className="w-full sm:w-auto"
+            size="lg"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Generating Summary...
+              </>
+            ) : (
+              'Generate Summary'
+            )}
+          </Button>
+        </div>
+      )}
 
       {summaryGenerated && (
         <div className="flex justify-end gap-3 animate-fade-in">

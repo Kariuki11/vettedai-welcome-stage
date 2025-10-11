@@ -31,6 +31,7 @@ export interface WorkspaceState {
   
   jobDescription: string;
   jobSummary: string;
+  jobTitle: string;
   jobSummaryConfirmed: boolean;
   candidateSource: 'own' | 'network' | null;
   uploadedResumes: UploadedFile[];
@@ -56,6 +57,7 @@ export const useChatFlow = () => {
     ],
     jobDescription: '',
     jobSummary: '',
+    jobTitle: '',
     jobSummaryConfirmed: false,
     candidateSource: null,
     uploadedResumes: [],
@@ -83,11 +85,12 @@ export const useChatFlow = () => {
     setState(prev => ({ ...prev, isTyping }));
   };
 
-  const updateJobDescription = (jd: string, summary: string) => {
+  const updateJobDescription = (jd: string, summary: string, jobTitle: string) => {
     setState(prev => ({
       ...prev,
       jobDescription: jd,
       jobSummary: summary,
+      jobTitle: jobTitle,
       jobSummaryConfirmed: true,
       stepHistory: [...prev.stepHistory, prev.currentStep],
       currentStep: 2,
@@ -189,6 +192,7 @@ export const useChatFlow = () => {
       ],
       jobDescription: '',
       jobSummary: '',
+      jobTitle: '',
       jobSummaryConfirmed: false,
       candidateSource: null,
       uploadedResumes: [],

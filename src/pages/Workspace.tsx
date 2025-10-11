@@ -28,8 +28,8 @@ const Workspace = () => {
     canGoForward,
   } = useChatFlow();
 
-  const handleJobDescriptionComplete = (jd: string, summary: string) => {
-    updateJobDescription(jd, summary);
+  const handleJobDescriptionComplete = (jd: string, summary: string, jobTitle: string) => {
+    updateJobDescription(jd, summary, jobTitle);
   };
 
   const handleCandidateSourceComplete = (source: 'own' | 'network') => {
@@ -58,11 +58,23 @@ const Workspace = () => {
         isTyping={state.isTyping}
       >
         {state.currentStep === 1 && (
-          <JobDescriptionStep 
-            onComplete={handleJobDescriptionComplete}
-            onAddMessage={addMessage}
-            onSetTyping={setTyping}
-          />
+          <>
+            {!state.messages.find(m => m.content === "Let's start by understanding the role you're hiring for. Paste your Job Description below.") && (
+              (() => {
+                addMessage({
+                  type: 'assistant',
+                  content: "Let's start by understanding the role you're hiring for. Paste your Job Description below.",
+                  stepId: 1,
+                });
+                return null;
+              })()
+            )}
+            <JobDescriptionStep 
+              onComplete={handleJobDescriptionComplete}
+              onAddMessage={addMessage}
+              onSetTyping={setTyping}
+            />
+          </>
         )}
 
         {state.currentStep === 2 && (
@@ -91,6 +103,8 @@ const Workspace = () => {
           <PricingSummaryStep
             candidateCount={state.candidateCount || 12}
             tier={state.selectedTier}
+            jobTitle={state.jobTitle || 'Role Title'}
+            candidateSource={state.candidateSource}
             onComplete={proceedToCheckout}
           />
         )}
