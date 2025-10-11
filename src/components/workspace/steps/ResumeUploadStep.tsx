@@ -6,15 +6,27 @@ import { ArrowRight } from "lucide-react";
 
 interface ResumeUploadStepProps {
   onComplete: (files: any[]) => void;
+  onAddMessage: (msg: { type: 'user' | 'assistant'; content: string }) => void;
 }
 
-export const ResumeUploadStep = ({ onComplete }: ResumeUploadStepProps) => {
+export const ResumeUploadStep = ({ onComplete, onAddMessage }: ResumeUploadStepProps) => {
   const uploadProps = useFileUpload();
   
   const allFilesComplete = uploadProps.files.length > 0 && 
     uploadProps.files.every(f => f.status === 'complete');
 
   const handleContinue = () => {
+    // Add confirmation messages
+    onAddMessage({
+      type: 'user',
+      content: `✅ Uploaded ${uploadProps.files.length} resumes`
+    });
+    
+    onAddMessage({
+      type: 'assistant',
+      content: `Perfect! I've received ${uploadProps.files.length} resumes. Let's choose your vetting tier.`
+    });
+    
     onComplete(uploadProps.files);
   };
 
@@ -22,7 +34,7 @@ export const ResumeUploadStep = ({ onComplete }: ResumeUploadStepProps) => {
     <div className="space-y-6">
       <ChatMessage
         type="assistant"
-        content="Great! Upload up to 20 candidate resumes. I'll analyze them against your job requirements."
+        content="Drop your resumes here, and I'll take care of the rest. I can handle up to 20 files."
         delay={0}
       />
 

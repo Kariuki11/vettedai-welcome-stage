@@ -5,16 +5,36 @@ import { cn } from "@/lib/utils";
 
 interface CandidateSourceStepProps {
   onComplete: (source: 'own' | 'network') => void;
+  onAddMessage: (msg: { type: 'user' | 'assistant'; content: string }) => void;
 }
 
-export const CandidateSourceStep = ({ onComplete }: CandidateSourceStepProps) => {
+export const CandidateSourceStep = ({ onComplete, onAddMessage }: CandidateSourceStepProps) => {
   const [selected, setSelected] = useState<'own' | 'network' | null>(null);
 
   const handleSelect = (source: 'own' | 'network') => {
     setSelected(source);
+    
+    // Add user's choice as message
+    onAddMessage({
+      type: 'user',
+      content: source === 'own' 
+        ? "I'll upload my own candidates"
+        : "Use VettedAI's candidate network"
+    });
+    
+    // Add assistant response
+    const response = source === 'own'
+      ? "Great! Let's get those resumes uploaded."
+      : "Perfect! I'll connect you with our pre-vetted network.";
+    
+    onAddMessage({
+      type: 'assistant',
+      content: response
+    });
+    
     setTimeout(() => {
       onComplete(source);
-    }, 500);
+    }, 300);
   };
 
   return (

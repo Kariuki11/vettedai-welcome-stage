@@ -1,13 +1,13 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { ProgressIndicator } from "@/components/workspace/ProgressIndicator";
 import { ChatContainer } from "@/components/workspace/ChatContainer";
+import { NavigationControls } from "@/components/workspace/NavigationControls";
 import { JobDescriptionStep } from "@/components/workspace/steps/JobDescriptionStep";
 import { CandidateSourceStep } from "@/components/workspace/steps/CandidateSourceStep";
 import { ResumeUploadStep } from "@/components/workspace/steps/ResumeUploadStep";
 import { TierSelectionStep } from "@/components/workspace/steps/TierSelectionStep";
-import { PricingModal } from "@/components/workspace/steps/PricingModal";
+import { PricingSummaryStep } from "@/components/workspace/steps/PricingSummaryStep";
 import { CheckoutStep } from "@/components/workspace/steps/CheckoutStep";
 import { useChatFlow } from "@/hooks/useChatFlow";
 
@@ -15,14 +15,18 @@ const Workspace = () => {
   const navigate = useNavigate();
   const {
     state,
+    addMessage,
+    setTyping,
     updateJobDescription,
     updateCandidateSource,
     updateUploadedResumes,
     updateSelectedTier,
     proceedToCheckout,
+    goToPreviousStep,
+    goToNextStep,
+    canGoBack,
+    canGoForward,
   } = useChatFlow();
-
-  const [showPricingModal, setShowPricingModal] = useState(false);
 
   const handleJobDescriptionComplete = (jd: string, summary: string) => {
     updateJobDescription(jd, summary);
@@ -38,41 +42,56 @@ const Workspace = () => {
 
   const handleTierSelectionComplete = (tier: any) => {
     updateSelectedTier(tier);
-    setShowPricingModal(true);
-  };
-
-  const handleProceedToCheckout = () => {
-    setShowPricingModal(false);
-    proceedToCheckout();
   };
 
   const handleCheckoutComplete = () => {
-    // Navigate to a project folder (placeholder route)
     navigate('/workspace');
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-[#F9F9F7]">
       <WorkspaceHeader />
-      <ProgressIndicator currentStep={state.currentStep} />
+      <ProgressIndicator currentStep={state.currentStep} totalSteps={6} />
       
-      <ChatContainer>
+      <ChatContainer 
+        messages={state.messages}
+        isTyping={state.isTyping}
+      >
         {state.currentStep === 1 && (
-          <JobDescriptionStep onComplete={handleJobDescriptionComplete} />
+          <JobDescriptionStep 
+            onComplete={handleJobDescriptionComplete}
+            onAddMessage={addMessage}
+            onSetTyping={setTyping}
+          />
         )}
 
         {state.currentStep === 2 && (
-          <CandidateSourceStep onComplete={handleCandidateSourceComplete} />
+          <CandidateSourceStep 
+            onComplete={handleCandidateSourceComplete}
+            onAddMessage={addMessage}
+          />
         )}
 
         {state.currentStep === 3 && state.candidateSource === 'own' && (
-          <ResumeUploadStep onComplete={handleResumeUploadComplete} />
+          <ResumeUploadStep 
+            onComplete={handleResumeUploadComplete}
+            onAddMessage={addMessage}
+          />
         )}
 
         {state.currentStep === 4 && (
           <TierSelectionStep
             candidateCount={state.candidateCount || 12}
             onComplete={handleTierSelectionComplete}
+            onAddMessage={addMessage}
+          />
+        )}
+
+        {state.currentStep === 5 && state.selectedTier && (
+          <PricingSummaryStep
+            candidateCount={state.candidateCount || 12}
+            tier={state.selectedTier}
+            onComplete={proceedToCheckout}
           />
         )}
 
@@ -81,11 +100,13 @@ const Workspace = () => {
         )}
       </ChatContainer>
 
-      <PricingModal
-        open={showPricingModal}
-        candidateCount={state.candidateCount || 12}
-        tier={state.selectedTier}
-        onProceed={handleProceedToCheckout}
+      <NavigationControls
+        canGoBack={canGoBack()}
+        canGoForward={canGoForward()}
+        onBack={goToPreviousStep}
+        onNext={goToNextStep}
+        currentStep={state.currentStep}
+        totalSteps={6}
       />
     </div>
   );

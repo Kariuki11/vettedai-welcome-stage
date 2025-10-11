@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { CheckCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatMessage } from "../ChatMessage";
+import { toast } from "@/hooks/use-toast";
 
 interface CheckoutStepProps {
   onComplete: () => void;
@@ -63,10 +64,20 @@ export const CheckoutStep = ({ onComplete }: CheckoutStepProps) => {
         delay={0}
       />
 
-      <div className="flex justify-center pt-4 animate-slide-in-up">
-        <Button onClick={onComplete} size="lg" variant="hero">
+      <div className="flex justify-center pt-4 animate-fade-in">
+        <Button 
+          onClick={() => {
+            toast({
+              title: "Project folder coming soon!",
+              description: "You'll be able to track your candidates here.",
+            });
+            onComplete();
+          }} 
+          size="lg" 
+          className="gap-2"
+        >
           Go to Folder
-          <ArrowRight className="ml-2 h-5 w-5" />
+          <ArrowRight className="h-5 w-5" />
         </Button>
       </div>
     </div>

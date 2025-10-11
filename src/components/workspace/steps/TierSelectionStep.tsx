@@ -8,6 +8,7 @@ import { TierInfo } from "@/hooks/useChatFlow";
 interface TierSelectionStepProps {
   candidateCount: number;
   onComplete: (tier: TierInfo) => void;
+  onAddMessage: (msg: { type: 'user' | 'assistant'; content: string }) => void;
 }
 
 const tiers: TierInfo[] = [
@@ -15,19 +16,16 @@ const tiers: TierInfo[] = [
     id: 1,
     name: "Quick Fit Screen",
     description: "5-minute async video response to key questions about their experience and approach.",
-    pricePerCandidate: 15,
   },
   {
     id: 2,
     name: "Scenario Fit",
     description: "Real work scenario with evaluation. Candidates solve a realistic problem from your domain.",
-    pricePerCandidate: 35,
   },
   {
     id: 3,
     name: "Role Simulation",
     description: "Full role simulation with TI Matrix. Comprehensive assessment across all key competencies.",
-    pricePerCandidate: 75,
   },
 ];
 
@@ -37,7 +35,7 @@ const tierIcons = {
   3: BarChart,
 };
 
-export const TierSelectionStep = ({ candidateCount, onComplete }: TierSelectionStepProps) => {
+export const TierSelectionStep = ({ candidateCount, onComplete, onAddMessage }: TierSelectionStepProps) => {
   const [selected, setSelected] = useState<TierInfo | null>(null);
 
   const handleSelect = (tier: TierInfo) => {
@@ -46,6 +44,18 @@ export const TierSelectionStep = ({ candidateCount, onComplete }: TierSelectionS
 
   const handleContinue = () => {
     if (selected) {
+      // Add user's choice as message
+      onAddMessage({
+        type: 'user',
+        content: `I'll use Tier ${selected.id}: ${selected.name}`
+      });
+      
+      // Add assistant response
+      onAddMessage({
+        type: 'assistant',
+        content: "Excellent choice. Let me show you the pilot pricing."
+      });
+      
       onComplete(selected);
     }
   };
@@ -90,19 +100,14 @@ export const TierSelectionStep = ({ candidateCount, onComplete }: TierSelectionS
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-border">
-                  <p className="text-2xl font-bold text-primary">
-                    ${tier.pricePerCandidate}
-                    <span className="text-sm font-normal text-muted-foreground"> per candidate</span>
-                  </p>
-                </div>
               </div>
 
               {isSelected && (
-                <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                  <svg className="w-4 h-4 text-primary-foreground" fill="currentColor" viewBox="0 0 20 20">
+                <div className="absolute top-3 right-3 flex items-center gap-1 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
+                  Selected
                 </div>
               )}
             </button>
@@ -111,21 +116,11 @@ export const TierSelectionStep = ({ candidateCount, onComplete }: TierSelectionS
       </div>
 
       {selected && (
-        <div className="space-y-4 animate-fade-in">
-          <div className="p-4 rounded-lg bg-secondary/30 border border-secondary">
-            <p className="text-sm text-center">
-              You're vetting <span className="font-semibold text-primary">{candidateCount} candidates</span> at{" "}
-              <span className="font-semibold text-primary">Tier {selected.id}</span> ={" "}
-              <span className="font-bold text-primary text-lg">${candidateCount * selected.pricePerCandidate} total</span>
-            </p>
-          </div>
-
-          <div className="flex justify-center">
-            <Button onClick={handleContinue} size="lg">
-              Continue to Pricing
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
+        <div className="flex justify-center pt-4 animate-fade-in">
+          <Button onClick={handleContinue} size="lg" className="gap-2">
+            Continue
+            <ArrowRight className="h-5 w-5" />
+          </Button>
         </div>
       )}
     </div>

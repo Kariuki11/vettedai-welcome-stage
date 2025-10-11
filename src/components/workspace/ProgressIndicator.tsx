@@ -9,17 +9,17 @@ export const ProgressIndicator = ({ currentStep, totalSteps = 6 }: ProgressIndic
   const progress = (currentStep / totalSteps) * 100;
 
   return (
-    <div className="sticky top-0 z-10 bg-card border-b border-border py-3 px-6">
-      <div className="max-w-[960px] mx-auto">
+    <div className="sticky top-0 z-10 bg-white border-b border-border">
+      <div className="max-w-[960px] mx-auto px-6 py-3">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Step {currentStep} of {totalSteps}
-          </span>
-          <span className="text-sm font-medium text-primary">
-            {Math.round(progress)}%
-          </span>
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {Math.round(progress)}% complete
+          </p>
         </div>
-        <Progress value={progress} className="h-2" />
+        <Progress value={progress} className="h-1" />
       </div>
     </div>
   );
