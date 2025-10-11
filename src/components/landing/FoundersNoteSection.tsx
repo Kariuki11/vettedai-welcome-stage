@@ -6,7 +6,7 @@ export const FoundersNoteSection = () => {
           From the front lines of Africa's talent market.
         </h2>
         <p className="text-lg md:text-xl text-muted-foreground leading-relaxed">
-          We've sat on both sides of the hiring table. We've felt the pain of the mis-hire and the frustration of a broken process. We're not just building software; we're building the tool we always wished we had.
+          We've sat on both sides of the hiring table. We've felt the pain of the mis-hire and the frustration of a broken process. We're rebuilding hiring from first principles.
         </p>
         <div className="pt-6 border-t border-border/30 mt-8">
           <p className="text-sm text-muted-foreground italic">
