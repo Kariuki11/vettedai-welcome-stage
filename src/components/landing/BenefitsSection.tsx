@@ -1,21 +1,21 @@
-import { Zap, Shield, TrendingUp } from "lucide-react";
+import { Zap, Eye, Target } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const benefits = [
   {
     icon: Zap,
-    title: "Speed",
-    description: "Get vetted shortlists in 48 hours. No more weeks of manual screening and guesswork.",
+    title: "Find your signal, faster.",
+    description: "Replace weeks of manual screening with an intelligent, automated process. We handle the vetting, so you can focus on what matters: connecting with the right people.",
   },
   {
-    icon: Shield,
-    title: "Proof",
-    description: "Every candidate completes real work tasks. No more résumé inflation or interview theater.",
+    icon: Eye,
+    title: "Look beyond the resume.",
+    description: "Every candidate completes a task that mirrors the real work. See their process, their thinking, and their final output—a true measure of their potential.",
   },
   {
-    icon: TrendingUp,
-    title: "Confidence",
-    description: "Hire with verified intelligence. Multi-dimensional proof replaces one-page proxies.",
+    icon: Target,
+    title: "Hire with conviction.",
+    description: "The Talent Intelligence Matrix isn't just a score; it's a story. A multi-dimensional view that empowers you and your team to make the right hire, with confidence you can defend.",
   },
 ];
 

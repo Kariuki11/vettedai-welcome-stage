@@ -7,7 +7,7 @@ export const Footer = () => {
           <div className="space-y-2">
             <h3 className="text-lg font-semibold text-primary">VettedAI</h3>
             <p className="text-sm text-muted-foreground">
-              The Assessment Platform for Non-Technical Roles
+              The Talent Intelligence Workspace
             </p>
           </div>
           
@@ -30,7 +30,7 @@ export const Footer = () => {
         
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-border/30 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} VettedAI. All rights reserved.
+          © {new Date().getFullYear()} VettedAI • The Talent Intelligence Workspace
         </div>
       </div>
     </footer>
