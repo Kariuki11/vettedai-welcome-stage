@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { HeroSection } from "@/components/landing/HeroSection";
-import { BenefitsSection } from "@/components/landing/BenefitsSection";
-import { CredibilityBand } from "@/components/landing/CredibilityBand";
+import { WhyItMattersSection } from "@/components/landing/WhyItMattersSection";
+import { PerformanceGraphSection } from "@/components/landing/PerformanceGraphSection";
+import { ProductSection } from "@/components/landing/ProductSection";
+import { FoundersNoteSection } from "@/components/landing/FoundersNoteSection";
+import { FinalCtaSection } from "@/components/landing/FinalCtaSection";
 import { Footer } from "@/components/landing/Footer";
 import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 
@@ -15,8 +18,11 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <HeroSection onCtaClick={handleCtaClick} />
-      <BenefitsSection />
-      <CredibilityBand />
+      <WhyItMattersSection />
+      <PerformanceGraphSection />
+      <ProductSection />
+      <FoundersNoteSection />
+      <FinalCtaSection onCtaClick={handleCtaClick} />
       <Footer />
       
       <OnboardingWizard 

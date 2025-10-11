@@ -10,8 +10,15 @@ export const HeroSection = ({
       {/* Background Gradient */}
       <div className="absolute inset-0 gradient-subtle -z-10" />
       
+      {/* Animated UI Cards - Layered Behind Content */}
+      <div className="absolute inset-0 -z-5 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-1/4 w-64 h-40 bg-secondary/30 backdrop-blur-sm rounded-lg animate-float" style={{ animationDelay: '0s' }} />
+        <div className="absolute top-40 right-1/4 w-72 h-48 bg-secondary/20 backdrop-blur-sm rounded-lg animate-float" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute bottom-32 left-1/3 w-56 h-36 bg-secondary/25 backdrop-blur-sm rounded-lg animate-float" style={{ animationDelay: '1s' }} />
+      </div>
+      
       {/* Content Container */}
-      <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in">
+      <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in relative z-10">
         {/* Headline */}
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
           Hire on Proof, <span className="text-primary">Not Promise.</span>
@@ -19,7 +26,7 @@ export const HeroSection = ({
         
         {/* Subheadline */}
         <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">
-          The era of the resume is over. VettedAI is the first intelligent workspace designed for recruiters to see what candidates can actually do. Go from a noisy pipeline to a confident decision, backed by verifiable proof.
+          The resume has become the biggest lie in business. VettedAI is the intelligent workspace built to show you the truth: what a candidate can <em>actually</em> do.
         </p>
         
         {/* CTA Button */}
@@ -32,7 +39,7 @@ export const HeroSection = ({
         
         {/* Trust Badge */}
         <p className="text-sm text-muted-foreground pt-4 animate-fade-in-delayed">
-          See True Ability • Decide in Days, Not Weeks • Your Intelligent Workspace
+          Verifiable Proof • 48-Hour Shortlists • Hire with Confidence
         </p>
       </div>
     </section>;

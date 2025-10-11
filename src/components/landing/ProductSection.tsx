@@ -1,28 +1,36 @@
-import { Zap, Eye, Target } from "lucide-react";
+import { Zap, Sparkles, Grid3x3 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const benefits = [
   {
     icon: Zap,
     title: "Find your signal, faster.",
-    description: "Replace weeks of manual screening with an intelligent, automated process. We handle the vetting, so you can focus on what matters: connecting with the right people.",
+    description: "Automate the noise, so you can focus on what matters: connecting with the right people.",
   },
   {
-    icon: Eye,
-    title: "Look beyond the resume.",
-    description: "Every candidate completes a task that mirrors the real work. See their process, their thinking, and their final output—a true measure of their potential.",
+    icon: Sparkles,
+    title: "Generate Proof of Work.",
+    description: "Our AI Co-pilot helps you design tasks that mirror the actual role, revealing how candidates truly think, create, and solve.",
   },
   {
-    icon: Target,
-    title: "Hire with conviction.",
-    description: "The Talent Intelligence Matrix isn't just a score; it's a story. A multi-dimensional view that empowers you and your team to make the right hire, with confidence you can defend.",
+    icon: Grid3x3,
+    title: "Decide with the TI Matrix.",
+    description: "Go beyond a score. The Talent Intelligence Matrix is your multi-dimensional view of ability—verifiable proof you can stand behind.",
   },
 ];
 
-export const BenefitsSection = () => {
+export const ProductSection = () => {
   return (
     <section className="px-6 py-24 bg-background">
       <div className="max-w-6xl mx-auto">
+        {/* Section Header */}
+        <div className="text-center space-y-4 mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold">
+            Your workspace for hiring intelligence.
+          </h2>
+        </div>
+        
+        {/* Benefits Grid */}
         <div className="grid md:grid-cols-3 gap-8">
           {benefits.map((benefit, index) => {
             const Icon = benefit.icon;
