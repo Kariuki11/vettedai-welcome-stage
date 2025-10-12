@@ -1,11 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface FinalCtaSectionProps {
-  onCtaClick: () => void;
+  onCtaClick?: () => void;
 }
 
 export const FinalCtaSection = ({ onCtaClick }: FinalCtaSectionProps) => {
+  const navigate = useNavigate();
+  
+  const handleCtaClick = () => {
+    if (onCtaClick) {
+      onCtaClick();
+    } else {
+      navigate('/signup');
+    }
+  };
   return (
     <section className="px-6 py-32 bg-gradient-to-b from-background to-muted/30">
       <div className="max-w-4xl mx-auto text-center space-y-8">
@@ -19,7 +29,7 @@ export const FinalCtaSection = ({ onCtaClick }: FinalCtaSectionProps) => {
           <Button 
             variant="hero" 
             size="lg" 
-            onClick={onCtaClick}
+            onClick={handleCtaClick}
             className="text-base px-8 py-6 h-auto"
           >
             Get Started

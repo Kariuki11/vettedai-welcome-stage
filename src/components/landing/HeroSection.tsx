@@ -1,9 +1,21 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 interface HeroSectionProps {
-  onCtaClick: () => void;
+  onCtaClick?: () => void;
 }
+
 export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
+  const navigate = useNavigate();
+  
+  const handleCtaClick = () => {
+    if (onCtaClick) {
+      onCtaClick();
+    } else {
+      navigate('/signup');
+    }
+  };
   return (
     <section className="relative min-h-[90vh] flex items-center justify-center px-6 py-20 overflow-hidden">
       {/* Background Gradient */}
@@ -44,7 +56,7 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
 
         {/* CTA Button */}
         <div className="pt-6 animate-slide-in-up">
-          <Button variant="hero" size="lg" onClick={onCtaClick} className="text-sm px-6 py-3 h-auto">
+          <Button variant="hero" size="lg" onClick={handleCtaClick} className="text-sm px-6 py-3 h-auto">
             Create My Recruiter Workspace
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>

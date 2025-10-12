@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { WhyItMattersSection } from "@/components/landing/WhyItMattersSection";
 import { PerformanceGraphSection } from "@/components/landing/PerformanceGraphSection";
@@ -6,29 +5,17 @@ import { ProductSection } from "@/components/landing/ProductSection";
 import { FoundersNoteSection } from "@/components/landing/FoundersNoteSection";
 import { FinalCtaSection } from "@/components/landing/FinalCtaSection";
 import { Footer } from "@/components/landing/Footer";
-import { OnboardingWizardV2 } from "@/components/onboarding/OnboardingWizardV2";
 
 const Index = () => {
-  const [showOnboarding, setShowOnboarding] = useState(false);
-
-  const handleCtaClick = () => {
-    setShowOnboarding(true);
-  };
-
   return (
     <div className="min-h-screen">
-      <HeroSection onCtaClick={handleCtaClick} />
+      <HeroSection />
       <WhyItMattersSection />
       <PerformanceGraphSection />
       <ProductSection />
       <FoundersNoteSection />
-      <FinalCtaSection onCtaClick={handleCtaClick} />
+      <FinalCtaSection />
       <Footer />
-      
-      <OnboardingWizardV2 
-        open={showOnboarding} 
-        onOpenChange={setShowOnboarding} 
-      />
     </div>
   );
 };

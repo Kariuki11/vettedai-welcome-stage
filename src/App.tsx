@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import SignupContext from "./pages/SignupContext";
 import Workspace from "./pages/Workspace";
 import Checkout from "./pages/Checkout";
 import ProjectFolder from "./pages/ProjectFolder";
@@ -31,6 +33,8 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/signup/context" element={<SignupContext />} />
           
           <Route path="/workspace" element={
             <ProtectedRoute>
