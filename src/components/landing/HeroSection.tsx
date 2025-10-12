@@ -37,7 +37,7 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
         </h1>
 
         {/* Subheadline */}
-        <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">
+        <p className="text-lg md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">
           The resume has become the biggest lie in business. VettedAI is the intelligent workspace built to show you the
           truth: what a candidate can <em>actually</em> do.
         </p>
