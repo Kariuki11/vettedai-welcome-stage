@@ -79,9 +79,11 @@ const Checkout = () => {
     }
   };
 
-  const handleContinueToFolder = () => {
+  const handleContinueToFolder = async () => {
     sessionStorage.removeItem('project_wizard_state');
-    navigate('/workspace');
+    // Wait a moment to ensure database transaction completes
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    navigate('/workspace', { state: { refetch: true } });
   };
 
   if (showSuccess) {

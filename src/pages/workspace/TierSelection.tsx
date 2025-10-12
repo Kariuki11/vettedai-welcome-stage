@@ -72,7 +72,7 @@ export default function TierSelection() {
     }
 
     saveWizardState({ selectedTier });
-    navigate('/workspace/new/review');
+    navigate('/workspace/new/review', { state: { selectedTier } });
   };
 
   const handleBack = () => {

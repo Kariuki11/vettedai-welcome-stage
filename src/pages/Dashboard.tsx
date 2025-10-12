@@ -1,14 +1,24 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { EmptyProjectsState } from "@/components/dashboard/EmptyProjectsState";
 import { useUserProjects } from "@/hooks/useUserProjects";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
   const { projects, isLoading } = useUserProjects();
+
+  useEffect(() => {
+    if (location.state?.refetch) {
+      queryClient.invalidateQueries({ queryKey: ['user-projects'] });
+    }
+  }, [location.state, queryClient]);
 
   const handleStartNewProject = () => {
     navigate('/workspace/new/jd-upload');

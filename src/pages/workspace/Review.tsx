@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Edit2 } from "lucide-react";
@@ -7,7 +7,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Review() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { wizardState } = useProjectWizard();
+  
+  // Use router state as fallback if wizardState.selectedTier is undefined
+  const selectedTier = wizardState.selectedTier || location.state?.selectedTier;
 
   const handleContinue = () => {
     // Pass wizard state to checkout
@@ -110,20 +114,20 @@ export default function Review() {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Selected Tier:</span>
-                <span className="font-medium">{wizardState.selectedTier?.name}</span>
+                <span className="font-medium">{selectedTier?.name}</span>
               </div>
               
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Regular Price:</span>
                 <span className="line-through text-muted-foreground">
-                  ${wizardState.selectedTier?.anchorPrice}
+                  ${selectedTier?.anchorPrice}
                 </span>
               </div>
               
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Pilot Discount:</span>
                 <span className="text-green-600 font-medium">
-                  -${(wizardState.selectedTier?.anchorPrice || 0) - (wizardState.selectedTier?.pilotPrice || 0)}
+                  -${(selectedTier?.anchorPrice || 0) - (selectedTier?.pilotPrice || 0)}
                 </span>
               </div>
               
@@ -131,7 +135,7 @@ export default function Review() {
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-lg">Total Due Today:</span>
                   <span className="text-3xl font-bold text-primary">
-                    ${wizardState.selectedTier?.pilotPrice}
+                    ${selectedTier?.pilotPrice}
                   </span>
                 </div>
               </div>
@@ -175,7 +179,7 @@ export default function Review() {
                 You'll be redirected to secure payment processing
               </p>
               <Button onClick={handleContinue} size="lg" className="gap-2">
-                Complete Payment • ${wizardState.selectedTier?.pilotPrice}
+                Complete Payment • ${selectedTier?.pilotPrice}
               </Button>
             </div>
           </div>

@@ -18,6 +18,9 @@ import TierSelection from "./pages/workspace/TierSelection";
 import Review from "./pages/workspace/Review";
 import Checkout from "./pages/Checkout";
 import ProjectFolder from "./pages/ProjectFolder";
+import AccountSettings from "./pages/AccountSettings";
+import AdminAuth from "./pages/AdminAuth";
+import AdminDashboard from "./pages/admin/Dashboard";
 import OpsConsole from "./pages/OpsConsole";
 import ActiveProjects from "./pages/admin/ActiveProjects";
 import NotFound from "./pages/NotFound";
@@ -88,6 +91,20 @@ const App = () => {
           <Route path="/workspace/project/:projectId" element={
             <ProtectedRoute>
               <ProjectFolder />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/settings" element={
+            <ProtectedRoute>
+              <AccountSettings />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/admin/login" element={<AdminAuth />} />
+          
+          <Route path="/admin/dashboard" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminDashboard />
             </ProtectedRoute>
           } />
           

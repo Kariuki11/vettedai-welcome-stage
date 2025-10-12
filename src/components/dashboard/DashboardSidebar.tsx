@@ -5,7 +5,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 const navigationItems = [
   { name: "All Projects", href: "/workspace", icon: FolderOpen, enabled: true },
-  { name: "Account Settings", href: "/settings", icon: Settings, enabled: false },
+  { name: "Account Settings", href: "/settings", icon: Settings, enabled: true },
   { name: "Billing History", href: "/billing", icon: CreditCard, enabled: false },
   { name: "Invite Team Members", href: "/team", icon: Users, enabled: false },
 ];

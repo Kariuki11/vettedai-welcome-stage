@@ -23,7 +23,7 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   }
 
   if (requireAdmin && !isAdmin) {
-    return <Navigate to="/workspace" replace />;
+    return <Navigate to="/admin/login" replace />;
   }
 
   return <>{children}</>;
