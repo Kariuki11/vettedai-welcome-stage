@@ -9,6 +9,28 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
+
+const adminSignupSchema = z.object({
+  email: z.string().trim().email("Invalid email address").max(255, "Email too long"),
+  password: z.string()
+    .min(12, "Password must be at least 12 characters")
+    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Must contain at least one special character"),
+  confirmPassword: z.string(),
+  fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
+  companyName: z.string().trim().max(200, "Company name too long").optional()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"]
+});
+
+const adminLoginSchema = z.object({
+  email: z.string().trim().email("Invalid email address"),
+  password: z.string().min(1, "Password required")
+});
 
 export default function AdminAuth() {
   const navigate = useNavigate();
@@ -30,7 +52,19 @@ export default function AdminAuth() {
     setIsLoading(true);
 
     try {
-      const { error } = await signIn(loginData.email, loginData.password);
+      // Validate login data
+      const validation = adminLoginSchema.safeParse(loginData);
+      if (!validation.success) {
+        toast({
+          title: "Validation Error",
+          description: validation.error.errors[0].message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      const { error } = await signIn(loginData.email.trim(), loginData.password);
       
       if (error) {
         toast({
@@ -73,24 +107,27 @@ export default function AdminAuth() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (signupData.password !== signupData.confirmPassword) {
-      toast({
-        title: "Password mismatch",
-        description: "Passwords do not match.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
+      // Validate all signup data with zod schema
+      const validation = adminSignupSchema.safeParse(signupData);
+      if (!validation.success) {
+        toast({
+          title: "Validation Error",
+          description: validation.error.errors[0].message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      const validatedData = validation.data;
       // Check if email is whitelisted
       const { data: whitelisted, error: whitelistError } = await supabase
         .from('admin_whitelist')
         .select('email')
-        .eq('email', signupData.email)
+        .eq('email', validatedData.email)
         .single();
 
       if (whitelistError || !whitelisted) {
@@ -103,13 +140,13 @@ export default function AdminAuth() {
         return;
       }
 
-      // Create auth user
+      // Create auth user with validated data
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: signupData.email,
-        password: signupData.password,
+        email: validatedData.email,
+        password: validatedData.password,
         options: {
           data: {
-            full_name: signupData.fullName
+            full_name: validatedData.fullName
           },
           emailRedirectTo: `${window.location.origin}/admin/dashboard`
         }
@@ -128,14 +165,14 @@ export default function AdminAuth() {
       // Create recruiter profile for admin (so they can test features)
       await supabase.from('recruiters').insert({
         user_id: authData.user.id,
-        email: signupData.email,
-        full_name: signupData.fullName,
-        company_name: signupData.companyName || 'VettedAI Team',
+        email: validatedData.email,
+        full_name: validatedData.fullName,
+        company_name: validatedData.companyName || 'VettedAI Team',
         status: 'active'
       });
 
       // Grant admin role
-      await supabase.rpc('grant_admin_role', { _email: signupData.email });
+      await supabase.rpc('grant_admin_role', { _email: validatedData.email });
 
       toast({
         title: "Account created!",
