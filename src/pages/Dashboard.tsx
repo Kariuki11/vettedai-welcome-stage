@@ -14,8 +14,9 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (location.state?.refetch || location.state?.refetchToken) {
-      refetch();
-      navigate(location.pathname, { replace: true });
+      void refetch().finally(() => {
+        navigate(location.pathname, { replace: true });
+      });
     }
   }, [location, navigate, refetch]);
 
