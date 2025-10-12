@@ -6,7 +6,7 @@ import { ProductSection } from "@/components/landing/ProductSection";
 import { FoundersNoteSection } from "@/components/landing/FoundersNoteSection";
 import { FinalCtaSection } from "@/components/landing/FinalCtaSection";
 import { Footer } from "@/components/landing/Footer";
-import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
+import { OnboardingWizardV2 } from "@/components/onboarding/OnboardingWizardV2";
 
 const Index = () => {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -25,7 +25,7 @@ const Index = () => {
       <FinalCtaSection onCtaClick={handleCtaClick} />
       <Footer />
       
-      <OnboardingWizard 
+      <OnboardingWizardV2 
         open={showOnboarding} 
         onOpenChange={setShowOnboarding} 
       />

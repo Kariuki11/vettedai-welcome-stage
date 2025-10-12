@@ -255,31 +255,46 @@ export type Database = {
       }
       recruiters: {
         Row: {
+          company_name: string | null
+          company_size: string | null
           created_at: string | null
           email: string
           full_name: string
           id: string
           organization_id: string | null
+          referral_source: string | null
+          status: string
           updated_at: string | null
           user_id: string | null
+          user_role: string | null
         }
         Insert: {
+          company_name?: string | null
+          company_size?: string | null
           created_at?: string | null
           email: string
           full_name: string
           id?: string
           organization_id?: string | null
+          referral_source?: string | null
+          status?: string
           updated_at?: string | null
           user_id?: string | null
+          user_role?: string | null
         }
         Update: {
+          company_name?: string | null
+          company_size?: string | null
           created_at?: string | null
           email?: string
           full_name?: string
           id?: string
           organization_id?: string | null
+          referral_source?: string | null
+          status?: string
           updated_at?: string | null
           user_id?: string | null
+          user_role?: string | null
         }
         Relationships: [
           {
