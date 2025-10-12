@@ -11,25 +11,27 @@ import { Loader2, Shield } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
 
+// Validation schema for admin signup
 const adminSignupSchema = z.object({
-  email: z.string().trim().email("Invalid email address").max(255, "Email too long"),
+  email: z.string().trim().email("Invalid email format").max(255, "Email must be less than 255 characters"),
   password: z.string()
     .min(12, "Password must be at least 12 characters")
-    .regex(/[A-Z]/, "Must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Must contain at least one number")
-    .regex(/[^A-Za-z0-9]/, "Must contain at least one special character"),
+    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+    .regex(/[0-9]/, "Password must contain at least one number")
+    .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
   confirmPassword: z.string(),
-  fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name too long"),
-  companyName: z.string().trim().max(200, "Company name too long").optional()
+  fullName: z.string().trim().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+  companyName: z.string().trim().max(200, "Company name must be less than 200 characters").optional()
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
-  path: ["confirmPassword"]
+  path: ["confirmPassword"],
 });
 
+// Validation schema for admin login
 const adminLoginSchema = z.object({
-  email: z.string().trim().email("Invalid email address"),
-  password: z.string().min(1, "Password required")
+  email: z.string().trim().email("Invalid email format").max(255, "Email must be less than 255 characters"),
+  password: z.string().min(1, "Password is required")
 });
 
 export default function AdminAuth() {
@@ -52,19 +54,20 @@ export default function AdminAuth() {
     setIsLoading(true);
 
     try {
-      // Validate login data
+      // Validate input
       const validation = adminLoginSchema.safeParse(loginData);
       if (!validation.success) {
+        const firstError = validation.error.errors[0];
         toast({
           title: "Validation Error",
-          description: validation.error.errors[0].message,
+          description: firstError.message,
           variant: "destructive",
         });
         setIsLoading(false);
         return;
       }
 
-      const { error } = await signIn(loginData.email.trim(), loginData.password);
+      const { error } = await signIn(validation.data.email, validation.data.password);
       
       if (error) {
         toast({
@@ -110,12 +113,13 @@ export default function AdminAuth() {
     setIsLoading(true);
 
     try {
-      // Validate all signup data with zod schema
+      // Validate input with zod schema
       const validation = adminSignupSchema.safeParse(signupData);
       if (!validation.success) {
+        const firstError = validation.error.errors[0];
         toast({
           title: "Validation Error",
-          description: validation.error.errors[0].message,
+          description: firstError.message,
           variant: "destructive",
         });
         setIsLoading(false);
@@ -123,6 +127,7 @@ export default function AdminAuth() {
       }
 
       const validatedData = validation.data;
+
       // Check if email is whitelisted
       const { data: whitelisted, error: whitelistError } = await supabase
         .from('admin_whitelist')
