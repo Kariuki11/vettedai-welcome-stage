@@ -1,5 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { WizardState } from "@/hooks/useProjectWizard";
@@ -11,14 +11,37 @@ const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const wizardState = (location.state as { wizardState?: WizardState })?.wizardState;
+  const wizardState = useMemo(() => {
+    const stateWizard = (location.state as { wizardState?: WizardState })?.wizardState;
+
+    if (stateWizard?.selectedTier) {
+      return stateWizard;
+    }
+
+    const stored = sessionStorage.getItem('project_wizard_state');
+    if (!stored) {
+      return undefined;
+    }
+
+    try {
+      const parsed = JSON.parse(stored) as WizardState;
+      return parsed?.selectedTier ? parsed : undefined;
+    } catch (error) {
+      console.warn('Failed to parse stored wizard state', error);
+      return undefined;
+    }
+  }, [location.state]);
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [projectId, setProjectId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!wizardState || !wizardState.selectedTier) {
+      navigate('/workspace');
+    }
+  }, [wizardState, navigate]);
 
   if (!wizardState || !wizardState.selectedTier) {
-    navigate('/workspace');
     return null;
   }
 

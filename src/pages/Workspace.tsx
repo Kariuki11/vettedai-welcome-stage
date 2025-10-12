@@ -10,6 +10,7 @@ import { CandidatePreviewStep } from "@/components/workspace/steps/CandidatePrev
 import { TierSelectionStep } from "@/components/workspace/steps/TierSelectionStep";
 import { ReviewProjectStep } from "@/components/workspace/steps/ReviewProjectStep";
 import { useChatFlow } from "@/hooks/useChatFlow";
+import type { WizardState } from "@/hooks/useProjectWizard";
 
 const Workspace = () => {
   const navigate = useNavigate();
@@ -50,14 +51,29 @@ const Workspace = () => {
   };
 
   const handleProceedToCheckout = () => {
+    if (!state.selectedTier) {
+      return;
+    }
+
+    const wizardState: WizardState = {
+      roleTitle: state.jobTitle,
+      jobSummary: state.jobSummary,
+      jobDescription: state.jobDescription,
+      candidateSource: state.candidateSource ?? undefined,
+      uploadedResumes: state.uploadedResumes?.map((file) => ({
+        name: file.name,
+        size: file.size,
+        status: file.status,
+        progress: file.progress,
+      })),
+      candidateCount: state.candidateCount,
+      selectedTier: state.selectedTier,
+    };
+
+    sessionStorage.setItem('project_wizard_state', JSON.stringify(wizardState));
+
     navigate('/checkout', {
-      state: {
-        tier: state.selectedTier,
-        jobTitle: state.jobTitle,
-        candidateCount: state.candidateCount,
-        candidateSource: state.candidateSource,
-        uploadedResumes: state.uploadedResumes,
-      },
+      state: { wizardState },
     });
   };
 
