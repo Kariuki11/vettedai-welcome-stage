@@ -126,7 +126,7 @@ const Checkout = () => {
     sessionStorage.removeItem('project_wizard_state');
     // Wait a moment to ensure database transaction completes
     await new Promise(resolve => setTimeout(resolve, 1000));
-    navigate('/workspace', { state: { refetch: true } });
+    navigate('/workspace', { state: { refetch: true, refetchToken: Date.now() } });
   };
 
   if (showSuccess) {

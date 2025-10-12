@@ -13,10 +13,11 @@ export default function Dashboard() {
   const { projects, isLoading, refetch } = useUserProjects();
 
   useEffect(() => {
-    if (location.state?.refetch) {
+    if (location.state?.refetch || location.state?.refetchToken) {
       refetch();
+      navigate(location.pathname, { replace: true });
     }
-  }, [location.state, refetch]);
+  }, [location, navigate, refetch]);
 
   const handleStartNewProject = () => {
     navigate('/workspace/new/jd-upload');

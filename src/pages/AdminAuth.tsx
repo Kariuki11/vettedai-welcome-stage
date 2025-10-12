@@ -127,12 +127,13 @@ export default function AdminAuth() {
       }
 
       const validatedData = validation.data;
+      const normalizedEmail = validatedData.email.toLowerCase();
 
-      console.log('Starting admin signup for:', validatedData.email);
+      console.log('Starting admin signup for:', normalizedEmail);
 
       // Check if email is whitelisted using RPC
       const { data: isWhitelisted, error: whitelistError } = await supabase
-        .rpc('is_email_whitelisted', { _email: validatedData.email });
+        .rpc('is_email_whitelisted', { _email: normalizedEmail });
 
       if (whitelistError) {
         console.error('Whitelist check error:', whitelistError);
@@ -153,7 +154,7 @@ export default function AdminAuth() {
 
       // Create auth user with validated data
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: validatedData.email,
+        email: normalizedEmail,
         password: validatedData.password,
         options: {
           data: {
@@ -177,7 +178,7 @@ export default function AdminAuth() {
       // Create recruiter profile for admin (so they can test features)
       const { error: recruiterError } = await supabase.from('recruiters').insert({
         user_id: authData.user.id,
-        email: validatedData.email,
+        email: normalizedEmail,
         full_name: validatedData.fullName,
         company_name: validatedData.companyName || 'VettedAI Team',
         status: 'active'
@@ -188,46 +189,57 @@ export default function AdminAuth() {
         // Don't fail completely, but log it
       }
 
-      console.log('Granting admin role...');
+      if (authData.session) {
+        console.log('Granting admin role...');
 
-      // Grant admin role
-      const { error: roleError } = await supabase.rpc('grant_admin_role', { 
-        _email: validatedData.email 
-      });
+        // Grant admin role when session is active
+        const { error: roleError } = await supabase.rpc('grant_admin_role', {
+          _email: normalizedEmail
+        });
 
-      if (roleError) {
-        console.error('Role grant error:', roleError);
-        throw new Error(`Failed to grant admin role: ${roleError.message}`);
+        if (roleError) {
+          console.error('Role grant error:', roleError);
+          throw new Error(`Failed to grant admin role: ${roleError.message}`);
+        }
+
+        console.log('Admin role granted, verifying...');
+
+        // Verify role was actually granted
+        const { data: roleCheck, error: roleCheckError } = await supabase
+          .from('user_roles')
+          .select('role')
+          .eq('user_id', authData.user.id)
+          .eq('role', 'admin')
+          .maybeSingle();
+
+        if (roleCheckError) {
+          console.error('Role verification error:', roleCheckError);
+          throw new Error('Failed to verify admin role assignment');
+        }
+
+        if (!roleCheck) {
+          console.error('Admin role not found in user_roles table');
+          throw new Error('Admin role was not properly assigned. Please contact support.');
+        }
+
+        console.log('Admin role verified successfully');
+
+        toast({
+          title: "Account created!",
+          description: "Your admin account has been created successfully.",
+        });
+
+        navigate('/admin/dashboard');
+      } else {
+        console.log('No active session returned after signup; relying on automatic whitelist trigger.');
+
+        toast({
+          title: "Account created!",
+          description: "Check your inbox to confirm your email. Admin access will activate automatically once verified.",
+        });
+
+        navigate('/admin/login');
       }
-
-      console.log('Admin role granted, verifying...');
-
-      // Verify role was actually granted
-      const { data: roleCheck, error: roleCheckError } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', authData.user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
-
-      if (roleCheckError) {
-        console.error('Role verification error:', roleCheckError);
-        throw new Error('Failed to verify admin role assignment');
-      }
-
-      if (!roleCheck) {
-        console.error('Admin role not found in user_roles table');
-        throw new Error('Admin role was not properly assigned. Please contact support.');
-      }
-
-      console.log('Admin role verified successfully');
-
-      toast({
-        title: "Account created!",
-        description: "Your admin account has been created successfully.",
-      });
-
-      navigate('/admin/dashboard');
     } catch (error: any) {
       console.error('Signup error:', error);
       toast({
