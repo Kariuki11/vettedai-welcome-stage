@@ -8,7 +8,7 @@ export const EmptyState = () => {
       </div>
       <h3 className="text-lg font-semibold mb-2">Your Proof-of-Work challenges are being scored.</h3>
       <p className="text-sm text-muted-foreground max-w-md">
-        You'll receive a shortlist link within 48 hours.
+        You'll receive a shortlist link within 48-72 hours.
       </p>
     </div>
   );

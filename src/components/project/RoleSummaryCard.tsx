@@ -72,7 +72,7 @@ export const RoleSummaryCard = ({
         />
 
         <div className="text-xs text-muted-foreground">
-          <p>Delivery SLA: 48 hours to verified shortlist</p>
+          <p>Delivery SLA: 48-72 hours to verified shortlist</p>
         </div>
       </div>
     </div>

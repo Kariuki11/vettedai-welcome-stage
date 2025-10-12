@@ -92,10 +92,10 @@ export default function Review() {
             </div>
           </div>
 
-          {/* Vetting Tier */}
-          <div className="border rounded-lg p-4">
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="font-semibold text-lg">Vetting Tier</h3>
+          {/* Pricing Summary */}
+          <div className="border-2 border-primary/20 rounded-lg p-6 bg-primary/5">
+            <div className="flex items-start justify-between mb-4">
+              <h3 className="font-semibold text-lg">Pricing Summary</h3>
               <Button
                 variant="ghost"
                 size="sm"
@@ -103,22 +103,37 @@ export default function Review() {
                 className="gap-2"
               >
                 <Edit2 className="w-3 h-3" />
-                Edit
+                Edit Tier
               </Button>
             </div>
-            <div className="space-y-2 text-sm">
-              <div>
+            
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">Selected Tier:</span>
-                <p className="font-medium mt-1">{wizardState.selectedTier?.name}</p>
+                <span className="font-medium">{wizardState.selectedTier?.name}</span>
               </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-primary">
-                  ${wizardState.selectedTier?.pilotPrice}
-                </span>
-                <span className="text-sm text-muted-foreground line-through">
+              
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Regular Price:</span>
+                <span className="line-through text-muted-foreground">
                   ${wizardState.selectedTier?.anchorPrice}
                 </span>
-                <span className="text-xs text-muted-foreground">(one-time)</span>
+              </div>
+              
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">Pilot Discount:</span>
+                <span className="text-green-600 font-medium">
+                  -${(wizardState.selectedTier?.anchorPrice || 0) - (wizardState.selectedTier?.pilotPrice || 0)}
+                </span>
+              </div>
+              
+              <div className="pt-3 border-t">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-lg">Total Due Today:</span>
+                  <span className="text-3xl font-bold text-primary">
+                    ${wizardState.selectedTier?.pilotPrice}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -155,9 +170,14 @@ export default function Review() {
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
-            <Button onClick={handleContinue} size="lg">
-              Continue to Payment →
-            </Button>
+            <div className="flex flex-col items-end gap-2">
+              <p className="text-xs text-muted-foreground">
+                You'll be redirected to secure payment processing
+              </p>
+              <Button onClick={handleContinue} size="lg" className="gap-2">
+                Complete Payment • ${wizardState.selectedTier?.pilotPrice}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

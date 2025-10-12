@@ -57,7 +57,7 @@ export const CheckoutStep = ({ onComplete }: CheckoutStepProps) => {
               Awesome. You can track progress in your Project Folder.
             </p>
             <p className="text-sm text-muted-foreground">
-              We'll notify you when your shortlist is ready (typically within 48 hours).
+              We'll notify you when your shortlist is ready (typically within 48-72 hours).
             </p>
           </div>
         }

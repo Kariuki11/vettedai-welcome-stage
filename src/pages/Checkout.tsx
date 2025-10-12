@@ -140,7 +140,7 @@ const Checkout = () => {
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">Delivery SLA:</span>
-                <span className="font-medium">48 hours to verified shortlist</span>
+                <span className="font-medium">48-72 hours to verified shortlist</span>
               </div>
             </div>
           </div>

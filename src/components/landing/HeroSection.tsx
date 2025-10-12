@@ -64,7 +64,7 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
 
         {/* Trust Badge */}
         <p className="text-sm text-muted-foreground pt-4 animate-fade-in-delayed">
-          Verifiable Proof • 48-Hour Shortlists • Hire with Confidence
+          Verifiable Proof • 48-72 Hour Shortlists • Hire with Confidence
         </p>
       </div>
     </section>

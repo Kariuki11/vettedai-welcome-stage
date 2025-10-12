@@ -19,6 +19,7 @@ import Review from "./pages/workspace/Review";
 import Checkout from "./pages/Checkout";
 import ProjectFolder from "./pages/ProjectFolder";
 import OpsConsole from "./pages/OpsConsole";
+import ActiveProjects from "./pages/admin/ActiveProjects";
 import NotFound from "./pages/NotFound";
 
 const App = () => {
@@ -93,6 +94,12 @@ const App = () => {
           <Route path="/ops" element={
             <ProtectedRoute requireAdmin={true}>
               <OpsConsole />
+            </ProtectedRoute>
+          } />
+          
+          <Route path="/admin/projects" element={
+            <ProtectedRoute requireAdmin={true}>
+              <ActiveProjects />
             </ProtectedRoute>
           } />
           

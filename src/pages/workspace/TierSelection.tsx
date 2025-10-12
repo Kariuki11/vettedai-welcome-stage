@@ -12,8 +12,8 @@ const tiers: TierInfo[] = [
     id: 1,
     name: "Essential PoW",
     description: "Basic skills assessment",
-    anchorPrice: 299,
-    pilotPrice: 20,
+    anchorPrice: 100,
+    pilotPrice: 10,
     features: [
       "Core competency evaluation",
       "Basic problem-solving tasks",
@@ -24,8 +24,8 @@ const tiers: TierInfo[] = [
     id: 2,
     name: "Advanced PoW",
     description: "Complex problem-solving",
-    anchorPrice: 499,
-    pilotPrice: 20,
+    anchorPrice: 150,
+    pilotPrice: 15,
     features: [
       "Advanced technical challenges",
       "Real-world scenario simulation",
@@ -36,8 +36,8 @@ const tiers: TierInfo[] = [
     id: 3,
     name: "Expert PoW",
     description: "Senior-level evaluation",
-    anchorPrice: 799,
-    pilotPrice: 20,
+    anchorPrice: 300,
+    pilotPrice: 30,
     features: [
       "Executive-level assessment",
       "Strategic thinking evaluation",

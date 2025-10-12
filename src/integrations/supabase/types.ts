@@ -174,7 +174,9 @@ export type Database = {
           anchor_price: number | null
           candidate_count: number | null
           candidate_source: string
+          candidates_completed: number | null
           completed_at: string | null
+          completion_percentage: number | null
           created_at: string | null
           hours_elapsed: number | null
           id: string
@@ -190,13 +192,16 @@ export type Database = {
           status: string
           tier_id: number
           tier_name: string
+          total_candidates: number | null
           updated_at: string | null
         }
         Insert: {
           anchor_price?: number | null
           candidate_count?: number | null
           candidate_source: string
+          candidates_completed?: number | null
           completed_at?: string | null
+          completion_percentage?: number | null
           created_at?: string | null
           hours_elapsed?: number | null
           id?: string
@@ -212,13 +217,16 @@ export type Database = {
           status?: string
           tier_id: number
           tier_name: string
+          total_candidates?: number | null
           updated_at?: string | null
         }
         Update: {
           anchor_price?: number | null
           candidate_count?: number | null
           candidate_source?: string
+          candidates_completed?: number | null
           completed_at?: string | null
+          completion_percentage?: number | null
           created_at?: string | null
           hours_elapsed?: number | null
           id?: string
@@ -234,6 +242,7 @@ export type Database = {
           status?: string
           tier_id?: number
           tier_name?: string
+          total_candidates?: number | null
           updated_at?: string | null
         }
         Relationships: [
