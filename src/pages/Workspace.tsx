@@ -4,11 +4,11 @@ import { ProgressIndicator } from "@/components/workspace/ProgressIndicator";
 import { ChatContainer } from "@/components/workspace/ChatContainer";
 import { NavigationControls } from "@/components/workspace/NavigationControls";
 import { JobDescriptionStep } from "@/components/workspace/steps/JobDescriptionStep";
-import { CandidateSourceStep } from "@/components/workspace/steps/CandidateSourceStep";
-import { ResumeUploadStep } from "@/components/workspace/steps/ResumeUploadStep";
+import { JDConfirmationStep } from "@/components/workspace/steps/JDConfirmationStep";
+import { CandidateSourceStepV2 } from "@/components/workspace/steps/CandidateSourceStepV2";
+import { CandidatePreviewStep } from "@/components/workspace/steps/CandidatePreviewStep";
 import { TierSelectionStep } from "@/components/workspace/steps/TierSelectionStep";
-import { PricingSummaryStep } from "@/components/workspace/steps/PricingSummaryStep";
-import { CheckoutStep } from "@/components/workspace/steps/CheckoutStep";
+import { ReviewProjectStep } from "@/components/workspace/steps/ReviewProjectStep";
 import { useChatFlow } from "@/hooks/useChatFlow";
 
 const Workspace = () => {
@@ -18,10 +18,11 @@ const Workspace = () => {
     addMessage,
     setTyping,
     updateJobDescription,
+    updateJDConfirmation,
     updateCandidateSource,
-    updateUploadedResumes,
+    confirmCandidateExperience,
     updateSelectedTier,
-    proceedToCheckout,
+    goToStep,
     goToPreviousStep,
     goToNextStep,
     canGoBack,
@@ -32,12 +33,16 @@ const Workspace = () => {
     updateJobDescription(jd, summary, jobTitle);
   };
 
-  const handleCandidateSourceComplete = (source: 'own' | 'network') => {
-    updateCandidateSource(source);
+  const handleJDConfirmationComplete = (roleTitle: string, summary: string) => {
+    updateJDConfirmation(roleTitle, summary);
   };
 
-  const handleResumeUploadComplete = (files: any[]) => {
-    updateUploadedResumes(files);
+  const handleCandidateSourceComplete = (source: 'own' | 'network', files?: any[]) => {
+    updateCandidateSource(source, files);
+  };
+
+  const handleCandidatePreviewComplete = () => {
+    confirmCandidateExperience();
   };
 
   const handleTierSelectionComplete = (tier: any) => {
@@ -56,6 +61,10 @@ const Workspace = () => {
     });
   };
 
+  const handleEditFromReview = (step: number) => {
+    goToStep(step);
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F9F9F7]">
       <WorkspaceHeader />
@@ -66,40 +75,37 @@ const Workspace = () => {
         isTyping={state.isTyping}
       >
         {state.currentStep === 1 && (
-          <>
-            {!state.messages.find(m => m.content === "Let's start by understanding the role you're hiring for. Paste your Job Description below.") && (
-              (() => {
-                addMessage({
-                  type: 'assistant',
-                  content: "Let's start by understanding the role you're hiring for. Paste your Job Description below.",
-                  stepId: 1,
-                });
-                return null;
-              })()
-            )}
-            <JobDescriptionStep 
-              onComplete={handleJobDescriptionComplete}
-              onAddMessage={addMessage}
-              onSetTyping={setTyping}
-            />
-          </>
+          <JobDescriptionStep 
+            onComplete={handleJobDescriptionComplete}
+            onAddMessage={addMessage}
+            onSetTyping={setTyping}
+          />
         )}
 
         {state.currentStep === 2 && (
-          <CandidateSourceStep 
+          <JDConfirmationStep
+            initialRoleTitle={state.jobTitle}
+            initialSummary={state.jobSummary}
+            onComplete={handleJDConfirmationComplete}
+            onAddMessage={addMessage}
+          />
+        )}
+
+        {state.currentStep === 3 && (
+          <CandidateSourceStepV2 
             onComplete={handleCandidateSourceComplete}
             onAddMessage={addMessage}
           />
         )}
 
-        {state.currentStep === 3 && state.candidateSource === 'own' && (
-          <ResumeUploadStep 
-            onComplete={handleResumeUploadComplete}
+        {state.currentStep === 4 && (
+          <CandidatePreviewStep 
+            onComplete={handleCandidatePreviewComplete}
             onAddMessage={addMessage}
           />
         )}
 
-        {state.currentStep === 4 && (
+        {state.currentStep === 5 && (
           <TierSelectionStep
             candidateCount={state.candidateCount || 12}
             onComplete={handleTierSelectionComplete}
@@ -107,13 +113,15 @@ const Workspace = () => {
           />
         )}
 
-        {state.currentStep === 5 && state.selectedTier && (
-          <PricingSummaryStep
-            candidateCount={state.candidateCount || 12}
+        {state.currentStep === 6 && state.selectedTier && (
+          <ReviewProjectStep
+            roleTitle={state.jobTitle || 'Role Title'}
+            jobSummary={state.jobSummary || 'No summary available'}
+            candidateSource={state.candidateSource || 'network'}
+            candidateCount={state.candidateCount || 0}
             tier={state.selectedTier}
-            jobTitle={state.jobTitle || 'Role Title'}
-            candidateSource={state.candidateSource}
             onComplete={handleProceedToCheckout}
+            onEdit={handleEditFromReview}
           />
         )}
       </ChatContainer>

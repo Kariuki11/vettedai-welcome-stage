@@ -124,7 +124,7 @@ export const TierSelectionStep = ({ candidateCount, onComplete, onAddMessage }: 
       {selected && (
         <div className="flex justify-center pt-4 animate-fade-in">
           <Button onClick={handleContinue} size="lg" className="gap-2">
-            Continue
+            Review Project
             <ArrowRight className="h-5 w-5" />
           </Button>
         </div>

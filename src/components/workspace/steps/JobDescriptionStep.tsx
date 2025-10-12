@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ChatMessage } from "../ChatMessage";
-import { Loader2, Check, Edit } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface JobDescriptionStepProps {
   onComplete: (jd: string, summary: string, jobTitle: string) => void;
@@ -13,16 +12,14 @@ interface JobDescriptionStepProps {
 export const JobDescriptionStep = ({ onComplete, onAddMessage, onSetTyping }: JobDescriptionStepProps) => {
   const [jd, setJd] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [summary, setSummary] = useState("");
-  const [summaryGenerated, setSummaryGenerated] = useState(false);
 
-  const handleGenerate = async () => {
+  const handleSubmit = async () => {
     setIsGenerating(true);
     
     // Add user's JD as message
     onAddMessage({
       type: 'user',
-      content: `[Job Description submitted: ${jd.substring(0, 100)}...]`
+      content: `[Job Description submitted]`
     });
     
     // Show typing indicator
@@ -30,96 +27,45 @@ export const JobDescriptionStep = ({ onComplete, onAddMessage, onSetTyping }: Jo
     await new Promise(resolve => setTimeout(resolve, 1500));
     onSetTyping(false);
     
+    // Generate summary and title for the next step
     const generatedSummary = "Senior Full-Stack Engineer role requiring 5+ years experience with React, Node.js, and cloud infrastructure. Focus on building scalable systems and mentoring junior developers. Remote-friendly position with competitive compensation.";
-    const extractedJobTitle = "Senior Full-Stack Engineer"; // Extract from first part of summary
+    const extractedJobTitle = "Senior Full-Stack Engineer";
     
-    setSummary(generatedSummary);
-    setSummaryGenerated(true);
+    onAddMessage({
+      type: 'assistant',
+      content: "Great! Let me analyze that for you..."
+    });
+    
     setIsGenerating(false);
-    
-    // Add summary as assistant message
-    onAddMessage({
-      type: 'assistant',
-      content: (
-        <div className="space-y-2">
-          <p className="font-medium text-primary">Here's what I understood:</p>
-          <p className="text-sm leading-relaxed">
-            {generatedSummary}
-          </p>
-        </div>
-      )
-    });
-  };
-
-  const handleConfirm = () => {
-    const extractedJobTitle = summary.split(' ').slice(0, 3).join(' '); // Extract first 3 words as title
-    
-    onAddMessage({
-      type: 'user',
-      content: "Looks right! Let's proceed."
-    });
-    
-    onAddMessage({
-      type: 'assistant',
-      content: "Perfect! Now let's find your candidates."
-    });
-    
-    onComplete(jd, summary, extractedJobTitle);
-  };
-
-  const handleEdit = () => {
-    setSummaryGenerated(false);
-    setSummary("");
+    onComplete(jd, generatedSummary, extractedJobTitle);
   };
 
   return (
     <div className="space-y-6">
-      {!summaryGenerated && (
-        <div className="space-y-4">
-          <Textarea
-            value={jd}
-            onChange={(e) => setJd(e.target.value)}
-            placeholder="Paste or type the full job description here..."
-            className="min-h-[200px] text-base resize-none"
-          />
-          
-          <Button
-            onClick={handleGenerate}
-            disabled={jd.length < 50 || isGenerating}
-            className="w-full sm:w-auto"
-            size="lg"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Generating Summary...
-              </>
-            ) : (
-              'Generate Summary'
-            )}
-          </Button>
-        </div>
-      )}
-
-      {summaryGenerated && (
-        <div className="flex justify-end gap-3 animate-fade-in">
-          <Button
-            variant="outline"
-            onClick={handleEdit}
-            className="gap-2"
-          >
-            <Edit className="w-4 h-4" />
-            Edit JD
-          </Button>
-          <Button
-            onClick={handleConfirm}
-            className="gap-2"
-          >
-            <Check className="w-4 h-4" />
-            Looks Right
-          </Button>
-        </div>
-      )}
+      <div className="space-y-4">
+        <Textarea
+          value={jd}
+          onChange={(e) => setJd(e.target.value)}
+          placeholder="Paste or type the full job description here..."
+          className="min-h-[200px] text-base resize-none"
+        />
+        
+        <Button
+          onClick={handleSubmit}
+          disabled={jd.length < 50 || isGenerating}
+          className="w-full sm:w-auto"
+          size="lg"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Analyzing...
+            </>
+          ) : (
+            'Continue'
+          )}
+        </Button>
+      </div>
     </div>
   );
 };

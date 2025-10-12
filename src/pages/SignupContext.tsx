@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -22,6 +22,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -32,7 +33,18 @@ const step2Schema = z.object({
   companySize: z.enum(['1-10', '11-50', '51-200', '201+'], {
     required_error: "Please select your company size"
   }),
-  referralSource: z.enum(['linkedin', 'friend_colleague', 'antler', 'other']).optional()
+  referralSource: z.object({
+    source: z.enum(['linkedin', 'instagram', 'friend_colleague', 'vfa_newsletter', 'app_newsletter', 'antler', 'google_search', 'other']),
+    otherDetails: z.string().optional()
+  }).refine(data => {
+    if (data.source === 'other') {
+      return data.otherDetails && data.otherDetails.trim().length > 0;
+    }
+    return true;
+  }, {
+    message: "Please specify how you heard about us",
+    path: ["otherDetails"]
+  }).optional()
 });
 
 type Step2FormData = z.infer<typeof step2Schema>;
@@ -82,16 +94,26 @@ const SignupContext = () => {
     },
   });
 
+  const referralSourceValue = useWatch({
+    control: form.control,
+    name: "referralSource"
+  });
+
   const onSubmit = async (data: Step2FormData) => {
     if (!step1Data) return;
 
     setIsSubmitting(true);
     
     try {
+      // Serialize referralSource to JSON string for storage
+      const referralSourceString = data.referralSource 
+        ? JSON.stringify(data.referralSource)
+        : undefined;
+
       await trackSignupEvent('signup_step_2_completed', undefined, {
         user_role: data.userRole,
         company_size: data.companySize,
-        referral_source: data.referralSource
+        referral_source: referralSourceString
       });
       
       const { data: authData, error } = await completeSignUp(
@@ -101,7 +123,7 @@ const SignupContext = () => {
         step1Data.companyName,
         data.userRole,
         data.companySize,
-        data.referralSource
+        referralSourceString
       );
       
       if (error) {
@@ -265,7 +287,7 @@ const SignupContext = () => {
 
               <FormField
                 control={form.control}
-                name="referralSource"
+                name="referralSource.source"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>How did you hear about us?</FormLabel>
@@ -277,8 +299,12 @@ const SignupContext = () => {
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="linkedin">LinkedIn</SelectItem>
+                        <SelectItem value="instagram">Instagram</SelectItem>
                         <SelectItem value="friend_colleague">Friend / Colleague</SelectItem>
+                        <SelectItem value="vfa_newsletter">VFA Newsletter</SelectItem>
+                        <SelectItem value="app_newsletter">APP Newsletter</SelectItem>
                         <SelectItem value="antler">Antler</SelectItem>
+                        <SelectItem value="google_search">Google Search</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
                       </SelectContent>
                     </Select>
@@ -286,6 +312,25 @@ const SignupContext = () => {
                   </FormItem>
                 )}
               />
+
+              {referralSourceValue?.source === 'other' && (
+                <FormField
+                  control={form.control}
+                  name="referralSource.otherDetails"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          placeholder="Please specify"
+                          className="mt-2"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <Button 
                 type="submit" 

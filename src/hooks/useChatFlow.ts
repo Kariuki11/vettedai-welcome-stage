@@ -34,8 +34,8 @@ export interface WorkspaceState {
   jobDescription: string;
   jobSummary: string;
   jobTitle: string;
-  jobSummaryConfirmed: boolean;
   candidateSource: 'own' | 'network' | null;
+  candidateExperienceConfirmed: boolean;
   uploadedResumes: UploadedFile[];
   selectedTier: TierInfo | null;
   candidateCount: number;
@@ -52,7 +52,7 @@ export const useChatFlow = () => {
       {
         id: 'welcome',
         type: 'assistant',
-        content: "👋 Welcome to Recruiter GPT. I'll help you vet candidates using our Proof-of-Work framework. This takes about 5 minutes. Ready to start?",
+        content: "👋 Welcome to VettedAI. I'll help you set up your first vetting project. This takes about 5 minutes. Let's start by understanding the role you're hiring for.",
         timestamp: new Date(),
         stepId: 1,
       }
@@ -60,8 +60,8 @@ export const useChatFlow = () => {
     jobDescription: '',
     jobSummary: '',
     jobTitle: '',
-    jobSummaryConfirmed: false,
     candidateSource: null,
+    candidateExperienceConfirmed: false,
     uploadedResumes: [],
     selectedTier: null,
     candidateCount: 0,
@@ -93,28 +93,38 @@ export const useChatFlow = () => {
       jobDescription: jd,
       jobSummary: summary,
       jobTitle: jobTitle,
-      jobSummaryConfirmed: true,
       stepHistory: [...prev.stepHistory, prev.currentStep],
       currentStep: 2,
     }));
   };
 
-  const updateCandidateSource = (source: 'own' | 'network') => {
+  const updateJDConfirmation = (roleTitle: string, summary: string) => {
     setState(prev => ({
       ...prev,
-      candidateSource: source,
+      jobTitle: roleTitle,
+      jobSummary: summary,
       stepHistory: [...prev.stepHistory, prev.currentStep],
-      currentStep: source === 'own' ? 3 : 4,
+      currentStep: 3,
     }));
   };
 
-  const updateUploadedResumes = (resumes: UploadedFile[]) => {
+  const updateCandidateSource = (source: 'own' | 'network', resumes?: UploadedFile[]) => {
     setState(prev => ({
       ...prev,
-      uploadedResumes: resumes,
-      candidateCount: resumes.length,
+      candidateSource: source,
+      uploadedResumes: resumes || [],
+      candidateCount: resumes?.length || 0,
       stepHistory: [...prev.stepHistory, prev.currentStep],
       currentStep: 4,
+    }));
+  };
+
+  const confirmCandidateExperience = () => {
+    setState(prev => ({
+      ...prev,
+      candidateExperienceConfirmed: true,
+      stepHistory: [...prev.stepHistory, prev.currentStep],
+      currentStep: 5,
     }));
   };
 
@@ -123,15 +133,15 @@ export const useChatFlow = () => {
       ...prev,
       selectedTier: tier,
       stepHistory: [...prev.stepHistory, prev.currentStep],
-      currentStep: 5,
+      currentStep: 6,
     }));
   };
 
-  const proceedToCheckout = () => {
+  const goToStep = (step: number) => {
     setState(prev => ({
       ...prev,
       stepHistory: [...prev.stepHistory, prev.currentStep],
-      currentStep: 6,
+      currentStep: step,
     }));
   };
 
@@ -163,15 +173,15 @@ export const useChatFlow = () => {
   const canGoForward = () => {
     switch (state.currentStep) {
       case 1:
-        return state.jobSummaryConfirmed;
+        return state.jobDescription.length > 0;
       case 2:
-        return state.candidateSource !== null;
+        return state.jobTitle.trim().length > 0 && state.jobSummary.trim().length > 0;
       case 3:
-        return state.uploadedResumes.length > 0;
+        return state.candidateSource !== null && (state.candidateSource === 'network' || state.uploadedResumes.length > 0);
       case 4:
-        return state.selectedTier !== null;
+        return state.candidateExperienceConfirmed;
       case 5:
-        return true;
+        return state.selectedTier !== null;
       case 6:
         return false;
       default:
@@ -187,7 +197,7 @@ export const useChatFlow = () => {
         {
           id: 'welcome',
           type: 'assistant',
-          content: "👋 Welcome to Recruiter GPT. I'll help you vet candidates using our Proof-of-Work framework. This takes about 5 minutes. Ready to start?",
+          content: "👋 Welcome to VettedAI. I'll help you set up your first vetting project. This takes about 5 minutes. Let's start by understanding the role you're hiring for.",
           timestamp: new Date(),
           stepId: 1,
         }
@@ -195,8 +205,8 @@ export const useChatFlow = () => {
       jobDescription: '',
       jobSummary: '',
       jobTitle: '',
-      jobSummaryConfirmed: false,
       candidateSource: null,
+      candidateExperienceConfirmed: false,
       uploadedResumes: [],
       selectedTier: null,
       candidateCount: 0,
@@ -210,10 +220,11 @@ export const useChatFlow = () => {
     addMessage,
     setTyping,
     updateJobDescription,
+    updateJDConfirmation,
     updateCandidateSource,
-    updateUploadedResumes,
+    confirmCandidateExperience,
     updateSelectedTier,
-    proceedToCheckout,
+    goToStep,
     goToPreviousStep,
     goToNextStep,
     canGoBack,
