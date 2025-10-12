@@ -44,9 +44,9 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
 
         {/* CTA Button */}
         <div className="pt-6 animate-slide-in-up">
-          <Button variant="hero" size="lg" onClick={onCtaClick} className="text-base px-8 py-6 h-auto">
+          <Button variant="hero" size="lg" onClick={onCtaClick} className="text-sm px-6 py-3 h-auto">
             Create My Recruiter Workspace
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
 
