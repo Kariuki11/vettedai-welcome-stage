@@ -10,7 +10,7 @@ interface Project {
   payment_status: string;
   candidate_count: number;
   created_at: string;
-  tier_name?: string;
+  tier_name?: string | null;
 }
 
 export const useUserProjects = () => {
@@ -24,39 +24,26 @@ export const useUserProjects = () => {
 
     console.log('Fetching projects for user:', user.id);
 
-    // First get recruiter ID
-    const { data: recruiterData, error: recruiterError } = await supabase
-      .from('recruiters')
-      .select('id')
-      .eq('user_id', user.id)
-      .maybeSingle();
-
-    if (recruiterError) {
-      console.error('Error fetching recruiter:', recruiterError);
-      throw recruiterError;
-    }
-
-    if (!recruiterData) {
-      console.error('No recruiter profile found for user:', user.id);
-      return [];
-    }
-
-    console.log('Recruiter found:', recruiterData.id);
-
-    // Then fetch projects for this recruiter
     const { data, error } = await supabase
-      .from('projects')
-      .select('id, role_title, status, payment_status, candidate_count, created_at, tier_name')
-      .eq('recruiter_id', recruiterData.id)
-      .order('created_at', { ascending: false });
+      .rpc('get_projects_for_current_user');
 
     if (error) {
       console.error('Error fetching projects:', error);
       throw error;
     }
 
-    console.log('Projects fetched:', data?.length || 0);
-    return data || [];
+    const normalizedProjects: Project[] = (data || []).map((project: any) => ({
+      id: project.id,
+      role_title: project.role_title,
+      status: project.status,
+      payment_status: project.payment_status,
+      candidate_count: project.candidate_count ?? 0,
+      created_at: project.created_at ?? new Date().toISOString(),
+      tier_name: project.tier_name ?? null,
+    }));
+
+    console.log('Projects fetched:', normalizedProjects.length);
+    return normalizedProjects;
   };
 
   const { data: projects = [], isLoading, refetch } = useQuery({
