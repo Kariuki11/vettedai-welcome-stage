@@ -6,11 +6,13 @@ import { WizardState } from "@/hooks/useProjectWizard";
 import { PaymentSuccess } from "@/components/checkout/PaymentSuccess";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const wizardState = useMemo(() => {
     const stateWizard = (location.state as { wizardState?: WizardState })?.wizardState;
 
@@ -34,6 +36,7 @@ const Checkout = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!wizardState || !wizardState.selectedTier) {
@@ -65,7 +68,10 @@ const Checkout = () => {
       console.log('User authenticated:', user.id);
 
       // Validate wizard state
-      if (!roleTitle || !selectedTier || !candidateCount) {
+      const hasMissingCount =
+        candidateCount === undefined || candidateCount === null;
+
+      if (!roleTitle || !selectedTier || hasMissingCount) {
         console.error('Incomplete wizard state:', wizardState);
         throw new Error('Please complete all project details before proceeding');
       }
@@ -97,6 +103,10 @@ const Checkout = () => {
       }
 
       console.log('Project created successfully:', projectId);
+      setCreatedProjectId(projectId);
+
+      // Ensure the recruiter dashboard reflects the new project immediately
+      await queryClient.invalidateQueries({ queryKey: ['user-projects'] });
 
       // Log analytics event (non-blocking)
       try {
@@ -114,9 +124,12 @@ const Checkout = () => {
       }
       
       setShowSuccess(true);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating project:', error);
-      alert(error.message || 'Failed to create project. Please try again or contact support.');
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to create project. Please try again or contact support.';
+      alert(message);
     } finally {
       setIsProcessing(false);
     }
@@ -126,7 +139,13 @@ const Checkout = () => {
     sessionStorage.removeItem('project_wizard_state');
     // Wait a moment to ensure database transaction completes
     await new Promise(resolve => setTimeout(resolve, 1000));
-    navigate('/workspace', { state: { refetch: true, refetchToken: Date.now() } });
+    navigate('/workspace', {
+      state: {
+        refetch: true,
+        refetchToken: Date.now(),
+        lastCreatedProjectId: createdProjectId,
+      },
+    });
   };
 
   if (showSuccess) {
