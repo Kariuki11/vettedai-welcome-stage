@@ -128,14 +128,21 @@ export default function AdminAuth() {
 
       const validatedData = validation.data;
 
+      console.log('Starting admin signup for:', validatedData.email);
+
       // Check if email is whitelisted
       const { data: whitelisted, error: whitelistError } = await supabase
         .from('admin_whitelist')
         .select('email')
         .eq('email', validatedData.email)
-        .single();
+        .maybeSingle();
 
-      if (whitelistError || !whitelisted) {
+      if (whitelistError) {
+        console.error('Whitelist check error:', whitelistError);
+        throw new Error('Failed to verify email authorization');
+      }
+
+      if (!whitelisted) {
         toast({
           title: "Access denied",
           description: "This email is not authorized for admin access. Contact tobi@venturefor.africa to request access.",
@@ -144,6 +151,8 @@ export default function AdminAuth() {
         setIsLoading(false);
         return;
       }
+
+      console.log('Email whitelisted, creating auth user...');
 
       // Create auth user with validated data
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -157,18 +166,19 @@ export default function AdminAuth() {
         }
       });
 
-      if (authError || !authData.user) {
-        toast({
-          title: "Signup failed",
-          description: authError?.message || "Failed to create account",
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
+      if (authError) {
+        console.error('Auth signup error:', authError);
+        throw new Error(`Signup failed: ${authError.message}`);
       }
 
+      if (!authData.user) {
+        throw new Error("Failed to create user account");
+      }
+
+      console.log('User created successfully:', authData.user.id);
+
       // Create recruiter profile for admin (so they can test features)
-      await supabase.from('recruiters').insert({
+      const { error: recruiterError } = await supabase.from('recruiters').insert({
         user_id: authData.user.id,
         email: validatedData.email,
         full_name: validatedData.fullName,
@@ -176,8 +186,44 @@ export default function AdminAuth() {
         status: 'active'
       });
 
+      if (recruiterError) {
+        console.error('Recruiter profile creation error:', recruiterError);
+        // Don't fail completely, but log it
+      }
+
+      console.log('Granting admin role...');
+
       // Grant admin role
-      await supabase.rpc('grant_admin_role', { _email: validatedData.email });
+      const { error: roleError } = await supabase.rpc('grant_admin_role', { 
+        _email: validatedData.email 
+      });
+
+      if (roleError) {
+        console.error('Role grant error:', roleError);
+        throw new Error(`Failed to grant admin role: ${roleError.message}`);
+      }
+
+      console.log('Admin role granted, verifying...');
+
+      // Verify role was actually granted
+      const { data: roleCheck, error: roleCheckError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', authData.user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (roleCheckError) {
+        console.error('Role verification error:', roleCheckError);
+        throw new Error('Failed to verify admin role assignment');
+      }
+
+      if (!roleCheck) {
+        console.error('Admin role not found in user_roles table');
+        throw new Error('Admin role was not properly assigned. Please contact support.');
+      }
+
+      console.log('Admin role verified successfully');
 
       toast({
         title: "Account created!",
@@ -186,9 +232,10 @@ export default function AdminAuth() {
 
       navigate('/admin/dashboard');
     } catch (error: any) {
+      console.error('Signup error:', error);
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to create admin account",
         variant: "destructive",
       });
     } finally {

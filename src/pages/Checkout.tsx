@@ -32,48 +32,98 @@ const Checkout = () => {
     setIsProcessing(true);
     
     try {
+      console.log('Starting project creation...');
+      
+      if (!user) {
+        console.error('No authenticated user found');
+        throw new Error('You must be logged in to create a project');
+      }
+
+      console.log('User authenticated:', user.id);
+
+      // Validate wizard state
+      if (!roleTitle || !selectedTier || !candidateCount) {
+        console.error('Incomplete wizard state:', wizardState);
+        throw new Error('Please complete all project details before proceeding');
+      }
+
       // First, get the recruiter ID for the current user
       const { data: recruiterData, error: recruiterError } = await supabase
         .from('recruiters')
         .select('id')
-        .eq('user_id', user?.id)
-        .single();
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (recruiterError || !recruiterData) {
+      if (recruiterError) {
         console.error('Error fetching recruiter:', recruiterError);
-        throw new Error('Could not find recruiter profile');
+        throw new Error(`Failed to fetch recruiter profile: ${recruiterError.message}`);
       }
+
+      if (!recruiterData) {
+        console.error('No recruiter profile found for user:', user.id);
+        throw new Error('Recruiter profile not found. Please complete your profile setup.');
+      }
+
+      console.log('Recruiter found:', recruiterData.id);
 
       // Generate project code
       const projectCode = `PROJ-${Date.now().toString(36).toUpperCase()}`;
 
+      const projectData = {
+        recruiter_id: recruiterData.id,
+        project_code: projectCode,
+        role_title: roleTitle,
+        job_description: wizardState.jobDescription,
+        job_summary: wizardState.jobSummary,
+        tier_id: selectedTier.id,
+        tier_name: selectedTier.name,
+        anchor_price: selectedTier.anchorPrice,
+        pilot_price: selectedTier.pilotPrice,
+        candidate_source: candidateSource || 'own',
+        candidate_count: candidateCount || 0,
+        total_candidates: candidateCount || 0,
+        status: 'awaiting',
+        payment_status: 'paid',
+        sla_deadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+      };
+
+      console.log('Inserting project:', projectData);
+
       // Create project in database
       const { data, error } = await supabase
         .from('projects')
-        .insert({
-          recruiter_id: recruiterData.id,
-          project_code: projectCode,
-          role_title: roleTitle,
-          job_description: wizardState.jobDescription,
-          job_summary: wizardState.jobSummary,
-          tier_id: selectedTier.id,
-          tier_name: selectedTier.name,
-          anchor_price: selectedTier.anchorPrice,
-          pilot_price: selectedTier.pilotPrice,
-          candidate_source: candidateSource || 'own',
-          candidate_count: candidateCount || 0,
-          status: 'awaiting',
-          payment_status: 'paid',
-        })
+        .insert(projectData)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error inserting project:', error);
+        throw new Error(`Failed to create project: ${error.message}`);
+      }
+
+      if (!data) {
+        console.error('No project data returned after insert');
+        throw new Error('Project creation failed - no data returned');
+      }
+
+      console.log('Project created successfully:', data.id);
+
+      // Log analytics event
+      await supabase.from('analytics_events').insert({
+        event_type: 'project_created',
+        user_id: user.id,
+        project_id: data.id,
+        metadata: {
+          tier: selectedTier.name,
+          candidate_count: candidateCount,
+        },
+      });
       
       setProjectId(data.id);
       setShowSuccess(true);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating project:', error);
+      alert(error.message || 'Failed to create project. Please try again or contact support.');
     } finally {
       setIsProcessing(false);
     }

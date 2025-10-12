@@ -20,24 +20,37 @@ export const useUserProjects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       if (!user) {
+        console.log('No user authenticated, skipping project fetch');
         setProjects([]);
         setIsLoading(false);
         return;
       }
 
       try {
+        console.log('Fetching projects for user:', user.id);
+
         // First get recruiter ID
         const { data: recruiterData, error: recruiterError } = await supabase
           .from('recruiters')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
-        if (recruiterError || !recruiterData) {
+        if (recruiterError) {
+          console.error('Error fetching recruiter:', recruiterError);
           setProjects([]);
           setIsLoading(false);
           return;
         }
+
+        if (!recruiterData) {
+          console.error('No recruiter profile found for user:', user.id);
+          setProjects([]);
+          setIsLoading(false);
+          return;
+        }
+
+        console.log('Recruiter found:', recruiterData.id);
 
         // Then fetch projects for this recruiter
         const { data, error } = await supabase
@@ -46,10 +59,15 @@ export const useUserProjects = () => {
           .eq('recruiter_id', recruiterData.id)
           .order('created_at', { ascending: false });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error fetching projects:', error);
+          throw error;
+        }
+
+        console.log('Projects fetched:', data?.length || 0);
         setProjects(data || []);
-      } catch (error) {
-        console.error('Error fetching projects:', error);
+      } catch (error: any) {
+        console.error('Error in fetchProjects:', error);
         setProjects([]);
       } finally {
         setIsLoading(false);
@@ -69,6 +87,7 @@ export const useUserProjects = () => {
           table: 'projects',
         },
         () => {
+          console.log('Projects table changed, refetching...');
           fetchProjects();
         }
       )
