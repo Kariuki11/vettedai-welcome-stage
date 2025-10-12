@@ -32,11 +32,27 @@ const Checkout = () => {
     setIsProcessing(true);
     
     try {
+      // First, get the recruiter ID for the current user
+      const { data: recruiterData, error: recruiterError } = await supabase
+        .from('recruiters')
+        .select('id')
+        .eq('user_id', user?.id)
+        .single();
+
+      if (recruiterError || !recruiterData) {
+        console.error('Error fetching recruiter:', recruiterError);
+        throw new Error('Could not find recruiter profile');
+      }
+
+      // Generate project code
+      const projectCode = `PROJ-${Date.now().toString(36).toUpperCase()}`;
+
       // Create project in database
       const { data, error } = await supabase
         .from('projects')
         .insert({
-          recruiter_id: user?.id,
+          recruiter_id: recruiterData.id,
+          project_code: projectCode,
           role_title: roleTitle,
           job_description: wizardState.jobDescription,
           job_summary: wizardState.jobSummary,
