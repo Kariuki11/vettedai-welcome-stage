@@ -133,6 +133,14 @@ export default {
           "50%": { opacity: "0.6" },
           "100%": { opacity: "0.3" },
         },
+        "slide-right": {
+          "0%": { transform: "translateX(0)", opacity: "1" },
+          "100%": { transform: "translateX(100%)", opacity: "0" }
+        },
+        "badge-appear": {
+          "0%": { transform: "scale(0.95)", opacity: "0" },
+          "100%": { transform: "scale(1)", opacity: "1" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -146,6 +154,8 @@ export default {
         "draw-polygon": "draw-polygon 0.8s ease-out forwards",
         "slide-up-delayed": "slide-up-delayed 0.6s ease-out",
         "shimmer": "shimmer 2s ease-in-out infinite",
+        "slide-right": "slide-right 0.4s ease-out forwards",
+        "badge-appear": "badge-appear 0.25s ease-out forwards",
       },
       boxShadow: {
         'elegant': '0 4px 12px -2px hsl(var(--primary) / 0.08)',

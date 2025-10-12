@@ -3,23 +3,23 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 export const WhyUsSection = () => {
   return (
     <section className="px-6 py-20 md:py-32 bg-background">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-[1200px] mx-auto">
         <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
           {/* Left: Avatar Group */}
-          <div className="flex justify-center md:justify-start">
+          <div className="flex flex-col items-center md:items-start gap-4">
             <div className="relative">
               <div className="flex items-center -space-x-4">
                 <Avatar className="w-20 h-20 border-4 border-background shadow-lg">
-                  <AvatarFallback className="bg-primary/20 text-primary text-xl font-semibold">VT</AvatarFallback>
+                  <AvatarFallback className="bg-primary/20 text-primary text-xl font-semibold">TL</AvatarFallback>
                 </Avatar>
                 <Avatar className="w-20 h-20 border-4 border-background shadow-lg">
-                  <AvatarFallback className="bg-primary/30 text-primary text-xl font-semibold">AI</AvatarFallback>
-                </Avatar>
-                <Avatar className="w-20 h-20 border-4 border-background shadow-lg">
-                  <AvatarFallback className="bg-primary/40 text-primary text-xl font-semibold">TM</AvatarFallback>
+                  <AvatarFallback className="bg-primary/30 text-primary text-xl font-semibold">LA</AvatarFallback>
                 </Avatar>
               </div>
             </div>
+            <p className="text-sm text-muted-foreground text-center md:text-left max-w-xs">
+              Hiring and training talent across Africa's fastest-growing startups.
+            </p>
           </div>
 
           {/* Right: Copy */}

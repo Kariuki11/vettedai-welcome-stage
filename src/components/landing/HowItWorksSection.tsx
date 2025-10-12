@@ -1,31 +1,33 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, Send, Lightbulb } from "lucide-react";
+import { FileText, Send, CheckCircle } from "lucide-react";
+import { BadgeGroup } from "./BadgeSystem";
 
 const steps = [
   {
     icon: FileText,
-    title: "Share your JD",
-    description: "Upload your job description and let our AI understand what you're looking for.",
+    title: "Paste your job description",
+    description: "Our AI co-pilot suggests a short, realistic task that mirrors the role.",
   },
   {
     icon: Send,
-    title: "We find & test",
-    description: "We source candidates and have them complete proof-of-work tasks designed for the role.",
+    title: "Send it to your candidates",
+    description: "They complete it right in their browser—no setup, no extra tools.",
   },
   {
-    icon: Lightbulb,
-    title: "You get insight",
-    description: "Receive a shortlist with verified work samples and clear talent intelligence.",
+    icon: CheckCircle,
+    title: "See your shortlist",
+    description: "We highlight the strongest performers with clear, verifiable proof of skill.",
+    showBadges: true,
   },
 ];
 
 export const HowItWorksSection = () => {
   return (
     <section className="px-6 py-20 md:py-32 bg-muted/30">
-      <div className="max-w-7xl mx-auto space-y-12">
+      <div className="max-w-[1200px] mx-auto space-y-12">
         <div className="text-center space-y-4">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-            How it works
+            Here's how it works:
           </h2>
         </div>
 
@@ -43,6 +45,14 @@ export const HowItWorksSection = () => {
                     <p className="text-muted-foreground leading-relaxed">
                       {step.description}
                     </p>
+                    
+                    {/* Show badge preview in step 3 */}
+                    {step.showBadges && (
+                      <div className="pt-4 mt-4 border-t border-border/30">
+                        <p className="text-xs text-muted-foreground mb-3">Example proof badges:</p>
+                        <BadgeGroup />
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
                 
