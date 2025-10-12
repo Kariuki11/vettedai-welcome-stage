@@ -217,7 +217,7 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
   // Success screen
   if (isSuccess) {
     return (
-      <Dialog open={open} onOpenChange={handleOpenChange}>
+      <Dialog open={open} onOpenChange={handleOpenChange} modal={true}>
         <DialogContent className="sm:max-w-md">
           <div className="flex flex-col items-center justify-center py-12 space-y-4 text-center animate-fade-in">
             <div className="w-16 h-16 rounded-full bg-success/10 flex items-center justify-center">
@@ -238,8 +238,8 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
   // Step 1 - Core Account Creation
   if (currentStep === 1) {
     return (
-      <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <Dialog open={open} onOpenChange={handleOpenChange} modal={true}>
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader className="space-y-2">
             <DialogTitle className="text-2xl">Create Your Recruiter Workspace</DialogTitle>
             <DialogDescription className="text-muted-foreground">
@@ -452,8 +452,8 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
 
   // Step 2 - Contextual Information
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+    <Dialog open={open} onOpenChange={handleOpenChange} modal={true}>
+      <DialogContent className="sm:max-w-lg" onInteractOutside={(e) => e.preventDefault()}>
         <DialogHeader className="space-y-2">
           <DialogTitle className="text-2xl">A Little More About You</DialogTitle>
           <DialogDescription className="text-muted-foreground">
