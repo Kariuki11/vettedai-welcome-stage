@@ -1,9 +1,18 @@
 import { useEffect } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "./useAuth";
 
-interface Project {
+type RawProject = Database['public']['Functions']['get_projects_for_current_user']['Returns'][number];
+
+type NormalizableProject = Pick<RawProject, 'id' | 'role_title' | 'status' | 'payment_status'> & {
+  candidate_count?: number | null;
+  created_at?: string | null;
+  tier_name?: string | null;
+};
+
+export interface Project {
   id: string;
   role_title: string;
   status: string;
@@ -12,6 +21,18 @@ interface Project {
   created_at: string;
   tier_name?: string | null;
 }
+
+export const userProjectsQueryKey = (userId?: string) => ['user-projects', userId] as const;
+
+export const normalizeProject = (project: NormalizableProject): Project => ({
+  id: project.id,
+  role_title: project.role_title,
+  status: project.status,
+  payment_status: project.payment_status,
+  candidate_count: project.candidate_count ?? 0,
+  created_at: project.created_at ?? new Date().toISOString(),
+  tier_name: project.tier_name ?? null,
+});
 
 export const useUserProjects = () => {
   const { user } = useAuth();
@@ -32,22 +53,14 @@ export const useUserProjects = () => {
       throw error;
     }
 
-    const normalizedProjects: Project[] = (data || []).map((project: any) => ({
-      id: project.id,
-      role_title: project.role_title,
-      status: project.status,
-      payment_status: project.payment_status,
-      candidate_count: project.candidate_count ?? 0,
-      created_at: project.created_at ?? new Date().toISOString(),
-      tier_name: project.tier_name ?? null,
-    }));
+    const normalizedProjects: Project[] = (data || []).map(normalizeProject);
 
     console.log('Projects fetched:', normalizedProjects.length);
     return normalizedProjects;
   };
 
   const { data: projects = [], isLoading, refetch } = useQuery({
-    queryKey: ['user-projects', user?.id],
+    queryKey: userProjectsQueryKey(user?.id),
     queryFn: fetchProjects,
     enabled: !!user,
   });
