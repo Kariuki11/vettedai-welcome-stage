@@ -47,79 +47,49 @@ const Checkout = () => {
         throw new Error('Please complete all project details before proceeding');
       }
 
-      // First, get the recruiter ID for the current user
-      const { data: recruiterData, error: recruiterError } = await supabase
-        .from('recruiters')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      // Create project using server-side RPC
+      const { data: projectId, error: projectError } = await supabase
+        .rpc('create_project_for_current_user', {
+          _role_title: roleTitle,
+          _job_description: wizardState.jobDescription || '',
+          _job_summary: wizardState.jobSummary || '',
+          _tier_id: parseInt(selectedTier.id.toString()),
+          _tier_name: selectedTier.name,
+          _anchor_price: parseFloat(selectedTier.anchorPrice.toString()),
+          _pilot_price: parseFloat(selectedTier.pilotPrice.toString()),
+          _candidate_source: candidateSource || 'own',
+          _candidate_count: candidateCount || 0,
+        });
 
-      if (recruiterError) {
-        console.error('Error fetching recruiter:', recruiterError);
-        throw new Error(`Failed to fetch recruiter profile: ${recruiterError.message}`);
+      if (projectError) {
+        console.error('Error creating project:', projectError);
+        throw new Error(projectError.message.includes('No recruiter profile')
+          ? 'Recruiter profile not found. Please complete your profile setup.'
+          : `Failed to create project: ${projectError.message}`);
       }
 
-      if (!recruiterData) {
-        console.error('No recruiter profile found for user:', user.id);
-        throw new Error('Recruiter profile not found. Please complete your profile setup.');
+      if (!projectId) {
+        console.error('No project ID returned');
+        throw new Error('Project creation failed - no ID returned');
       }
 
-      console.log('Recruiter found:', recruiterData.id);
+      console.log('Project created successfully:', projectId);
 
-      // Generate project code
-      const projectCode = `PROJ-${Date.now().toString(36).toUpperCase()}`;
-
-      const projectData = {
-        recruiter_id: recruiterData.id,
-        project_code: projectCode,
-        role_title: roleTitle,
-        job_description: wizardState.jobDescription,
-        job_summary: wizardState.jobSummary,
-        tier_id: selectedTier.id,
-        tier_name: selectedTier.name,
-        anchor_price: selectedTier.anchorPrice,
-        pilot_price: selectedTier.pilotPrice,
-        candidate_source: candidateSource || 'own',
-        candidate_count: candidateCount || 0,
-        total_candidates: candidateCount || 0,
-        status: 'awaiting',
-        payment_status: 'paid',
-        sla_deadline: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
-      };
-
-      console.log('Inserting project:', projectData);
-
-      // Create project in database
-      const { data, error } = await supabase
-        .from('projects')
-        .insert(projectData)
-        .select()
-        .single();
-
-      if (error) {
-        console.error('Error inserting project:', error);
-        throw new Error(`Failed to create project: ${error.message}`);
+      // Log analytics event (non-blocking)
+      try {
+        await supabase.from('analytics_events').insert({
+          event_type: 'project_created',
+          user_id: user.id,
+          project_id: projectId,
+          metadata: {
+            tier: selectedTier.name,
+            candidate_count: candidateCount,
+          },
+        });
+      } catch (analyticsError) {
+        console.warn('Analytics logging failed:', analyticsError);
       }
-
-      if (!data) {
-        console.error('No project data returned after insert');
-        throw new Error('Project creation failed - no data returned');
-      }
-
-      console.log('Project created successfully:', data.id);
-
-      // Log analytics event
-      await supabase.from('analytics_events').insert({
-        event_type: 'project_created',
-        user_id: user.id,
-        project_id: data.id,
-        metadata: {
-          tier: selectedTier.name,
-          candidate_count: candidateCount,
-        },
-      });
       
-      setProjectId(data.id);
       setShowSuccess(true);
     } catch (error: any) {
       console.error('Error creating project:', error);

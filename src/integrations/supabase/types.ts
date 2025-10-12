@@ -421,6 +421,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_project_for_current_user: {
+        Args: {
+          _anchor_price: number
+          _candidate_count: number
+          _candidate_source: string
+          _job_description: string
+          _job_summary: string
+          _pilot_price: number
+          _role_title: string
+          _tier_id: number
+          _tier_name: string
+        }
+        Returns: string
+      }
       grant_admin_role: {
         Args: { _email: string }
         Returns: undefined
@@ -434,6 +448,10 @@ export type Database = {
       }
       is_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_email_whitelisted: {
+        Args: { _email: string }
         Returns: boolean
       }
     }

@@ -130,19 +130,16 @@ export default function AdminAuth() {
 
       console.log('Starting admin signup for:', validatedData.email);
 
-      // Check if email is whitelisted
-      const { data: whitelisted, error: whitelistError } = await supabase
-        .from('admin_whitelist')
-        .select('email')
-        .eq('email', validatedData.email)
-        .maybeSingle();
+      // Check if email is whitelisted using RPC
+      const { data: isWhitelisted, error: whitelistError } = await supabase
+        .rpc('is_email_whitelisted', { _email: validatedData.email });
 
       if (whitelistError) {
         console.error('Whitelist check error:', whitelistError);
         throw new Error('Failed to verify email authorization');
       }
 
-      if (!whitelisted) {
+      if (!isWhitelisted) {
         toast({
           title: "Access denied",
           description: "This email is not authorized for admin access. Contact tobi@venturefor.africa to request access.",

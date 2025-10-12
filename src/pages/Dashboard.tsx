@@ -6,19 +6,17 @@ import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
 import { ProjectCard } from "@/components/dashboard/ProjectCard";
 import { EmptyProjectsState } from "@/components/dashboard/EmptyProjectsState";
 import { useUserProjects } from "@/hooks/useUserProjects";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
-  const queryClient = useQueryClient();
-  const { projects, isLoading } = useUserProjects();
+  const { projects, isLoading, refetch } = useUserProjects();
 
   useEffect(() => {
     if (location.state?.refetch) {
-      queryClient.invalidateQueries({ queryKey: ['user-projects'] });
+      refetch();
     }
-  }, [location.state, queryClient]);
+  }, [location.state, refetch]);
 
   const handleStartNewProject = () => {
     navigate('/workspace/new/jd-upload');

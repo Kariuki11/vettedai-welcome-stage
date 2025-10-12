@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -14,67 +15,58 @@ interface Project {
 
 export const useUserProjects = () => {
   const { user } = useAuth();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchProjects = async () => {
+    if (!user) {
+      console.log('No user authenticated, skipping project fetch');
+      return [];
+    }
+
+    console.log('Fetching projects for user:', user.id);
+
+    // First get recruiter ID
+    const { data: recruiterData, error: recruiterError } = await supabase
+      .from('recruiters')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (recruiterError) {
+      console.error('Error fetching recruiter:', recruiterError);
+      throw recruiterError;
+    }
+
+    if (!recruiterData) {
+      console.error('No recruiter profile found for user:', user.id);
+      return [];
+    }
+
+    console.log('Recruiter found:', recruiterData.id);
+
+    // Then fetch projects for this recruiter
+    const { data, error } = await supabase
+      .from('projects')
+      .select('id, role_title, status, payment_status, candidate_count, created_at, tier_name')
+      .eq('recruiter_id', recruiterData.id)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching projects:', error);
+      throw error;
+    }
+
+    console.log('Projects fetched:', data?.length || 0);
+    return data || [];
+  };
+
+  const { data: projects = [], isLoading, refetch } = useQuery({
+    queryKey: ['user-projects', user?.id],
+    queryFn: fetchProjects,
+    enabled: !!user,
+  });
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      if (!user) {
-        console.log('No user authenticated, skipping project fetch');
-        setProjects([]);
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        console.log('Fetching projects for user:', user.id);
-
-        // First get recruiter ID
-        const { data: recruiterData, error: recruiterError } = await supabase
-          .from('recruiters')
-          .select('id')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (recruiterError) {
-          console.error('Error fetching recruiter:', recruiterError);
-          setProjects([]);
-          setIsLoading(false);
-          return;
-        }
-
-        if (!recruiterData) {
-          console.error('No recruiter profile found for user:', user.id);
-          setProjects([]);
-          setIsLoading(false);
-          return;
-        }
-
-        console.log('Recruiter found:', recruiterData.id);
-
-        // Then fetch projects for this recruiter
-        const { data, error } = await supabase
-          .from('projects')
-          .select('id, role_title, status, payment_status, candidate_count, created_at, tier_name')
-          .eq('recruiter_id', recruiterData.id)
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error('Error fetching projects:', error);
-          throw error;
-        }
-
-        console.log('Projects fetched:', data?.length || 0);
-        setProjects(data || []);
-      } catch (error: any) {
-        console.error('Error in fetchProjects:', error);
-        setProjects([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProjects();
+    if (!user) return;
 
     // Set up real-time subscription for projects
     const channel = supabase
@@ -88,7 +80,7 @@ export const useUserProjects = () => {
         },
         () => {
           console.log('Projects table changed, refetching...');
-          fetchProjects();
+          refetch();
         }
       )
       .subscribe();
@@ -96,7 +88,7 @@ export const useUserProjects = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user]);
+  }, [user, refetch]);
 
-  return { projects, isLoading };
-}
+  return { projects, isLoading, refetch };
+};
