@@ -2,63 +2,70 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { TierInfo } from "@/hooks/useChatFlow";
+import { WizardState } from "@/hooks/useProjectWizard";
 import { PaymentSuccess } from "@/components/checkout/PaymentSuccess";
-
-interface CheckoutState {
-  tier: TierInfo;
-  jobTitle: string;
-  candidateCount: number;
-  candidateSource: 'own' | 'network' | null;
-  uploadedResumes?: any[];
-}
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as CheckoutState;
+  const { user } = useAuth();
+  const wizardState = (location.state as { wizardState?: WizardState })?.wizardState;
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [projectId, setProjectId] = useState<string | null>(null);
 
-  if (!state || !state.tier) {
+  if (!wizardState || !wizardState.selectedTier) {
     navigate('/workspace');
     return null;
   }
 
-  const { tier, jobTitle, candidateCount, candidateSource, uploadedResumes } = state;
+  const { selectedTier, roleTitle, candidateCount, candidateSource } = wizardState;
 
   const candidatePoolText = candidateSource === 'own' 
     ? `${candidateCount} Candidates`
     : 'VettedAI Network';
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setIsProcessing(true);
     
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      // Create project in database
+      const { data, error } = await supabase
+        .from('projects')
+        .insert({
+          recruiter_id: user?.id,
+          role_title: roleTitle,
+          job_description: wizardState.jobDescription,
+          job_summary: wizardState.jobSummary,
+          tier_id: selectedTier.id,
+          tier_name: selectedTier.name,
+          anchor_price: selectedTier.anchorPrice,
+          pilot_price: selectedTier.pilotPrice,
+          candidate_source: candidateSource || 'own',
+          candidate_count: candidateCount || 0,
+          status: 'awaiting',
+          payment_status: 'paid',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setProjectId(data.id);
       setShowSuccess(true);
-    }, 2000);
+    } catch (error) {
+      console.error('Error creating project:', error);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleContinueToFolder = () => {
-    navigate('/workspace/project', {
-      state: {
-        projectId: `proj-${Date.now()}`,
-        roleTitle: jobTitle,
-        tier: tier,
-        candidateSource: candidateSource || 'own',
-        candidateCount: candidateCount,
-        uploadedResumes: uploadedResumes || [],
-        status: 'awaiting',
-        paymentStatus: 'paid',
-        progress: {
-          hoursElapsed: 0,
-          totalHours: 48,
-          percentage: 0,
-        },
-      },
-    });
+    sessionStorage.removeItem('project_wizard_state');
+    navigate('/workspace');
   };
 
   if (showSuccess) {
@@ -84,7 +91,7 @@ const Checkout = () => {
             <div>
               <p className="text-sm text-muted-foreground mb-1">Regular Price</p>
               <p className="text-4xl text-muted-foreground line-through">
-                ${tier.anchorPrice}
+                ${selectedTier.anchorPrice}
               </p>
             </div>
             
@@ -92,7 +99,7 @@ const Checkout = () => {
               <p className="text-sm font-medium mb-2">Your Pilot Price</p>
               <div className="flex items-baseline justify-center gap-2">
                 <p className="text-6xl font-bold text-primary">
-                  ${tier.pilotPrice}
+                  ${selectedTier.pilotPrice}
                 </p>
                 <span className="text-sm text-muted-foreground">(one-time)</span>
               </div>
@@ -105,11 +112,11 @@ const Checkout = () => {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">Role:</span>
-                <span className="font-medium">{jobTitle}</span>
+                <span className="font-medium">{roleTitle}</span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">Vetting Tier:</span>
-                <span className="font-medium">{tier.name}</span>
+                <span className="font-medium">{selectedTier.name}</span>
               </div>
               <div className="flex justify-between py-2">
                 <span className="text-muted-foreground">Candidates:</span>

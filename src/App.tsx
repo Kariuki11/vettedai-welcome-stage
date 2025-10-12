@@ -9,7 +9,13 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SignupContext from "./pages/SignupContext";
-import Workspace from "./pages/Workspace";
+import Dashboard from "./pages/Dashboard";
+import JdUpload from "./pages/workspace/JdUpload";
+import JdConfirm from "./pages/workspace/JdConfirm";
+import CandidateSource from "./pages/workspace/CandidateSource";
+import CandidatePreview from "./pages/workspace/CandidatePreview";
+import TierSelection from "./pages/workspace/TierSelection";
+import Review from "./pages/workspace/Review";
 import Checkout from "./pages/Checkout";
 import ProjectFolder from "./pages/ProjectFolder";
 import OpsConsole from "./pages/OpsConsole";
@@ -38,7 +44,37 @@ const App = () => {
           
           <Route path="/workspace" element={
             <ProtectedRoute>
-              <Workspace />
+              <Dashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/workspace/new/jd-upload" element={
+            <ProtectedRoute>
+              <JdUpload />
+            </ProtectedRoute>
+          } />
+          <Route path="/workspace/new/jd-confirm" element={
+            <ProtectedRoute>
+              <JdConfirm />
+            </ProtectedRoute>
+          } />
+          <Route path="/workspace/new/candidate-source" element={
+            <ProtectedRoute>
+              <CandidateSource />
+            </ProtectedRoute>
+          } />
+          <Route path="/workspace/new/candidate-preview" element={
+            <ProtectedRoute>
+              <CandidatePreview />
+            </ProtectedRoute>
+          } />
+          <Route path="/workspace/new/tier-selection" element={
+            <ProtectedRoute>
+              <TierSelection />
+            </ProtectedRoute>
+          } />
+          <Route path="/workspace/new/review" element={
+            <ProtectedRoute>
+              <Review />
             </ProtectedRoute>
           } />
           
@@ -48,7 +84,7 @@ const App = () => {
             </ProtectedRoute>
           } />
           
-          <Route path="/workspace/project" element={
+          <Route path="/workspace/project/:projectId" element={
             <ProtectedRoute>
               <ProjectFolder />
             </ProtectedRoute>
