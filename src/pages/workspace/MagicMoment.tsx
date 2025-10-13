@@ -9,6 +9,12 @@ export default function MagicMoment() {
   const navigate = useNavigate();
   const { wizardState } = useProjectWizard();
 
+  // If critical wizard state is missing, redirect to start
+  if (!wizardState.jdContent && !wizardState.jobDescription) {
+    navigate('/workspace/new/jd-upload');
+    return null;
+  }
+
   const roleTitle = wizardState.roleTitle || "Pending Role Title";
   const companyName = wizardState.companyName || "";
   const selectedTier = wizardState.selectedTier;

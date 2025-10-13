@@ -36,12 +36,6 @@ export default function BookCall() {
 
   const jdContent = wizardState.jdContent || wizardState.jobDescription;
 
-  useEffect(() => {
-    if (!jdContent) {
-      navigate('/workspace/new/jd-upload');
-    }
-  }, [jdContent, navigate]);
-
   const ensureRecruiterProfile = async () => {
     if (!user?.id) {
       throw new Error('You need to be signed in.');
