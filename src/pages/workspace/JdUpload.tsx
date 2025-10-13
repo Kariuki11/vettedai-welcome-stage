@@ -13,7 +13,8 @@ export default function JdUpload() {
   const { saveWizardState, wizardState } = useProjectWizard();
   const { toast } = useToast();
   const [jd, setJd] = useState(wizardState.jdContent || wizardState.jobDescription || "");
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,40 +38,68 @@ export default function JdUpload() {
       return;
     }
 
-    setIsProcessing(true);
-    
+    setIsLoading(true);
+    setErrorMessage(null);
+
     try {
       // Call AI parsing edge function
-      const { data, error } = await supabase.functions.invoke('parse-job-description', {
-        body: { jd_text: jd }
+      const { data, error } = await supabase.functions.invoke("parse-job-description", {
+        body: { jd_text: jd },
       });
 
       if (error) {
-        console.error('AI parsing error:', error);
+        console.error("AI parsing error:", error);
         throw error;
       }
+
+      const parsedData = data as {
+        role_title?: unknown;
+        job_summary?: unknown;
+        company_name?: unknown;
+        key_skills?: unknown;
+        experience_level?: unknown;
+      } | null;
+
+      if (
+        !parsedData ||
+        typeof parsedData.role_title !== "string" ||
+        typeof parsedData.job_summary !== "string"
+      ) {
+        throw new Error("Invalid response from JD parser");
+      }
+
+      const companyName =
+        typeof parsedData.company_name === "string" ? parsedData.company_name : undefined;
+      const keySkills = Array.isArray(parsedData.key_skills)
+        ? (parsedData.key_skills as string[])
+        : undefined;
+      const experienceLevel =
+        typeof parsedData.experience_level === "string" ? parsedData.experience_level : undefined;
 
       // Save parsed data to wizard state
       saveWizardState({
         jobDescription: jd,
         jdContent: jd,
-        roleTitle: data.role_title,
-        jobSummary: data.job_summary,
-        companyName: data.company_name,
-        keySkills: data.key_skills,
-        experienceLevel: data.experience_level,
+        roleTitle: parsedData.role_title,
+        jobSummary: parsedData.job_summary,
+        companyName,
+        keySkills,
+        experienceLevel,
       });
-      
-      navigate('/workspace/new/jd-confirm');
+
+      navigate("/workspace/new/jd-confirm");
     } catch (error) {
-      console.error('Failed to parse JD:', error);
+      console.error("Failed to parse JD:", error);
+      setErrorMessage(
+        "We couldn't process that Job Description. Please try again or simplify the text."
+      );
       toast({
         title: "Processing failed",
         description: "Could not analyze the job description. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
   };
 
@@ -120,10 +149,10 @@ export default function JdUpload() {
           <div className="flex justify-end">
             <Button
               onClick={handleContinue}
-              disabled={jd.length < 50 || isProcessing}
+              disabled={jd.length < 50 || isLoading}
               size="lg"
             >
-              {isProcessing ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Analyzing JD...
@@ -133,6 +162,9 @@ export default function JdUpload() {
               )}
             </Button>
           </div>
+          {errorMessage && (
+            <div className="text-sm text-destructive text-right">{errorMessage}</div>
+          )}
         </CardContent>
       </Card>
     </div>
