@@ -62,13 +62,14 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                 Hire on proof,<span className="text-primary"> not promise.</span>
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                Drowning in perfect resumes that fall apart at interview? VettedAI lets you see how people actually work—so you can move forward with confidence, not guesswork.
+                Drowning in perfect resumes that fall apart at interview? VettedAI lets you see how people actually
+                work—so you can move forward with confidence, not guesswork.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
               <Button variant="hero" size="lg" onClick={handleCtaClick} className="h-auto px-8 py-4 text-base">
-                Create my recruiter workspace
+                Try VettedAI for your next role
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -94,7 +95,9 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                     <p className="text-sm text-muted-foreground">Shortlist preview</p>
                     <p className="text-xl font-semibold">Ops Leadership Sprint</p>
                   </div>
-                  <div className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">Noise removed</div>
+                  <div className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                    Noise removed
+                  </div>
                 </div>
                 <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
