@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,8 +11,34 @@ export default function JdUpload() {
   const navigate = useNavigate();
   const { saveWizardState, wizardState } = useProjectWizard();
   const { toast } = useToast();
-  const [jd, setJd] = useState(wizardState.jobDescription || "");
+  const [jd, setJd] = useState(wizardState.jdContent || wizardState.jobDescription || "");
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const derivedRoleTitle = useMemo(() => {
+    const firstMeaningfulLine = jd
+      .split('\n')
+      .map(line => line.trim())
+      .find(line => line.length > 0);
+
+    if (!firstMeaningfulLine) {
+      return 'Pending Role Title';
+    }
+
+    return firstMeaningfulLine.length > 80
+      ? `${firstMeaningfulLine.slice(0, 77)}...`
+      : firstMeaningfulLine;
+  }, [jd]);
+
+  const derivedSummary = useMemo(() => {
+    const normalized = jd.replace(/\s+/g, ' ').trim();
+    if (!normalized) {
+      return '';
+    }
+
+    return normalized.length > 240
+      ? `${normalized.slice(0, 237)}...`
+      : normalized;
+  }, [jd]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -39,7 +65,12 @@ export default function JdUpload() {
     setIsProcessing(true);
     
     // Save JD to wizard state
-    saveWizardState({ jobDescription: jd });
+    saveWizardState({
+      jobDescription: jd,
+      jdContent: jd,
+      roleTitle: derivedRoleTitle,
+      jobSummary: derivedSummary,
+    });
     
     // Simulate AI processing
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -52,7 +83,7 @@ export default function JdUpload() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 1 of 6</div>
+          <div className="mb-2 text-sm text-muted-foreground">Step 1 of 5</div>
           <CardTitle className="text-3xl">Start Your Vetting Project</CardTitle>
           <CardDescription>
             Paste your Job Description below or upload a file to get started.

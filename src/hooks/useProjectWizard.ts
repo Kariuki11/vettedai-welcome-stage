@@ -18,12 +18,14 @@ export interface UploadedFile {
 
 export interface WizardState {
   jobDescription?: string;
+  jdContent?: string;
   roleTitle?: string;
   jobSummary?: string;
   candidateSource?: 'own' | 'network';
   uploadedResumes?: UploadedFile[];
   candidateCount?: number;
   selectedTier?: TierInfo;
+  projectId?: string;
 }
 
 const STORAGE_KEY = 'project_wizard_state';
@@ -63,9 +65,9 @@ export const useProjectWizard = () => {
   const canProceedToNextStep = (currentStep: number): boolean => {
     switch (currentStep) {
       case 1: // JD Upload
-        return !!wizardState.jobDescription && wizardState.jobDescription.length > 50;
+        return !!wizardState.jdContent && wizardState.jdContent.length > 50;
       case 2: // JD Confirmation
-        return !!wizardState.roleTitle && !!wizardState.jobSummary;
+        return true;
       case 3: // Candidate Source
         if (!wizardState.candidateSource) return false;
         if (wizardState.candidateSource === 'own') {
@@ -74,9 +76,7 @@ export const useProjectWizard = () => {
         return true;
       case 4: // Candidate Preview
         return true; // No validation needed
-      case 5: // Tier Selection
-        return !!wizardState.selectedTier;
-      case 6: // Review
+      case 5: // Book a Call
         return true;
       default:
         return false;

@@ -23,13 +23,18 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
   const navigate = useNavigate();
   
   const getStatusBadge = () => {
-    if (project.payment_status === 'pending') {
-      return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Awaiting Payment</Badge>;
+    switch (project.status) {
+      case 'pending':
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Draft</Badge>;
+      case 'awaiting_setup_call':
+        return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">Awaiting Setup Call</Badge>;
+      case 'ready':
+        return <Badge variant="default" className="bg-green-50 text-green-700 border-green-200">Shortlist Ready</Badge>;
+      case 'scoring':
+        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Scoring</Badge>;
+      default:
+        return <Badge variant="secondary">In Progress</Badge>;
     }
-    if (project.status === 'ready') {
-      return <Badge variant="default" className="bg-green-50 text-green-700 border-green-200">Shortlist Ready</Badge>;
-    }
-    return <Badge variant="secondary">In Progress</Badge>;
   };
 
   const getProgressInfo = () => {
