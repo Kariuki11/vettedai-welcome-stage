@@ -83,6 +83,7 @@ const Checkout = () => {
       // Create project using server-side RPC
       const { data: projectId, error: projectError } = await supabase
         .rpc('create_project_for_current_user', {
+          _user_id: user.id,
           _role_title: roleTitle,
           _job_description: wizardState.jobDescription || '',
           _job_summary: wizardState.jobSummary || '',

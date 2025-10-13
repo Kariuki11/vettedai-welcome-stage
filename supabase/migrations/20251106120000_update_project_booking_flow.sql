@@ -25,7 +25,8 @@ CREATE OR REPLACE FUNCTION public.create_project_for_current_user(
   _anchor_price numeric,
   _pilot_price numeric,
   _candidate_source text,
-  _candidate_count integer
+  _candidate_count integer,
+  _user_id uuid DEFAULT NULL
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -40,7 +41,7 @@ BEGIN
   -- Get recruiter_id for current user
   SELECT id INTO _recruiter_id
   FROM public.recruiters
-  WHERE user_id = auth.uid();
+  WHERE user_id = COALESCE(_user_id, auth.uid());
 
   -- Validate recruiter exists
   IF _recruiter_id IS NULL THEN
@@ -92,3 +93,36 @@ $$;
 
 -- Preserve execute permissions
 GRANT EXECUTE ON FUNCTION public.create_project_for_current_user TO authenticated;
+
+-- Allow recruiters to mark a project as awaiting a setup call with explicit user ownership checks
+CREATE OR REPLACE FUNCTION public.mark_project_awaiting_setup_call(
+  _project_id uuid,
+  _user_id uuid
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+  _recruiter_id uuid;
+BEGIN
+  SELECT id INTO _recruiter_id
+  FROM public.recruiters
+  WHERE user_id = _user_id;
+
+  IF _recruiter_id IS NULL THEN
+    RAISE EXCEPTION 'No recruiter profile found for current user. Please contact support.';
+  END IF;
+
+  UPDATE public.projects
+  SET status = 'awaiting_setup_call'
+  WHERE id = _project_id AND recruiter_id = _recruiter_id;
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Project not found or you do not have permission to update it.';
+  END IF;
+END;
+$$;
+
+GRANT EXECUTE ON FUNCTION public.mark_project_awaiting_setup_call TO authenticated;
