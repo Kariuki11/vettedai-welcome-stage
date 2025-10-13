@@ -6,11 +6,17 @@ import { WizardState } from "@/hooks/useProjectWizard";
 import { PaymentSuccess } from "@/components/checkout/PaymentSuccess";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
+import { normalizeProject, userProjectsQueryKey, type Project } from "@/hooks/useUserProjects";
+import type { Database } from "@/integrations/supabase/types";
+
+type ProjectRow = Database['public']['Tables']['projects']['Row'];
 
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const wizardState = useMemo(() => {
     const stateWizard = (location.state as { wizardState?: WizardState })?.wizardState;
 
@@ -34,6 +40,7 @@ const Checkout = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!wizardState || !wizardState.selectedTier) {
@@ -65,7 +72,10 @@ const Checkout = () => {
       console.log('User authenticated:', user.id);
 
       // Validate wizard state
-      if (!roleTitle || !selectedTier || !candidateCount) {
+      const hasMissingCount =
+        candidateCount === undefined || candidateCount === null;
+
+      if (!roleTitle || !selectedTier || hasMissingCount) {
         console.error('Incomplete wizard state:', wizardState);
         throw new Error('Please complete all project details before proceeding');
       }
@@ -97,6 +107,31 @@ const Checkout = () => {
       }
 
       console.log('Project created successfully:', projectId);
+      setCreatedProjectId(projectId);
+
+      // Ensure the recruiter dashboard reflects the new project immediately
+      if (user?.id) {
+        const { data: createdProject, error: fetchProjectError } = await supabase
+          .from('projects')
+          .select('id, role_title, status, payment_status, candidate_count, created_at, tier_name')
+          .eq('id', projectId)
+          .maybeSingle<ProjectRow>();
+
+        if (fetchProjectError) {
+          console.warn('Failed to fetch created project for cache hydration:', fetchProjectError);
+        } else if (createdProject) {
+          queryClient.setQueryData<Project[]>(
+            userProjectsQueryKey(user.id),
+            (existing) => {
+              const normalized = normalizeProject(createdProject);
+              const withoutDuplicate = (existing || []).filter((project) => project.id !== normalized.id);
+              return [normalized, ...withoutDuplicate];
+            }
+          );
+        }
+
+        await queryClient.invalidateQueries({ queryKey: userProjectsQueryKey(user.id), exact: false });
+      }
 
       // Log analytics event (non-blocking)
       try {
@@ -114,9 +149,12 @@ const Checkout = () => {
       }
       
       setShowSuccess(true);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error creating project:', error);
-      alert(error.message || 'Failed to create project. Please try again or contact support.');
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to create project. Please try again or contact support.';
+      alert(message);
     } finally {
       setIsProcessing(false);
     }
@@ -124,9 +162,17 @@ const Checkout = () => {
 
   const handleContinueToFolder = async () => {
     sessionStorage.removeItem('project_wizard_state');
-    // Wait a moment to ensure database transaction completes
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    navigate('/workspace', { state: { refetch: true, refetchToken: Date.now() } });
+    if (user?.id) {
+      await queryClient.refetchQueries({ queryKey: userProjectsQueryKey(user.id), type: 'all' });
+    }
+
+    navigate('/workspace', {
+      state: {
+        refetch: true,
+        refetchToken: Date.now(),
+        lastCreatedProjectId: createdProjectId,
+      },
+    });
   };
 
   if (showSuccess) {

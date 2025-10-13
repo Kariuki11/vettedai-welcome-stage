@@ -1,15 +1,32 @@
+import { Check } from "lucide-react";
+
+const learnings = [
+  "Benchmarked against hires that are already thriving in your org.",
+  "Understands how they approach ambiguous, high-leverage scenarios.",
+  "Surfaces the 'how' behind the work—not just the finished artefact.",
+];
+
 export const PerformanceGraphSection = () => {
   return (
     <section className="px-6 py-32 bg-muted/30">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center space-y-6 mb-16">
+          <span className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+            Performance Graph
+          </span>
           <h2 className="text-4xl md:text-5xl font-bold">Powered by the Performance Graph.</h2>
           <p className="text-lg md:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Our proprietary Performance Graph learns from every hire. It looks beyond <em>what</em> a candidate submits
-            to understand <em>how</em> they work—capturing the behavioral signals that actually predict success, so you
-            can repeat it, with confidence.
+            We learn from every assessment your team runs. The Performance Graph combines behavioural signals, work quality, and context so each hire gets easier than the last.
           </p>
+          <div className="mx-auto grid max-w-3xl gap-3 text-left sm:grid-cols-3">
+            {learnings.map((learning) => (
+              <div key={learning} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <Check className="mt-0.5 h-4 w-4 text-primary" />
+                <span>{learning}</span>
+              </div>
+            ))}
+          </div>
           <p className="text-base font-medium text-primary pt-2">
             The more you hire with VettedAI, the smarter it gets.
           </p>

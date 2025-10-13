@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface HeroSectionProps {
@@ -40,32 +40,33 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
       {/* Content Container */}
       <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in relative z-10">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-subtle border border-primary/20 text-primary text-sm font-medium mb-4">
-          <Zap className="h-4 w-4" />
-          The Assessment Platform for Non-Technical Roles
+          <Sparkles className="h-4 w-4" />
+          The Talent Intelligence Workspace
         </div>
         {/* Headline */}
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
-          Hire on Proof, <span className="text-primary">Not Promise.</span>
+          Hire on proof, <span className="text-primary">not promise.</span>
         </h1>
 
         {/* Subheadline */}
         <p className="text-lg md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">
-          The resume has become the biggest lie in business. VettedAI is the intelligent workspace built to show you the
-          truth: what a candidate can <em>actually</em> do.
+          Drowning in perfect resumes that fall apart at interview? VettedAI lets you see how people actually work—so you
+          can move forward with confidence, not guesswork.
         </p>
 
         {/* CTA Button */}
         <div className="pt-6 animate-slide-in-up">
-          <Button variant="hero" size="lg" onClick={handleCtaClick} className="text-sm px-6 py-3 h-auto">
-            Create My Recruiter Workspace
-            <ArrowRight className="ml-2 h-4 w-4" />
+          <Button variant="hero" size="lg" onClick={handleCtaClick} className="text-base px-7 py-4 h-auto">
+            Create my recruiter workspace
+            <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
 
         {/* Trust Badge */}
-        <p className="text-sm text-muted-foreground pt-4 animate-fade-in-delayed">
-          Verifiable Proof • 48-72 Hour Shortlists • Hire with Confidence
-        </p>
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-4 animate-fade-in-delayed">
+          <ShieldCheck className="h-4 w-4 text-primary" />
+          Verifiable proof in 48-72 hours
+        </div>
       </div>
     </section>
   );

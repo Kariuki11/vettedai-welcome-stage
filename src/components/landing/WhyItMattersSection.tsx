@@ -1,11 +1,29 @@
 import { useState, useEffect } from "react";
-import { FileText, ArrowRight, Sparkles, TrendingUp, MessageSquare, Target } from "lucide-react";
+import { FileText, ArrowRight, Sparkles, TrendingUp, MessageSquare, Gauge, ListChecks, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 interface PerformanceChartProps {
   animate?: boolean;
 }
+
+const advantages = [
+  {
+    icon: Gauge,
+    title: "Confidence without the chaos",
+    description: "Go from guesses to grounded decisions. Every shortlist pairs a confidence signal with the proof behind it.",
+  },
+  {
+    icon: ListChecks,
+    title: "Signals your team can align on",
+    description: "Structured scoring makes it simple to compare candidates against the work that actually matters to your role.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Proof delivered in hours, not weeks",
+    description: "VettedAI handles the busywork—crafting role-specific tasks, collecting responses, and surfacing what stands out.",
+  },
+];
 
 const PerformanceChart = ({ animate = false }: PerformanceChartProps) => {
   const metrics = [
@@ -123,11 +141,14 @@ export const WhyItMattersSection = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center space-y-4 mb-16 animate-fade-in-up">
+          <span className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+            Why it matters
+          </span>
           <h2 className="text-4xl md:text-5xl font-bold">
-            Stop Screening Resumes. Start Seeing Proof.
+            The problem isn't filtering harder. It's seeing better.
           </h2>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            The old way forces you to guess based on flat, unreliable proxies. VettedAI gives you a rich, multi-dimensional view of a candidate's true ability.
+            Traditional hiring tools stop at the resume. They leave you hoping the keywords translate to the work. VettedAI delivers the proof: how candidates think, collaborate, and execute when the stakes are real.
           </p>
         </div>
 
@@ -340,6 +361,23 @@ export const WhyItMattersSection = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="mt-20 grid gap-6 md:grid-cols-3">
+          {advantages.map((advantage) => {
+            const Icon = advantage.icon;
+            return (
+              <div
+                key={advantage.title}
+                className="rounded-2xl border border-border bg-background/80 p-6 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 text-lg font-semibold text-foreground">{advantage.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{advantage.description}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
