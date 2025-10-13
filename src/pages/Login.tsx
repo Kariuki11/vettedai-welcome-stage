@@ -8,12 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from 'sonner';
 
 export default function Login() {
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,17 +19,10 @@ export default function Login() {
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await signUp(email, password, fullName);
-        if (error) throw error;
-        toast.success('Account created! Please sign in.');
-        setIsSignUp(false);
-      } else {
-        const { error } = await signIn(email, password);
-        if (error) throw error;
-        toast.success('Signed in successfully!');
-        navigate('/workspace');
-      }
+      const { error } = await signIn(email, password);
+      if (error) throw error;
+      toast.success('Signed in successfully!');
+      navigate('/workspace');
     } catch (error: any) {
       toast.error(error.message || 'An error occurred');
     } finally {
@@ -43,24 +34,11 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{isSignUp ? 'Create Account' : 'Sign In'}</CardTitle>
-          <CardDescription>
-            {isSignUp ? 'Get started with VettedAI' : 'Welcome back to VettedAI'}
-          </CardDescription>
+          <CardTitle>Sign In</CardTitle>
+          <CardDescription>Welcome back to VettedAI</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <Input
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                />
-              </div>
-            )}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -82,15 +60,15 @@ export default function Login() {
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
+              {loading ? 'Loading...' : 'Sign In'}
             </Button>
             <Button
               type="button"
               variant="ghost"
               className="w-full"
-              onClick={() => setIsSignUp(!isSignUp)}
+              onClick={() => navigate('/signup')}
             >
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
+              Don't have an account? Create one
             </Button>
           </form>
         </CardContent>

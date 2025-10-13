@@ -91,13 +91,12 @@ const calculatePasswordStrength = (password: string): {
 export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Props) => {
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
   const [step1Data, setStep1Data] = useState<Step1FormData | null>(null);
-  const [emailBlurred, setEmailBlurred] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  const { createPendingRecruiter, completeSignUp, trackSignupEvent } = useAuth();
+  const { completeSignUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -124,23 +123,9 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
   const password = step1Form.watch("password");
   const passwordStrength = password ? calculatePasswordStrength(password) : null;
 
-  // Handle email blur - create pending recruiter record
-  const handleEmailBlur = async (email: string) => {
-    if (!emailBlurred && z.string().email().safeParse(email).success) {
-      setEmailBlurred(true);
-      await createPendingRecruiter(email);
-    }
-  };
-
   // Handle Step 1 submission
   const handleStep1Submit = async (data: Step1FormData) => {
     setStep1Data(data);
-    
-    // Track Step 1 completion
-    await trackSignupEvent('signup_step_1_completed', undefined, {
-      email: data.email
-    });
-    
     setCurrentStep(2);
   };
 
@@ -151,13 +136,6 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
     setIsSubmitting(true);
     
     try {
-      // Track Step 2 completion
-      await trackSignupEvent('signup_step_2_completed', undefined, {
-        user_role: data.userRole,
-        company_size: data.companySize,
-        referral_source: data.referralSource
-      });
-      
       // Complete signup
       const { data: authData, error } = await completeSignUp(
         step1Data.email,
@@ -178,9 +156,6 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
         setIsSubmitting(false);
         return;
       }
-      
-      // Track signup completion
-      await trackSignupEvent('signup_completed', authData?.user?.id);
       
       // Show success state
       setIsSuccess(true);
@@ -206,7 +181,6 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
     if (!open) {
       setCurrentStep(1);
       setStep1Data(null);
-      setEmailBlurred(false);
       setIsSuccess(false);
       step1Form.reset();
       step2Form.reset();
@@ -297,10 +271,6 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
                         placeholder="jane@acme.com" 
                         autoComplete="email"
                         {...field}
-                        onBlur={(e) => {
-                          field.onBlur();
-                          handleEmailBlur(e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />

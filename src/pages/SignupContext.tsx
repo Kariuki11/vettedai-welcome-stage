@@ -62,7 +62,7 @@ const SignupContext = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
   
-  const { completeSignUp, trackSignupEvent } = useAuth();
+  const { completeSignUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -107,14 +107,6 @@ const SignupContext = () => {
     try {
       // Extract the structured referral data
       const referralSourceValue = data.referralSource?.source;
-      const referralSourceDetails = data.referralSource?.otherDetails?.trim() || undefined;
-
-      await trackSignupEvent('signup_step_2_completed', undefined, {
-        user_role: data.userRole,
-        company_size: data.companySize,
-        referral_source: referralSourceValue,
-        referral_source_details: referralSourceDetails
-      });
 
       const { data: authData, error } = await completeSignUp(
         step1Data.email,
@@ -135,8 +127,6 @@ const SignupContext = () => {
         setIsSubmitting(false);
         return;
       }
-      
-      await trackSignupEvent('signup_completed', authData?.user?.id);
       
       sessionStorage.removeItem("signup.step1");
       

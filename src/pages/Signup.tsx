@@ -54,11 +54,9 @@ const calculatePasswordStrength = (password: string): {
 };
 
 const Signup = () => {
-  const [emailBlurred, setEmailBlurred] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
-  const { createPendingRecruiter, trackSignupEvent } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -77,19 +75,8 @@ const Signup = () => {
   const password = form.watch("password");
   const passwordStrength = password ? calculatePasswordStrength(password) : null;
 
-  const handleEmailBlur = async (email: string) => {
-    if (!emailBlurred && z.string().email().safeParse(email).success) {
-      setEmailBlurred(true);
-      await createPendingRecruiter(email);
-    }
-  };
-
   const onSubmit = async (data: Step1FormData) => {
     try {
-      await trackSignupEvent('signup_step_1_completed', undefined, {
-        email: data.email
-      });
-      
       sessionStorage.setItem("signup.step1", JSON.stringify(data));
       navigate("/signup/context", { state: { step1Data: data } });
     } catch (error: any) {
@@ -160,10 +147,6 @@ const Signup = () => {
                         placeholder="jane@acme.com" 
                         autoComplete="email"
                         {...field}
-                        onBlur={(e) => {
-                          field.onBlur();
-                          handleEmailBlur(e.target.value);
-                        }}
                       />
                     </FormControl>
                     <FormMessage />
