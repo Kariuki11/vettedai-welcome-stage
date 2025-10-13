@@ -40,9 +40,12 @@ export interface WizardState {
 }
 
 const STORAGE_KEY = 'project_wizard_state';
+const hasSessionStorage = () => typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
 
 export const useProjectWizard = () => {
   const [wizardState, setWizardState] = useState<WizardState>(() => {
+    if (!hasSessionStorage()) return {};
+
     // Initialize from sessionStorage
     const stored = sessionStorage.getItem(STORAGE_KEY);
     if (stored) {
@@ -57,11 +60,29 @@ export const useProjectWizard = () => {
 
   // Save to sessionStorage whenever state changes
   useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(wizardState));
+    if (!hasSessionStorage()) return;
+
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(wizardState));
+    } catch (error) {
+      console.warn('Failed to persist wizard state', error);
+    }
   }, [wizardState]);
 
   const saveWizardState = (newState: Partial<WizardState>) => {
-    setWizardState(prev => ({ ...prev, ...newState }));
+    setWizardState(prev => {
+      const updatedState = { ...prev, ...newState };
+
+      if (hasSessionStorage()) {
+        try {
+          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updatedState));
+        } catch (error) {
+          console.warn('Failed to persist wizard state', error);
+        }
+      }
+
+      return updatedState;
+    });
   };
 
   const getWizardState = (): WizardState => {
@@ -70,7 +91,9 @@ export const useProjectWizard = () => {
 
   const clearWizardState = () => {
     setWizardState({});
-    sessionStorage.removeItem(STORAGE_KEY);
+    if (hasSessionStorage()) {
+      sessionStorage.removeItem(STORAGE_KEY);
+    }
   };
 
   const canProceedToNextStep = (currentStep: number): boolean => {
