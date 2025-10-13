@@ -105,17 +105,17 @@ const SignupContext = () => {
     setIsSubmitting(true);
     
     try {
-      // Serialize referralSource to JSON string for storage
-      const referralSourceString = data.referralSource 
-        ? JSON.stringify(data.referralSource)
-        : undefined;
+      // Extract the structured referral data
+      const referralSourceValue = data.referralSource?.source;
+      const referralSourceDetails = data.referralSource?.otherDetails?.trim() || undefined;
 
       await trackSignupEvent('signup_step_2_completed', undefined, {
         user_role: data.userRole,
         company_size: data.companySize,
-        referral_source: referralSourceString
+        referral_source: referralSourceValue,
+        referral_source_details: referralSourceDetails
       });
-      
+
       const { data: authData, error } = await completeSignUp(
         step1Data.email,
         step1Data.password,
@@ -123,7 +123,7 @@ const SignupContext = () => {
         step1Data.companyName,
         data.userRole,
         data.companySize,
-        referralSourceString
+        referralSourceValue
       );
       
       if (error) {
