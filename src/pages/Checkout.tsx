@@ -83,6 +83,7 @@ const Checkout = () => {
       // Create project using server-side RPC
       const { data: projectId, error: projectError } = await supabase
         .rpc('create_project_for_current_user', {
+          _user_id: user.id,
           _role_title: roleTitle,
           _job_description: wizardState.jobDescription || '',
           _job_summary: wizardState.jobSummary || '',
@@ -109,6 +110,16 @@ const Checkout = () => {
       console.log('Project created successfully:', projectId);
       setCreatedProjectId(projectId);
 
+      // Mark project as paid and ready for vetting when checkout completes
+      const { error: statusUpdateError } = await supabase
+        .from('projects')
+        .update({ status: 'awaiting', payment_status: 'paid' })
+        .eq('id', projectId);
+
+      if (statusUpdateError) {
+        console.warn('Failed to update project status after checkout:', statusUpdateError);
+      }
+
       // Ensure the recruiter dashboard reflects the new project immediately
       if (user?.id) {
         const { data: createdProject, error: fetchProjectError } = await supabase
@@ -123,7 +134,11 @@ const Checkout = () => {
           queryClient.setQueryData<Project[]>(
             userProjectsQueryKey(user.id),
             (existing) => {
-              const normalized = normalizeProject(createdProject);
+              const normalized = normalizeProject({
+                ...createdProject,
+                status: statusUpdateError ? createdProject.status : 'awaiting',
+                payment_status: statusUpdateError ? createdProject.payment_status : 'paid',
+              });
               const withoutDuplicate = (existing || []).filter((project) => project.id !== normalized.id);
               return [normalized, ...withoutDuplicate];
             }

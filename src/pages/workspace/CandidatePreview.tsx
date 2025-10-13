@@ -3,13 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Mail, Monitor } from "lucide-react";
 import { useProjectWizard } from "@/hooks/useProjectWizard";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CandidatePreview() {
   const navigate = useNavigate();
   const { wizardState } = useProjectWizard();
+  const { user } = useAuth();
+
+  const roleTitle = wizardState.roleTitle?.trim() || "[Role Title]";
+  const companyName =
+    (typeof user?.user_metadata?.company_name === "string" && user.user_metadata.company_name.trim()) ||
+    "[Company Name]";
 
   const handleContinue = () => {
-    navigate('/workspace/new/tier-selection');
+    navigate('/workspace/new/book-call');
   };
 
   const handleBack = () => {
@@ -20,7 +27,7 @@ export default function CandidatePreview() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-5xl">
         <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 4 of 6</div>
+          <div className="mb-2 text-sm text-muted-foreground">Step 4 of 5</div>
           <CardTitle className="text-3xl">Preview the Candidate Experience</CardTitle>
           <CardDescription>
             See exactly what your candidates will receive when we send them their Proof of Work task.
@@ -50,23 +57,22 @@ export default function CandidatePreview() {
                   <div>
                     <div className="text-xs text-muted-foreground mb-1">Subject:</div>
                     <div className="font-semibold text-sm">
-                      Your Proof of Work Task for {wizardState.roleTitle || "the Role"}
+                      Invitation: Your Proof of Work Task for the {roleTitle} position
                     </div>
                   </div>
-                  
-                  <div className="text-sm text-muted-foreground space-y-2">
+
+                  <div className="text-sm text-muted-foreground space-y-3">
                     <p>Hi [Candidate Name],</p>
                     <p>
-                      You've been selected to complete a Proof of Work task for the position of{" "}
-                      <span className="font-semibold text-foreground">
-                        {wizardState.roleTitle || "Senior Full-Stack Engineer"}
-                      </span>.
+                      You've been selected to complete a Proof of Work task for the {roleTitle} position with {companyName}.
                     </p>
-                    <p className="text-xs">
-                      This task is designed to showcase your skills and should take approximately 2-3 hours.
+                    <p>
+                      This task is designed to showcase your skills in a real-world scenario and should take approximately 2-3 hours. Click the button below to begin.
                     </p>
+                    <p>Best,</p>
+                    <p>The VettedAI Team</p>
                   </div>
-                  
+
                   <Button className="w-full" size="sm">
                     Start Your Task →
                   </Button>
@@ -83,8 +89,8 @@ export default function CandidatePreview() {
               <div className="border-2 border-border rounded-lg p-6 bg-card">
                 <div className="space-y-4">
                   <div className="pb-3 border-b">
-                    <h3 className="font-bold text-lg">{wizardState.roleTitle || "Senior Full-Stack Engineer"}</h3>
-                    <p className="text-xs text-muted-foreground">Proof of Work Assessment</p>
+                    <h3 className="font-bold text-lg">Proof of Work for the {roleTitle} position</h3>
+                    <p className="text-xs text-muted-foreground">at {companyName}</p>
                   </div>
                   
                   <div className="space-y-3">

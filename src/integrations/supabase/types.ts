@@ -432,8 +432,16 @@ export type Database = {
           _role_title: string
           _tier_id: number
           _tier_name: string
+          _user_id?: string | null
         }
         Returns: string
+      }
+      mark_project_awaiting_setup_call: {
+        Args: {
+          _project_id: string
+          _user_id: string
+        }
+        Returns: undefined
       }
       grant_admin_role: {
         Args: { _email: string }

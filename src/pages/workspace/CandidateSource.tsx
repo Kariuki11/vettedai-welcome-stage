@@ -64,7 +64,7 @@ export default function CandidateSource() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl">
         <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 3 of 6</div>
+          <div className="mb-2 text-sm text-muted-foreground">Step 3 of 5</div>
           <CardTitle className="text-3xl">Who are the candidates for this role?</CardTitle>
           <CardDescription>
             We'll send your candidates a unique Proof of Work task, generated from your Job Description.
