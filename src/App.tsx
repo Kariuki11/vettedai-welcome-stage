@@ -19,7 +19,7 @@ import CandidateSource from "./pages/workspace/CandidateSource";
 import BookCall from "./pages/workspace/BookCall";
 import TierSelection from "./pages/workspace/TierSelection";
 import Checkout from "./pages/Checkout";
-import ProjectFolder from "./pages/ProjectFolder";
+import ProjectDetailPage from "./pages/ProjectDetailPage";
 import AccountSettings from "./pages/AccountSettings";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -93,7 +93,7 @@ const App = () => {
 
               <Route path="/workspace/project/:projectId" element={
                 <ProtectedRoute>
-                  <ProjectFolder />
+                  <ProjectDetailPage />
                 </ProtectedRoute>
               } />
 

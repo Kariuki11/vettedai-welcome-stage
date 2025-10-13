@@ -1,11 +1,23 @@
 import { Badge } from "@/components/ui/badge";
 
 interface StatusBadgeProps {
-  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready';
+  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready' | 'pending_activation' | 'activation_in_progress' | 'in_progress' | 'completed';
 }
 
 export const StatusBadge = ({ status }: StatusBadgeProps) => {
   switch (status) {
+    case 'pending_activation':
+      return (
+        <Badge className="bg-[#FEF3C7] text-[#92400E] hover:bg-[#FEF3C7]">
+          Pending Activation
+        </Badge>
+      );
+    case 'activation_in_progress':
+      return (
+        <Badge className="bg-[#DBEAFE] text-[#1D4ED8] hover:bg-[#DBEAFE]">
+          Activation in Progress
+        </Badge>
+      );
     case 'pending':
       return (
         <Badge className="bg-[#E0E7FF] text-[#4338CA] hover:bg-[#E0E7FF]">
@@ -37,6 +49,12 @@ export const StatusBadge = ({ status }: StatusBadgeProps) => {
       return (
         <Badge className="bg-[#D1FAE5] text-[#22C55E] hover:bg-[#D1FAE5]">
           Shortlist Ready
+        </Badge>
+      );
+    default:
+      return (
+        <Badge variant="outline" className="capitalize">
+          {status.replace(/_/g, ' ')}
         </Badge>
       );
   }
