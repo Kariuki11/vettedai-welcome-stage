@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
@@ -27,7 +28,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
       case 'pending':
         return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Draft</Badge>;
       case 'awaiting_setup_call':
-        return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">Awaiting Setup Call</Badge>;
+        return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">Setup Call Needed</Badge>;
       case 'ready':
         return <Badge variant="default" className="bg-green-50 text-green-700 border-green-200">Shortlist Ready</Badge>;
       case 'scoring':
@@ -35,6 +36,19 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
       default:
         return <Badge variant="secondary">In Progress</Badge>;
     }
+  };
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking the book call button
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    navigate(`/workspace/project/${project.id}`);
+  };
+
+  const handleBookCall = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open("https://calendly.com/lemuel-vettedai/30min", "_blank");
   };
 
   const getProgressInfo = () => {
@@ -56,7 +70,7 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
   return (
     <Card 
       className="cursor-pointer hover:shadow-lg transition-shadow"
-      onClick={() => navigate(`/workspace/project/${project.id}`)}
+      onClick={handleCardClick}
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
@@ -89,6 +103,18 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
           <div className="text-sm text-muted-foreground">
             Tier: <span className="font-medium text-foreground">{project.tier_name}</span>
           </div>
+        )}
+
+        {project.status === 'awaiting_setup_call' && (
+          <Button 
+            onClick={handleBookCall}
+            variant="default"
+            size="sm"
+            className="w-full gap-2"
+          >
+            <Calendar className="w-4 h-4" />
+            Book Your Setup Call
+          </Button>
         )}
       </CardContent>
     </Card>

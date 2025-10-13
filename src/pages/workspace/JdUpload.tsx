@@ -81,6 +81,13 @@ export default function JdUpload() {
         typeof parsedPayload.experience_level === "string"
           ? parsedPayload.experience_level
           : undefined;
+      const proofOfWorkTask =
+        typeof parsedPayload.proof_of_work_task === "string"
+          ? parsedPayload.proof_of_work_task
+          : undefined;
+      const evaluationCriteria = Array.isArray(parsedPayload.evaluation_criteria)
+        ? (parsedPayload.evaluation_criteria as Array<{ name: string; description: string }>)
+        : undefined;
 
       // Save parsed data to wizard state
       saveWizardState({
@@ -91,9 +98,11 @@ export default function JdUpload() {
         companyName,
         keySkills,
         experienceLevel,
+        proofOfWorkTask,
+        evaluationCriteria,
       });
 
-      navigate("/workspace/new/jd-confirm");
+      navigate("/workspace/new/magic-moment");
     } catch (error) {
       console.error("Failed to parse JD:", error);
       setErrorMessage(
@@ -113,7 +122,16 @@ export default function JdUpload() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 1 of 5</div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm text-muted-foreground">Step 1 of 2</div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/workspace')}
+            >
+              ← Back to Workspace
+            </Button>
+          </div>
           <CardTitle className="text-3xl">Start Your Vetting Project</CardTitle>
           <CardDescription>
             Paste your Job Description below or upload a file to get started.

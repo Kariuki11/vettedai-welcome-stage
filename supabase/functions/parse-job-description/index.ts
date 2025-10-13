@@ -47,6 +47,8 @@ Extract the following information:
 3. job_summary: A professional 2-3 sentence summary of the role
 4. key_skills: Array of 5-7 most important required skills
 5. experience_level: Years of experience required (e.g., "5+ years", "Mid-level", "Entry-level")
+6. proof_of_work_task: Generate a realistic 2-3 hour practical task that tests the candidate's core skills for this role. This should be a specific scenario or challenge they would solve that demonstrates their ability to perform in this position.
+7. evaluation_criteria: Create exactly 3 evaluation criteria that will be used to score candidate responses. Each criterion should have a clear name and a brief description of what it evaluates.
 
 Return structured data with these exact fields.`
           },
@@ -84,9 +86,25 @@ Return structured data with these exact fields.`
                   experience_level: { 
                     type: 'string',
                     description: 'Experience level required (e.g., "5+ years", "Mid-level")'
+                  },
+                  proof_of_work_task: {
+                    type: 'string',
+                    description: 'A realistic 2-3 hour practical task that tests the candidate\'s core skills. This should be a specific scenario or challenge they would solve.'
+                  },
+                  evaluation_criteria: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        name: { type: 'string', description: 'Name of the evaluation criterion' },
+                        description: { type: 'string', description: 'Brief description of what this criterion evaluates' }
+                      },
+                      required: ['name', 'description']
+                    },
+                    description: 'Exactly 3 evaluation criteria that will be used to score responses. Each should have a name and brief description.'
                   }
                 },
-                required: ['role_title', 'company_name', 'job_summary', 'key_skills', 'experience_level'],
+                required: ['role_title', 'company_name', 'job_summary', 'key_skills', 'experience_level', 'proof_of_work_task', 'evaluation_criteria'],
                 additionalProperties: false
               }
             }

@@ -29,6 +29,11 @@ export interface WizardState {
   candidateCount?: number;
   selectedTier?: TierInfo;
   projectId?: string;
+  proofOfWorkTask?: string;
+  evaluationCriteria?: Array<{
+    name: string;
+    description: string;
+  }>;
 }
 
 const STORAGE_KEY = 'project_wizard_state';
