@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { isReferralSource } from '@/constants/referralSources';
 import type { User } from '@supabase/supabase-js';
 
 export const useAuth = () => {
@@ -68,8 +69,8 @@ export const useAuth = () => {
 
 
   const completeSignUp = async (
-    email: string, 
-    password: string, 
+    email: string,
+    password: string,
     fullName: string,
     companyName: string,
     userRole: string,
@@ -93,7 +94,8 @@ export const useAuth = () => {
       return { data: null, error: authError };
     }
 
-    // Use upsert to create or update recruiter profile atomically
+    const sanitizedReferralSource = isReferralSource(referralSource) ? referralSource : null;
+
     const { error: recruiterError } = await supabase
       .from('recruiters')
       .upsert({
@@ -103,11 +105,11 @@ export const useAuth = () => {
         company_name: companyName,
         user_role: userRole,
         company_size: companySize,
-        referral_source: referralSource,
+        referral_source: sanitizedReferralSource,
         status: 'active',
         updated_at: new Date().toISOString()
-      }, { 
-        onConflict: 'user_id' 
+      }, {
+        onConflict: 'user_id'
       });
 
     return { data: authData, error: recruiterError };
