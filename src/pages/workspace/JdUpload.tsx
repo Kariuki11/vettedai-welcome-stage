@@ -52,36 +52,42 @@ export default function JdUpload() {
         throw error;
       }
 
-      const parsedData = data as {
-        role_title?: unknown;
-        job_summary?: unknown;
-        company_name?: unknown;
-        key_skills?: unknown;
-        experience_level?: unknown;
-      } | null;
+      const parsedPayload =
+        typeof data === "string"
+          ? (JSON.parse(data) as Record<string, unknown> | null)
+          : ((data as Record<string, unknown> | null) ?? null);
 
-      if (
-        !parsedData ||
-        typeof parsedData.role_title !== "string" ||
-        typeof parsedData.job_summary !== "string"
-      ) {
+      if (!parsedPayload) {
+        throw new Error("Empty response from JD parser");
+      }
+
+      if (typeof parsedPayload.error === "string" && parsedPayload.error.trim().length > 0) {
+        throw new Error(parsedPayload.error);
+      }
+
+      const roleTitle = parsedPayload.role_title;
+      const jobSummary = parsedPayload.job_summary;
+
+      if (typeof roleTitle !== "string" || typeof jobSummary !== "string") {
         throw new Error("Invalid response from JD parser");
       }
 
       const companyName =
-        typeof parsedData.company_name === "string" ? parsedData.company_name : undefined;
-      const keySkills = Array.isArray(parsedData.key_skills)
-        ? (parsedData.key_skills as string[])
+        typeof parsedPayload.company_name === "string" ? parsedPayload.company_name : undefined;
+      const keySkills = Array.isArray(parsedPayload.key_skills)
+        ? (parsedPayload.key_skills as string[])
         : undefined;
       const experienceLevel =
-        typeof parsedData.experience_level === "string" ? parsedData.experience_level : undefined;
+        typeof parsedPayload.experience_level === "string"
+          ? parsedPayload.experience_level
+          : undefined;
 
       // Save parsed data to wizard state
       saveWizardState({
         jobDescription: jd,
         jdContent: jd,
-        roleTitle: parsedData.role_title,
-        jobSummary: parsedData.job_summary,
+        roleTitle,
+        jobSummary,
         companyName,
         keySkills,
         experienceLevel,
