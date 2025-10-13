@@ -184,26 +184,13 @@ export default function BookCall() {
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#5A4FCF] text-white">
             <Check className="h-8 w-8" />
           </div>
-          <CardTitle className="text-3xl">Let's Build Your High-Confidence Shortlist</CardTitle>
+          <CardTitle className="text-3xl">Book Your Setup Call</CardTitle>
           <p className="text-lg text-muted-foreground">
-            We're ready to build your {wizardState.selectedTier?.name?.toLowerCase() || 'proof'} experience for {wizardState.roleTitle || 'this role'}. Book a call to finalize your proof of work details.
+            During the call, we'll discuss your proof of work task and evaluation criteria to ensure the perfect fit for your role.
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          <div className="flex justify-center -space-x-6">
-            <Avatar className="h-16 w-16 border-4 border-background shadow-sm">
-              <AvatarImage src="/placeholder.svg" alt="Lemuel" />
-              <AvatarFallback>L</AvatarFallback>
-            </Avatar>
-            <Avatar className="h-16 w-16 border-4 border-background shadow-sm">
-              <AvatarImage src="/placeholder.svg" alt="Tobi" />
-              <AvatarFallback>T</AvatarFallback>
-            </Avatar>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            During the call, we'll discuss your proof of work task and evaluation criteria to ensure the perfect fit for your role.
-          </p>
 
           <div className="space-y-3">
             <Button
@@ -217,7 +204,7 @@ export default function BookCall() {
               ) : (
                 <Calendar className="mr-2 h-5 w-5" />
               )}
-              Strategy Call with a Product Expert
+              Book Call with Lemuel
             </Button>
 
             <Button
@@ -232,7 +219,7 @@ export default function BookCall() {
               ) : (
                 <ArrowRight className="mr-2 h-5 w-5" />
               )}
-              Deploy Your First VettedAI Shortlist
+              Book Call with Tobi
             </Button>
           </div>
         </CardContent>
