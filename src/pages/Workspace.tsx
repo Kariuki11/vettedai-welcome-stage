@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { ProgressIndicator } from "@/components/workspace/ProgressIndicator";
 import { ChatContainer } from "@/components/workspace/ChatContainer";
+import { ChatMessage } from "@/components/workspace/ChatMessage";
 import { NavigationControls } from "@/components/workspace/NavigationControls";
 import { JobDescriptionStep } from "@/components/workspace/steps/JobDescriptionStep";
 import { JDConfirmationStep } from "@/components/workspace/steps/JDConfirmationStep";
@@ -9,11 +11,17 @@ import { CandidateSourceStepV2 } from "@/components/workspace/steps/CandidateSou
 import { CandidatePreviewStep } from "@/components/workspace/steps/CandidatePreviewStep";
 import { TierSelectionStep } from "@/components/workspace/steps/TierSelectionStep";
 import { ReviewProjectStep } from "@/components/workspace/steps/ReviewProjectStep";
+import { Button } from "@/components/ui/button";
 import { useChatFlow } from "@/hooks/useChatFlow";
+import { useUserProjects, type Project } from "@/hooks/useUserProjects";
 import type { WizardState } from "@/hooks/useProjectWizard";
+import { format } from "date-fns";
 
 const Workspace = () => {
   const navigate = useNavigate();
+  const { projects, isLoading: isLoadingProjects } = useUserProjects();
+  const visibleProjects = useMemo(() => projects.slice(0, 3), [projects]);
+
   const {
     state,
     addMessage,
@@ -86,12 +94,30 @@ const Workspace = () => {
       <WorkspaceHeader />
       <ProgressIndicator currentStep={state.currentStep} totalSteps={6} />
       
-      <ChatContainer 
+      <ChatContainer
         messages={state.messages}
         isTyping={state.isTyping}
       >
+        {isLoadingProjects ? (
+          <ChatMessage
+            type="assistant"
+            content="Fetching your existing projects..."
+          />
+        ) : visibleProjects.length > 0 ? (
+          <ChatMessage
+            type="assistant"
+            content={(
+              <WorkspaceProjects
+                projects={visibleProjects}
+                totalProjects={projects.length}
+                onOpenProject={(projectId) => navigate(`/workspace/project/${projectId}`)}
+              />
+            )}
+          />
+        ) : null}
+
         {state.currentStep === 1 && (
-          <JobDescriptionStep 
+          <JobDescriptionStep
             onComplete={handleJobDescriptionComplete}
             onAddMessage={addMessage}
             onSetTyping={setTyping}
@@ -155,3 +181,64 @@ const Workspace = () => {
 };
 
 export default Workspace;
+
+interface WorkspaceProjectsProps {
+  projects: Project[];
+  totalProjects: number;
+  onOpenProject: (projectId: string) => void;
+}
+
+const WorkspaceProjects = ({ projects, totalProjects, onOpenProject }: WorkspaceProjectsProps) => {
+  const pluralizedCount = totalProjects === 1 ? "project" : "projects";
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-1">
+        <p className="text-sm font-semibold text-foreground">Your saved vetting {pluralizedCount}</p>
+        <p className="text-sm text-muted-foreground">
+          You can revisit an existing folder or continue below to start another project.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {projects.map((project) => (
+          <div
+            key={project.id}
+            className="rounded-lg border border-border bg-white p-4 shadow-sm"
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <p className="font-medium text-foreground">{project.role_title}</p>
+                <p className="text-xs text-muted-foreground">
+                  Created on {format(new Date(project.created_at), "MMM d, yyyy")}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Status: <span className="font-medium text-foreground capitalize">{project.status}</span>
+                  {project.tier_name && (
+                    <span className="text-muted-foreground">
+                      {" "}• Tier {project.tier_name}
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              <Button
+                onClick={() => onOpenProject(project.id)}
+                size="sm"
+                className="self-start sm:self-auto"
+              >
+                Open Folder →
+              </Button>
+            </div>
+          </div>
+        ))}
+
+        {totalProjects > projects.length && (
+          <p className="text-xs text-muted-foreground">
+            Showing {projects.length} of {totalProjects} {pluralizedCount}. Visit your dashboard to view them all.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
