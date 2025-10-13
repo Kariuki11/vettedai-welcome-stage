@@ -10,7 +10,7 @@ interface RoleSummaryCardProps {
   candidateSource: 'own' | 'network';
   candidateCount: number;
   paymentStatus: 'paid' | 'pending';
-  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready';
+  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready' | 'pending_activation' | 'activation_in_progress' | 'in_progress' | 'completed';
   progress: {
     hoursElapsed: number;
     totalHours: 48;
