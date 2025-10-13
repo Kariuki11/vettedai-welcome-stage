@@ -1,4 +1,13 @@
-import { useState, useEffect } from "react";
+import {
+  createContext,
+  createElement,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 export interface TierInfo {
   id: number;
@@ -13,10 +22,13 @@ export interface TierInfo {
 }
 
 export interface UploadedFile {
+  id?: string;
+  file?: File;
   name: string;
   size: number;
   status: 'uploading' | 'complete' | 'error';
   progress: number;
+  error?: string;
 }
 
 export interface WizardState {
@@ -40,42 +52,66 @@ export interface WizardState {
 }
 
 const STORAGE_KEY = 'project_wizard_state';
-const hasSessionStorage = () => typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
+const hasSessionStorage = () =>
+  typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
 
-export const useProjectWizard = () => {
-  const [wizardState, setWizardState] = useState<WizardState>(() => {
-    if (!hasSessionStorage()) return {};
+const sanitizeForStorage = (state: WizardState): WizardState => {
+  if (!state.uploadedResumes?.length) {
+    return state;
+  }
 
-    // Initialize from sessionStorage
-    const stored = sessionStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return {};
-      }
-    }
+  return {
+    ...state,
+    uploadedResumes: state.uploadedResumes.map(({ file, ...rest }) => rest),
+  };
+};
+
+const loadInitialWizardState = (): WizardState => {
+  if (!hasSessionStorage()) return {};
+
+  const stored = sessionStorage.getItem(STORAGE_KEY);
+  if (!stored) return {};
+
+  try {
+    return JSON.parse(stored) as WizardState;
+  } catch {
     return {};
-  });
+  }
+};
 
-  // Save to sessionStorage whenever state changes
+interface ProjectWizardContextValue {
+  wizardState: WizardState;
+  saveWizardState: (newState: Partial<WizardState>) => void;
+  getWizardState: () => WizardState;
+  clearWizardState: () => void;
+  canProceedToNextStep: (currentStep: number) => boolean;
+}
+
+const ProjectWizardContext = createContext<ProjectWizardContextValue | undefined>(undefined);
+
+export const ProjectWizardProvider = ({ children }: { children: ReactNode }) => {
+  const [wizardState, setWizardState] = useState<WizardState>(loadInitialWizardState);
+
   useEffect(() => {
     if (!hasSessionStorage()) return;
 
     try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(wizardState));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(sanitizeForStorage(wizardState)));
     } catch (error) {
       console.warn('Failed to persist wizard state', error);
     }
   }, [wizardState]);
 
-  const saveWizardState = (newState: Partial<WizardState>) => {
+  const saveWizardState = useCallback((newState: Partial<WizardState>) => {
     setWizardState(prev => {
       const updatedState = { ...prev, ...newState };
 
       if (hasSessionStorage()) {
         try {
-          sessionStorage.setItem(STORAGE_KEY, JSON.stringify(updatedState));
+          sessionStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(sanitizeForStorage(updatedState))
+          );
         } catch (error) {
           console.warn('Failed to persist wizard state', error);
         }
@@ -83,20 +119,20 @@ export const useProjectWizard = () => {
 
       return updatedState;
     });
-  };
+  }, []);
 
-  const getWizardState = (): WizardState => {
+  const getWizardState = useCallback((): WizardState => {
     return wizardState;
-  };
+  }, [wizardState]);
 
-  const clearWizardState = () => {
+  const clearWizardState = useCallback(() => {
     setWizardState({});
     if (hasSessionStorage()) {
       sessionStorage.removeItem(STORAGE_KEY);
     }
-  };
+  }, []);
 
-  const canProceedToNextStep = (currentStep: number): boolean => {
+  const canProceedToNextStep = useCallback((currentStep: number): boolean => {
     switch (currentStep) {
       case 1: // Job Description
         return !!wizardState.jdContent && wizardState.jdContent.length > 50;
@@ -115,13 +151,28 @@ export const useProjectWizard = () => {
       default:
         return false;
     }
-  };
+  }, [wizardState]);
 
-  return {
-    wizardState,
-    saveWizardState,
-    getWizardState,
-    clearWizardState,
-    canProceedToNextStep,
-  };
-}
+  const value = useMemo(
+    () => ({
+      wizardState,
+      saveWizardState,
+      getWizardState,
+      clearWizardState,
+      canProceedToNextStep,
+    }),
+    [wizardState, saveWizardState, getWizardState, clearWizardState, canProceedToNextStep]
+  );
+
+  return createElement(ProjectWizardContext.Provider, { value }, children);
+};
+
+export const useProjectWizard = () => {
+  const context = useContext(ProjectWizardContext);
+
+  if (!context) {
+    throw new Error('useProjectWizard must be used within a ProjectWizardProvider');
+  }
+
+  return context;
+};
