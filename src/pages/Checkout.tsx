@@ -7,6 +7,10 @@ import { PaymentSuccess } from "@/components/checkout/PaymentSuccess";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
+import { normalizeProject, userProjectsQueryKey, type Project } from "@/hooks/useUserProjects";
+import type { Database } from "@/integrations/supabase/types";
+
+type ProjectRow = Database['public']['Tables']['projects']['Row'];
 
 const Checkout = () => {
   const location = useLocation();
@@ -137,7 +141,28 @@ const Checkout = () => {
       setCreatedProjectId(projectId);
 
       // Ensure the recruiter dashboard reflects the new project immediately
-      await queryClient.invalidateQueries({ queryKey: ['user-projects'] });
+      if (user?.id) {
+        const { data: createdProject, error: fetchProjectError } = await supabase
+          .from('projects')
+          .select('id, role_title, status, payment_status, candidate_count, created_at, tier_name')
+          .eq('id', projectId)
+          .maybeSingle<ProjectRow>();
+
+        if (fetchProjectError) {
+          console.warn('Failed to fetch created project for cache hydration:', fetchProjectError);
+        } else if (createdProject) {
+          queryClient.setQueryData<Project[]>(
+            userProjectsQueryKey(user.id),
+            (existing) => {
+              const normalized = normalizeProject(createdProject);
+              const withoutDuplicate = (existing || []).filter((project) => project.id !== normalized.id);
+              return [normalized, ...withoutDuplicate];
+            }
+          );
+        }
+
+        await queryClient.invalidateQueries({ queryKey: userProjectsQueryKey(user.id), exact: false });
+      }
 
       // Log analytics event (non-blocking)
       try {
@@ -168,8 +193,10 @@ const Checkout = () => {
 
   const handleContinueToFolder = async () => {
     sessionStorage.removeItem('project_wizard_state');
-    // Wait a moment to ensure database transaction completes
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (user?.id) {
+      await queryClient.refetchQueries({ queryKey: userProjectsQueryKey(user.id), type: 'all' });
+    }
+
     navigate('/workspace', {
       state: {
         refetch: true,
