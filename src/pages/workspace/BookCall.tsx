@@ -4,7 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, Calendar, Loader2 } from "lucide-react";
+import { Check, Calendar, Loader2, ArrowRight } from "lucide-react";
 import { useProjectWizard } from "@/hooks/useProjectWizard";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,7 +22,7 @@ const DEFAULT_TIER = {
   pilotPrice: 0,
 };
 
-type BookingAction = "lemuel" | "tobi" | "later";
+type BookingAction = "lemuel" | "tobi";
 
 type ProjectRow = Database["public"]["Tables"]["projects"]["Row"];
 
@@ -166,10 +166,8 @@ export default function BookCall() {
 
       clearWizardState();
 
-      if (action !== 'later') {
-        const url = action === 'lemuel' ? LEMUEL_CALENDLY_URL : TOBI_CALENDLY_URL;
-        window.open(url, '_blank', 'noopener,noreferrer');
-      }
+      const url = action === 'lemuel' ? LEMUEL_CALENDLY_URL : TOBI_CALENDLY_URL;
+      window.open(url, '_blank', 'noopener,noreferrer');
 
       navigate('/workspace');
     } catch (error) {
@@ -186,14 +184,15 @@ export default function BookCall() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-xl text-center shadow-lg">
+      <Card className="w-full max-w-2xl text-center shadow-lg">
         <CardHeader className="space-y-4">
+          <div className="text-sm text-muted-foreground">Step 5 of 5</div>
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#5A4FCF] text-white">
             <Check className="h-8 w-8" />
           </div>
-          <CardTitle className="text-3xl">You're almost set — book a quick call</CardTitle>
+          <CardTitle className="text-3xl">Let's Build Your High-Confidence Shortlist</CardTitle>
           <p className="text-lg text-muted-foreground">
-            Choose a time with Lemuel or Tobi based on your availability. Either founder will walk you through finalizing your project.
+            Gemini has your {wizardState.selectedTier?.name?.toLowerCase() || 'proof'} experience ready for {wizardState.roleTitle || 'this role'}. Choose how you'd like to kick things off.
           </p>
         </CardHeader>
 
@@ -209,7 +208,7 @@ export default function BookCall() {
             </Avatar>
           </div>
           <p className="text-sm text-muted-foreground">
-            We’ll confirm the details of your Proof of Work during this call.
+            Every option keeps your selections intact — we're simply aligning the rollout to your hiring plan.
           </p>
 
           <div className="space-y-3">
@@ -224,7 +223,7 @@ export default function BookCall() {
               ) : (
                 <Calendar className="mr-2 h-5 w-5" />
               )}
-              Book with Lemuel
+              Strategy Call with a Product Expert
             </Button>
 
             <Button
@@ -237,22 +236,9 @@ export default function BookCall() {
               {loadingAction === 'tobi' ? (
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               ) : (
-                <Calendar className="mr-2 h-5 w-5" />
+                <ArrowRight className="mr-2 h-5 w-5" />
               )}
-              Book with Tobi
-            </Button>
-
-            <Button
-              size="lg"
-              variant="ghost"
-              className="w-full"
-              onClick={() => finalizeProject('later')}
-              disabled={!!loadingAction}
-            >
-              {loadingAction === 'later' ? (
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              ) : null}
-              I'll book later
+              Deploy Your First VettedAI Shortlist
             </Button>
           </div>
         </CardContent>

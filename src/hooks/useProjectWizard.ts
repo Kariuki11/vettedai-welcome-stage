@@ -7,6 +7,9 @@ export interface TierInfo {
   anchorPrice: number;
   pilotPrice: number;
   features: string[];
+  bestFor?: string;
+  whatItIs?: string;
+  output?: string;
 }
 
 export interface UploadedFile {
@@ -72,19 +75,19 @@ export const useProjectWizard = () => {
 
   const canProceedToNextStep = (currentStep: number): boolean => {
     switch (currentStep) {
-      case 1: // JD Upload
+      case 1: // Job Description
         return !!wizardState.jdContent && wizardState.jdContent.length > 50;
-      case 2: // JD Confirmation
-        return true;
-      case 3: // Candidate Source
+      case 2: // Candidate Source
         if (!wizardState.candidateSource) return false;
         if (wizardState.candidateSource === 'own') {
           return !!wizardState.uploadedResumes && wizardState.uploadedResumes.length > 0;
         }
         return true;
-      case 4: // Candidate Preview
-        return true; // No validation needed
-      case 5: // Book a Call
+      case 3: // Proof Level Selection
+        return !!wizardState.selectedTier;
+      case 4: // Magic Moment Snapshot
+        return true;
+      case 5: // Final CTA
         return true;
       default:
         return false;
