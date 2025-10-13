@@ -1,11 +1,4 @@
-import { useState, useEffect } from "react";
-import { FileText, ArrowRight, Sparkles, TrendingUp, MessageSquare, Gauge, ListChecks, CheckCircle2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-
-interface PerformanceChartProps {
-  animate?: boolean;
-}
+import { CheckCircle2, FileText, Gauge, ListChecks, Sparkles, XCircle } from "lucide-react";
 
 const advantages = [
   {
@@ -19,132 +12,24 @@ const advantages = [
     description: "Structured scoring makes it simple to compare candidates against the work that actually matters to your role.",
   },
   {
-    icon: CheckCircle2,
+    icon: Sparkles,
     title: "Proof delivered in hours, not weeks",
     description: "VettedAI handles the busywork—crafting role-specific tasks, collecting responses, and surfacing what stands out.",
   },
 ];
 
-const PerformanceChart = ({ animate = false }: PerformanceChartProps) => {
-  const metrics = [
-    { label: "Strategic Thinking", value: 8.5, angle: 0 },
-    { label: "Communication", value: 9.0, angle: 90 },
-    { label: "Product Sense", value: 7.8, angle: 180 },
-    { label: "Problem Solving", value: 8.2, angle: 270 },
-  ];
-
-  const maxValue = 10;
-  const centerX = 80;
-  const centerY = 80;
-  const radius = 60;
-
-  // Calculate polygon points for the data
-  const points = metrics
-    .map((metric) => {
-      const angleRad = ((metric.angle - 90) * Math.PI) / 180;
-      const distance = (metric.value / maxValue) * radius;
-      const x = centerX + distance * Math.cos(angleRad);
-      const y = centerY + distance * Math.sin(angleRad);
-      return `${x},${y}`;
-    })
-    .join(" ");
-
-  // Calculate background circle points
-  const bgPoints = metrics
-    .map((metric) => {
-      const angleRad = ((metric.angle - 90) * Math.PI) / 180;
-      const x = centerX + radius * Math.cos(angleRad);
-      const y = centerY + radius * Math.sin(angleRad);
-      return `${x},${y}`;
-    })
-    .join(" ");
-
-  return (
-    <svg viewBox="0 0 160 160" className="w-full h-full">
-      {/* Background polygon */}
-      <polygon
-        points={bgPoints}
-        fill="hsl(var(--primary) / 0.05)"
-        stroke="hsl(var(--primary) / 0.2)"
-        strokeWidth="1"
-      />
-      
-      {/* Grid circles */}
-      {[0.33, 0.66, 1].map((factor, i) => (
-        <circle
-          key={i}
-          cx={centerX}
-          cy={centerY}
-          r={radius * factor}
-          fill="none"
-          stroke="hsl(var(--muted-foreground) / 0.1)"
-          strokeWidth="1"
-        />
-      ))}
-      
-      {/* Axis lines */}
-      {metrics.map((metric, i) => {
-        const angleRad = ((metric.angle - 90) * Math.PI) / 180;
-        const x = centerX + radius * Math.cos(angleRad);
-        const y = centerY + radius * Math.sin(angleRad);
-        return (
-          <line
-            key={i}
-            x1={centerX}
-            y1={centerY}
-            x2={x}
-            y2={y}
-            stroke="hsl(var(--muted-foreground) / 0.15)"
-            strokeWidth="1"
-          />
-        );
-      })}
-      
-      {/* Data polygon with animation */}
-      <polygon
-        points={points}
-        fill="hsl(var(--primary) / 0.2)"
-        stroke="hsl(var(--primary))"
-        strokeWidth="2"
-        strokeDasharray="1000"
-        className={animate ? "animate-draw-polygon" : ""}
-        style={!animate ? { strokeDashoffset: 0 } : {}}
-      />
-      
-      {/* Data points */}
-      {metrics.map((metric, i) => {
-        const angleRad = ((metric.angle - 90) * Math.PI) / 180;
-        const distance = (metric.value / maxValue) * radius;
-        const x = centerX + distance * Math.cos(angleRad);
-        const y = centerY + distance * Math.sin(angleRad);
-        return (
-          <circle
-            key={i}
-            cx={x}
-            cy={y}
-            r="4"
-            fill="hsl(var(--primary))"
-            className="animate-pulse-glow"
-          />
-        );
-      })}
-    </svg>
-  );
-};
-
 export const WhyItMattersSection = () => {
   return (
-    <section ref={ref as React.RefObject<HTMLElement>} className="px-6 py-24 bg-muted/30">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center space-y-4 mb-16 animate-fade-in-up">
-          <span className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+    <section className="px-6 py-24 bg-background">
+      <div className="max-w-6xl mx-auto">
+        <div className="max-w-3xl space-y-6">
+          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-[0.3em]">
             Why it matters
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight">
             The problem isn't filtering harder. It's seeing better.
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg text-muted-foreground leading-relaxed">
             Traditional hiring tools stop at the resume. They leave you hoping the keywords translate to the work. VettedAI delivers the proof: how candidates think, collaborate, and execute when the stakes are real.
           </p>
         </div>
@@ -198,18 +83,19 @@ export const WhyItMattersSection = () => {
             </div>
           </div>
         </div>
-        <div className="mt-20 grid gap-6 md:grid-cols-3">
+
+        <div className="mt-16 grid gap-6 md:grid-cols-3">
           {advantages.map((advantage) => {
             const Icon = advantage.icon;
             return (
               <div
                 key={advantage.title}
-                className="rounded-2xl border border-border bg-background/80 p-6 shadow-sm transition-shadow hover:shadow-md"
+                className="rounded-3xl border border-border/70 bg-white p-6 shadow-sm transition-colors hover:border-primary/40"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-5 text-lg font-semibold text-foreground">{advantage.title}</h3>
+                <h4 className="mt-5 text-lg font-semibold">{advantage.title}</h4>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{advantage.description}</p>
               </div>
             );

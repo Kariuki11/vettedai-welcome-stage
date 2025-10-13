@@ -435,21 +435,21 @@ export type Database = {
         }
         Returns: string
       }
-      get_projects_for_current_user: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          candidate_count: number
-          created_at: string
-          id: string
-          payment_status: string
-          role_title: string
-          status: string
-          tier_name: string
-        }[]
-      }
       grant_admin_role: {
         Args: { _email: string }
         Returns: undefined
+      }
+      get_projects_for_current_user: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          role_title: string
+          status: string
+          payment_status: string
+          candidate_count: number
+          created_at: string | null
+          tier_name: string | null
+        }[]
       }
       has_role: {
         Args: {

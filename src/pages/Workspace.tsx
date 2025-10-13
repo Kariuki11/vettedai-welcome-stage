@@ -75,10 +75,7 @@ const Workspace = () => {
         progress: file.progress,
       })),
       candidateCount: state.candidateCount,
-      selectedTier: state.selectedTier ? { 
-        ...state.selectedTier, 
-        features: state.selectedTier.features || [] 
-      } : undefined,
+      selectedTier: state.selectedTier,
     };
 
     sessionStorage.setItem('project_wizard_state', JSON.stringify(wizardState));

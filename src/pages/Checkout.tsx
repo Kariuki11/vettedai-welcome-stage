@@ -81,55 +81,24 @@ const Checkout = () => {
       }
 
       // Create project using server-side RPC
-      let projectId;
-      let projectError;
-      
-      const createProjectResult = await supabase.rpc('create_project_for_current_user', {
-        _role_title: roleTitle,
-        _job_description: wizardState.jobDescription || '',
-        _job_summary: wizardState.jobSummary || '',
-        _tier_id: parseInt(selectedTier.id.toString()),
-        _tier_name: selectedTier.name,
-        _anchor_price: parseFloat(selectedTier.anchorPrice.toString()),
-        _pilot_price: parseFloat(selectedTier.pilotPrice.toString()),
-        _candidate_source: candidateSource || 'own',
-        _candidate_count: candidateCount || 0,
-      });
-      
-      projectId = createProjectResult.data;
-      projectError = createProjectResult.error;
-
-      // If recruiter profile missing, create it and retry once
-      if (projectError && projectError.message?.includes('No recruiter profile')) {
-        console.log('Creating missing recruiter profile...');
-        
-        const { error: recruiterError } = await supabase.from('recruiters').insert({
-          user_id: user.id,
-          email: user.email || '',
-          full_name: user.user_metadata?.full_name || 'User',
+      const { data: projectId, error: projectError } = await supabase
+        .rpc('create_project_for_current_user', {
+          _role_title: roleTitle,
+          _job_description: wizardState.jobDescription || '',
+          _job_summary: wizardState.jobSummary || '',
+          _tier_id: parseInt(selectedTier.id.toString()),
+          _tier_name: selectedTier.name,
+          _anchor_price: parseFloat(selectedTier.anchorPrice.toString()),
+          _pilot_price: parseFloat(selectedTier.pilotPrice.toString()),
+          _candidate_source: candidateSource || 'own',
+          _candidate_count: candidateCount || 0,
         });
-
-        if (!recruiterError) {
-          // Retry project creation
-          const retryResult = await supabase.rpc('create_project_for_current_user', {
-            _role_title: roleTitle,
-            _job_description: wizardState.jobDescription || '',
-            _job_summary: wizardState.jobSummary || '',
-            _tier_id: parseInt(selectedTier.id.toString()),
-            _tier_name: selectedTier.name,
-            _anchor_price: parseFloat(selectedTier.anchorPrice.toString()),
-            _pilot_price: parseFloat(selectedTier.pilotPrice.toString()),
-            _candidate_source: candidateSource || 'own',
-            _candidate_count: candidateCount || 0,
-          });
-          projectId = retryResult.data;
-          projectError = retryResult.error;
-        }
-      }
 
       if (projectError) {
         console.error('Error creating project:', projectError);
-        throw new Error(`Failed to create project: ${projectError.message}`);
+        throw new Error(projectError.message.includes('No recruiter profile')
+          ? 'Recruiter profile not found. Please complete your profile setup.'
+          : `Failed to create project: ${projectError.message}`);
       }
 
       if (!projectId) {
