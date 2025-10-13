@@ -14,8 +14,7 @@ import JdUpload from "./pages/workspace/JdUpload";
 import JdConfirm from "./pages/workspace/JdConfirm";
 import CandidateSource from "./pages/workspace/CandidateSource";
 import CandidatePreview from "./pages/workspace/CandidatePreview";
-import TierSelection from "./pages/workspace/TierSelection";
-import Review from "./pages/workspace/Review";
+import BookCall from "./pages/workspace/BookCall";
 import Checkout from "./pages/Checkout";
 import ProjectFolder from "./pages/ProjectFolder";
 import AccountSettings from "./pages/AccountSettings";
@@ -71,14 +70,9 @@ const App = () => {
               <CandidatePreview />
             </ProtectedRoute>
           } />
-          <Route path="/workspace/new/tier-selection" element={
+          <Route path="/workspace/new/book-call" element={
             <ProtectedRoute>
-              <TierSelection />
-            </ProtectedRoute>
-          } />
-          <Route path="/workspace/new/review" element={
-            <ProtectedRoute>
-              <Review />
+              <BookCall />
             </ProtectedRoute>
           } />
           

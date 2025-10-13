@@ -1,11 +1,23 @@
 import { Badge } from "@/components/ui/badge";
 
 interface StatusBadgeProps {
-  status: 'awaiting' | 'scoring' | 'ready';
+  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready';
 }
 
 export const StatusBadge = ({ status }: StatusBadgeProps) => {
   switch (status) {
+    case 'pending':
+      return (
+        <Badge className="bg-[#E0E7FF] text-[#4338CA] hover:bg-[#E0E7FF]">
+          Draft Created
+        </Badge>
+      );
+    case 'awaiting_setup_call':
+      return (
+        <Badge className="bg-[#DDD6FE] text-[#5B21B6] hover:bg-[#DDD6FE]">
+          Awaiting Setup Call
+        </Badge>
+      );
     case 'awaiting':
       return (
         <Badge className="bg-[#D6D1FF] text-[#5A4FCF] hover:bg-[#D6D1FF]">

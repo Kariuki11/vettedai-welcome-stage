@@ -5,7 +5,7 @@ interface ProgressIndicatorProps {
   totalSteps?: number;
 }
 
-export const ProgressIndicator = ({ currentStep, totalSteps = 6 }: ProgressIndicatorProps) => {
+export const ProgressIndicator = ({ currentStep, totalSteps = 5 }: ProgressIndicatorProps) => {
   const progress = (currentStep / totalSteps) * 100;
 
   return (
