@@ -18,6 +18,11 @@ const tiers: TierInfo[] = [
     description: "5-minute async video response to key questions about their experience and approach.",
     anchorPrice: 150,
     pilotPrice: 15,
+    features: [
+      "Core competency evaluation",
+      "Basic problem-solving tasks",
+      "48-72 hour delivery"
+    ]
   },
   {
     id: 2,
@@ -25,6 +30,11 @@ const tiers: TierInfo[] = [
     description: "Real work scenario with evaluation. Candidates solve a realistic problem from your domain.",
     anchorPrice: 200,
     pilotPrice: 20,
+    features: [
+      "Advanced technical challenges",
+      "Real-world scenario simulation",
+      "Detailed performance insights"
+    ]
   },
   {
     id: 3,
@@ -32,6 +42,11 @@ const tiers: TierInfo[] = [
     description: "Full role simulation with TI Matrix. Comprehensive assessment across all key competencies.",
     anchorPrice: 300,
     pilotPrice: 30,
+    features: [
+      "Executive-level assessment",
+      "Strategic thinking evaluation",
+      "Comprehensive skill analysis"
+    ]
   },
 ];
 
