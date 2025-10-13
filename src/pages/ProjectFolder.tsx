@@ -22,7 +22,7 @@ interface ProjectFolderState {
   candidateSource: 'own' | 'network';
   candidateCount: number;
   uploadedResumes?: UploadedFile[];
-  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready';
+  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready' | 'pending_activation' | 'activation_in_progress' | 'in_progress' | 'completed';
   paymentStatus: 'paid' | 'pending';
   progress: {
     hoursElapsed: number;

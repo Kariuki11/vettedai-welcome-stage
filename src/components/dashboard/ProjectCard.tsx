@@ -25,8 +25,11 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
   
   const getStatusBadge = () => {
     switch (project.status) {
+      case 'pending_activation':
       case 'pending':
-        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Draft</Badge>;
+        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">Pending Activation</Badge>;
+      case 'activation_in_progress':
+        return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">Activation in Progress</Badge>;
       case 'awaiting_setup_call':
         return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">Setup Call Needed</Badge>;
       case 'ready':
