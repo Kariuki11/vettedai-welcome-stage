@@ -12,6 +12,7 @@ import SignupContext from "./pages/SignupContext";
 import Dashboard from "./pages/Dashboard";
 import JdUpload from "./pages/workspace/JdUpload";
 import JdConfirm from "./pages/workspace/JdConfirm";
+import MagicMoment from "./pages/workspace/MagicMoment";
 import CandidateSource from "./pages/workspace/CandidateSource";
 import CandidatePreview from "./pages/workspace/CandidatePreview";
 import BookCall from "./pages/workspace/BookCall";
@@ -55,6 +56,12 @@ const App = () => {
               <JdUpload />
             </ProtectedRoute>
           } />
+          <Route path="/workspace/new/magic-moment" element={
+            <ProtectedRoute>
+              <MagicMoment />
+            </ProtectedRoute>
+          } />
+          {/* Legacy routes - kept for backward compatibility */}
           <Route path="/workspace/new/jd-confirm" element={
             <ProtectedRoute>
               <JdConfirm />
