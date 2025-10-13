@@ -53,21 +53,21 @@ export default function CandidateSource() {
       candidateCount: source === 'own' ? uploadProps.files.length : 0,
     });
     
-    navigate('/workspace/new/candidate-preview');
+    navigate('/workspace/new/tier-selection');
   };
 
   const handleBack = () => {
-    navigate('/workspace/new/jd-confirm');
+    navigate('/workspace/new/jd-upload');
   };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl">
         <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 3 of 5</div>
-          <CardTitle className="text-3xl">Who are the candidates for this role?</CardTitle>
+          <div className="mb-2 text-sm text-muted-foreground">Step 2 of 5</div>
+          <CardTitle className="text-3xl">Where should we source your candidates from?</CardTitle>
           <CardDescription>
-            We'll send your candidates a unique Proof of Work task, generated from your Job Description.
+            Let us know if you're bringing your own pipeline or want the VettedAI Network to supply talent for this project.
           </CardDescription>
         </CardHeader>
         
@@ -88,9 +88,9 @@ export default function CandidateSource() {
                   <Upload className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-1">Upload My Own Candidates</h3>
+                  <h3 className="font-semibold text-lg mb-1">I have my own candidates</h3>
                   <p className="text-sm text-muted-foreground">
-                    Upload resumes for candidates you've already sourced
+                    We'll deliver the Proof of Work experience to the people already in your funnel.
                   </p>
                   <p className="text-xs text-muted-foreground mt-2">
                     Up to 50 candidates for this pilot project
@@ -114,9 +114,9 @@ export default function CandidateSource() {
                   <Network className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-lg mb-1">Use VettedAI Network</h3>
+                  <h3 className="font-semibold text-lg mb-1">Source from the VettedAI Network</h3>
                   <p className="text-sm text-muted-foreground">
-                    We'll source qualified candidates for you
+                    Tap into our curated pool of talent tailored to your Job Description.
                   </p>
                   <p className="text-xs text-muted-foreground mt-2">
                     Sourcing included at no extra cost
@@ -150,10 +150,9 @@ export default function CandidateSource() {
           {/* Show info box if "network" is selected */}
           {source === 'network' && (
             <div className="p-4 rounded-lg bg-muted border border-border animate-fade-in">
-              <h4 className="font-semibold mb-2">How our Network Sourcing works for the pilot:</h4>
+              <h4 className="font-semibold mb-2">What happens next</h4>
               <p className="text-sm text-muted-foreground">
-                Sourcing is included at no extra cost. Our team will identify and vet a high-quality 
-                pool of candidates for your role, all within the same 48-72 hour delivery window.
+                We'll align the Proof of Work to the role you shared and queue up outreach to matched candidates within 48-72 hours.
               </p>
             </div>
           )}
@@ -168,7 +167,7 @@ export default function CandidateSource() {
               disabled={!source || (source === 'own' && uploadProps.files.length === 0)}
               size="lg"
             >
-              Next →
+              Continue to Proof Level →
             </Button>
           </div>
         </CardContent>

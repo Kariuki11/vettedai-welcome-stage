@@ -7,6 +7,9 @@ export interface TierInfo {
   anchorPrice: number;
   pilotPrice: number;
   features: string[];
+  bestFor?: string;
+  whatItIs?: string;
+  output?: string;
 }
 
 export interface UploadedFile {
