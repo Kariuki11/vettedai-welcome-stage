@@ -1,5 +1,6 @@
 import {
   createContext,
+  createElement,
   useCallback,
   useContext,
   useEffect,
@@ -163,11 +164,7 @@ export const ProjectWizardProvider = ({ children }: { children: ReactNode }) => 
     [wizardState, saveWizardState, getWizardState, clearWizardState, canProceedToNextStep]
   );
 
-  return (
-    <ProjectWizardContext.Provider value={value}>
-      {children}
-    </ProjectWizardContext.Provider>
-  );
+  return createElement(ProjectWizardContext.Provider, { value }, children);
 };
 
 export const useProjectWizard = () => {
