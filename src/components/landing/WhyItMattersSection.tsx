@@ -133,9 +133,6 @@ const PerformanceChart = ({ animate = false }: PerformanceChartProps) => {
 };
 
 export const WhyItMattersSection = () => {
-  const [activeSlide, setActiveSlide] = useState(0);
-  const { ref } = useScrollAnimation();
-
   return (
     <section ref={ref as React.RefObject<HTMLElement>} className="px-6 py-24 bg-muted/30">
       <div className="max-w-4xl mx-auto">
@@ -152,212 +149,51 @@ export const WhyItMattersSection = () => {
           </p>
         </div>
 
-        {/* Carousel Container */}
-        <div 
-          className="relative"
-          role="region"
-          aria-label="Comparison carousel"
-          aria-live="polite"
-        >
-          {/* Slide Indicators */}
-          <div className="flex justify-center gap-2 mb-8">
-            <div className={`h-2 rounded-full transition-all duration-300 ${activeSlide === 0 ? 'w-8 bg-primary' : 'w-2 bg-muted-foreground/30'}`} />
-            <div className={`h-2 rounded-full transition-all duration-300 ${activeSlide === 1 ? 'w-8 bg-primary' : 'w-2 bg-muted-foreground/30'}`} />
-          </div>
-
-          {/* SLIDE 1: THE OLD WAY */}
-          <div 
-            className={`transition-all duration-500 ${
-              activeSlide === 0 
-                ? 'opacity-100 translate-x-0 relative' 
-                : 'opacity-0 -translate-x-8 absolute inset-0 pointer-events-none'
-            }`}
-          >
-            <div className="max-w-md mx-auto">
-              {/* Slide Label */}
-              <h3 className="text-xs font-bold tracking-widest text-muted-foreground uppercase text-center mb-6">
-                THE OLD WAY: GUESSING WITH PROXIES
-              </h3>
-
-              {/* Old Way Card */}
-              <div className="bg-background border border-border rounded-lg p-6 shadow-sm space-y-4">
-                {/* Header */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="text-lg font-medium text-foreground">Wanjiku Gitari</h4>
-                    <span className="inline-block mt-2 px-3 py-1 text-xs font-medium bg-muted text-muted-foreground rounded-full">
-                      Needs Review
-                    </span>
-                  </div>
-                </div>
-
-                {/* Resume Link */}
-                <div className="flex items-center gap-2 py-3 border-t border-border">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground underline">View Resume.pdf</span>
-                </div>
-
-                {/* Manual Notes */}
-                <div className="space-y-2 py-3 border-t border-border">
-                  <p className="text-xs font-medium text-muted-foreground">Manual Notes:</p>
-                  <p className="text-sm text-muted-foreground italic">
-                    "Seems like a good fit based on keywords..."
-                  </p>
-                </div>
-
-                {/* Static Details */}
-                <div className="space-y-2 py-3 border-t border-border">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Experience:</span>
-                    <span className="text-foreground">5 years</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Education:</span>
-                    <span className="text-foreground">MBA, University of Nairobi</span>
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <Button variant="outline" className="w-full mt-4">
-                  Schedule Interview
-                </Button>
+        <div className="mt-16 grid gap-6 lg:grid-cols-2">
+          <div className="rounded-3xl border border-border/60 bg-white p-8 shadow-sm">
+            <div className="flex items-center gap-3 text-sm font-semibold text-muted-foreground">
+              <XCircle className="h-4 w-4 text-rose-500" /> The old way
+            </div>
+            <h3 className="mt-4 text-2xl font-semibold">Hiring in the dark.</h3>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              Endless CV reviews. Unstructured interviews. Gut feel and guesswork.
+            </p>
+            <div className="mt-6 space-y-4">
+              <div className="flex items-start gap-3 rounded-2xl bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                <FileText className="mt-0.5 h-4 w-4" />
+                Resumes that look perfect on paper but tell you nothing about how someone actually performs.
               </div>
-
-              {/* Caption */}
-              <p className="text-sm text-muted-foreground text-center mt-8 leading-relaxed max-w-sm mx-auto">
-                You get a one-dimensional summary of keywords and credentials. No context, no proof, no confidence.
-              </p>
-
-              {/* Navigation Button */}
-              <div className="flex justify-center mt-8">
-                <Button 
-                  onClick={() => setActiveSlide(1)}
-                  size="lg"
-                  className="gap-2"
-                  aria-label="View the VettedAI way"
-                >
-                  See the New Way
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+              <div className="flex items-start gap-3 rounded-2xl bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                <XCircle className="mt-0.5 h-4 w-4 text-rose-500" />
+                Hours wasted coordinating teams around incomplete, inconsistent information.
+              </div>
+              <div className="flex items-start gap-3 rounded-2xl bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+                <XCircle className="mt-0.5 h-4 w-4 text-rose-500" />
+                Decisions made with doubt because nothing feels verifiable.
               </div>
             </div>
           </div>
 
-          {/* SLIDE 2: THE VETTEDAI WAY */}
-          <div 
-            className={`transition-all duration-500 ${
-              activeSlide === 1 
-                ? 'opacity-100 translate-x-0 relative' 
-                : 'opacity-0 translate-x-8 absolute inset-0 pointer-events-none'
-            }`}
-          >
-            <div className="max-w-md mx-auto">
-              {/* Slide Label */}
-              <h3 className="text-xs font-bold tracking-widest text-primary uppercase text-center mb-6">
-                THE VETTEDAI WAY: DECIDING WITH PROOF
-              </h3>
-
-              {/* New Way Card */}
-              <div className="bg-background border-t-4 border-t-primary rounded-lg shadow-lg p-6 space-y-5">
-                {/* Header */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="text-lg font-semibold text-foreground">Wanjiku Gitari</h4>
-                    <span className="inline-block mt-2 px-3 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full">
-                      Ready to Review
-                    </span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">Completed 2h ago</span>
-                </div>
-
-                {/* Performance Chart */}
-                <div className="space-y-3 py-4">
-                  <h5 className="text-sm font-semibold text-foreground">Performance Snapshot</h5>
-                  <div className="flex items-center justify-center h-48">
-                    <div className="w-48 h-48">
-                      <PerformanceChart animate={activeSlide === 1} />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Strategic Thinking</span>
-                      <span className="font-semibold text-primary">8.5</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Communication</span>
-                      <span className="font-semibold text-primary">9.0</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Product Sense</span>
-                      <span className="font-semibold text-primary">7.8</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Problem Solving</span>
-                      <span className="font-semibold text-primary">8.2</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* AI Insights with staggered animation */}
-                <div className="space-y-3 py-3 border-t border-border">
-                  <p className="text-xs font-medium text-muted-foreground">AI-Generated Strengths</p>
-                  <div className="flex flex-wrap gap-2">
-                    <span 
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium transition-all duration-500 ${
-                        activeSlide === 1 ? 'opacity-100 translate-y-0 delay-[400ms]' : 'opacity-0 translate-y-4'
-                      }`}
-                    >
-                      <Sparkles className="h-3 w-3" />
-                      Systems Thinker
-                    </span>
-                    <span 
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium transition-all duration-500 ${
-                        activeSlide === 1 ? 'opacity-100 translate-y-0 delay-[600ms]' : 'opacity-0 translate-y-4'
-                      }`}
-                    >
-                      <MessageSquare className="h-3 w-3" />
-                      Clear Communicator
-                    </span>
-                    <span 
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium transition-all duration-500 ${
-                        activeSlide === 1 ? 'opacity-100 translate-y-0 delay-[800ms]' : 'opacity-0 translate-y-4'
-                      }`}
-                    >
-                      <TrendingUp className="h-3 w-3" />
-                      Data-Driven
-                    </span>
-                  </div>
-                </div>
-
-                {/* CTA */}
-                <Button variant="hero" className="w-full mt-4">
-                  View Proof of Work →
-                </Button>
-
-                {/* Metadata Footer */}
-                <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border">
-                  <span>Assessed via Product Strategy Task</span>
-                  <span>Completed in 3.5 hours</span>
-                </div>
+          <div className="rounded-3xl border border-primary/30 bg-primary/5 p-8 shadow-[0_20px_50px_-30px_rgba(54,35,119,0.4)]">
+            <div className="flex items-center gap-3 text-sm font-semibold text-primary">
+              <CheckCircle2 className="h-4 w-4" /> The VettedAI way
+            </div>
+            <h3 className="mt-4 text-2xl font-semibold">Proof you can put in front of a hiring panel.</h3>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+              Every candidate delivers a work sample crafted for your role—scored, summarised, and ready to share.
+            </p>
+            <div className="mt-6 space-y-4">
+              <div className="rounded-2xl border border-primary/20 bg-white/80 px-4 py-3 text-sm shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">Proof of work</p>
+                <p className="mt-1 text-muted-foreground">Structured deliverables that reveal thinking, collaboration, and pace.</p>
               </div>
-
-              {/* Caption */}
-              <p className="text-sm text-muted-foreground text-center mt-8 leading-relaxed max-w-sm mx-auto">
-                You get a multi-dimensional analysis of their actual skill. See how they think, work, and solve—backed by verifiable proof.
-              </p>
-
-              {/* Navigation Button */}
-              <div className="flex justify-center mt-8">
-                <Button 
-                  onClick={() => setActiveSlide(0)}
-                  variant="outline"
-                  size="lg"
-                  className="gap-2"
-                  aria-label="Go back to old way"
-                >
-                  <ArrowRight className="h-4 w-4 rotate-180" />
-                  Go Back
-                </Button>
+              <div className="rounded-2xl border border-primary/20 bg-white/80 px-4 py-3 text-sm shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">Confidence signal</p>
+                <p className="mt-1 text-muted-foreground">A clean, shared scorecard that shows exactly why a candidate made the shortlist.</p>
+              </div>
+              <div className="rounded-2xl border border-primary/20 bg-white/80 px-4 py-3 text-sm shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-widest text-primary">Decision ready</p>
+                <p className="mt-1 text-muted-foreground">Bring hiring managers into the conversation with proof they can trust.</p>
               </div>
             </div>
           </div>

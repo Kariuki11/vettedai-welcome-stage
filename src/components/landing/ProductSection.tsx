@@ -24,7 +24,7 @@ const steps = [
 
 export const ProductSection = () => {
   return (
-    <section className="px-6 py-24 bg-background">
+    <section className="px-6 py-24 bg-white">
       <div className="max-w-6xl mx-auto">
         {/* Section Header */}
         <div className="text-center space-y-4 mb-16">

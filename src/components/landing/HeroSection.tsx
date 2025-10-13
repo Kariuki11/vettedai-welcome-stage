@@ -6,36 +6,56 @@ interface HeroSectionProps {
   onCtaClick?: () => void;
 }
 
+const shortlist = [
+  {
+    name: "Aisha Mwangi",
+    role: "Operations Lead",
+    confidence: "92%",
+    signal: "Process signal is strong",
+    status: "Decision: Advance",
+    accent: "bg-emerald-50 text-emerald-700",
+  },
+  {
+    name: "Luis Martins",
+    role: "Customer Success",
+    confidence: "88%",
+    signal: "Noise removed • Scope clarity",
+    status: "Decision: Advance",
+    accent: "bg-sky-50 text-sky-700",
+  },
+  {
+    name: "Tara Singh",
+    role: "Chief of Staff",
+    confidence: "84%",
+    signal: "Proof of work delivered",
+    status: "Decision: Review",
+    accent: "bg-amber-50 text-amber-700",
+  },
+];
+
 export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
   const navigate = useNavigate();
-  
+
   const handleCtaClick = () => {
     if (onCtaClick) {
       onCtaClick();
     } else {
-      navigate('/signup');
+      navigate("/signup");
     }
   };
-  return (
-    <section className="relative min-h-[90vh] flex items-center justify-center px-6 py-20 overflow-hidden">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 gradient-subtle -z-10" />
 
-      {/* Animated UI Cards - Layered Behind Content */}
-      <div className="absolute inset-0 -z-5 overflow-hidden pointer-events-none">
-        <div
-          className="absolute top-20 left-1/4 w-64 h-40 bg-secondary/30 backdrop-blur-sm rounded-lg animate-float"
-          style={{ animationDelay: "0s" }}
-        />
-        <div
-          className="absolute top-40 right-1/4 w-72 h-48 bg-secondary/20 backdrop-blur-sm rounded-lg animate-float"
-          style={{ animationDelay: "0.5s" }}
-        />
-        <div
-          className="absolute bottom-32 left-1/3 w-56 h-36 bg-secondary/25 backdrop-blur-sm rounded-lg animate-float"
-          style={{ animationDelay: "1s" }}
-        />
-      </div>
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-background via-white to-muted/40">
+      <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-primary/10 via-transparent to-transparent" />
+      <div className="absolute -top-16 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+      <div className="absolute -bottom-32 -left-12 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+
+      <div className="max-w-6xl mx-auto px-6 py-24 lg:py-28">
+        <div className="grid lg:grid-cols-[minmax(0,1.1fr),minmax(0,420px)] gap-16 items-center">
+          <div className="space-y-8">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-sm font-medium text-primary shadow-sm">
+              <Sparkles className="h-4 w-4" /> The Talent Intelligence Workspace
+            </span>
 
       {/* Content Container */}
       <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in relative z-10">

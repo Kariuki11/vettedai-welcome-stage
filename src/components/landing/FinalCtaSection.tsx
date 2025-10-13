@@ -8,14 +8,15 @@ interface FinalCtaSectionProps {
 
 export const FinalCtaSection = ({ onCtaClick }: FinalCtaSectionProps) => {
   const navigate = useNavigate();
-  
+
   const handleCtaClick = () => {
     if (onCtaClick) {
       onCtaClick();
     } else {
-      navigate('/signup');
+      navigate("/signup");
     }
   };
+
   return (
     <section className="px-6 py-24 bg-gradient-to-b from-muted/40 via-white to-background">
       <div className="max-w-4xl mx-auto text-center space-y-6">
