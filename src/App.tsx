@@ -16,6 +16,7 @@ import MagicMoment from "./pages/workspace/MagicMoment";
 import CandidateSource from "./pages/workspace/CandidateSource";
 import CandidatePreview from "./pages/workspace/CandidatePreview";
 import BookCall from "./pages/workspace/BookCall";
+import TierSelection from "./pages/workspace/TierSelection";
 import Checkout from "./pages/Checkout";
 import ProjectFolder from "./pages/ProjectFolder";
 import AccountSettings from "./pages/AccountSettings";
@@ -70,6 +71,11 @@ const App = () => {
           <Route path="/workspace/new/candidate-source" element={
             <ProtectedRoute>
               <CandidateSource />
+            </ProtectedRoute>
+          } />
+          <Route path="/workspace/new/tier-selection" element={
+            <ProtectedRoute>
+              <TierSelection />
             </ProtectedRoute>
           } />
           <Route path="/workspace/new/candidate-preview" element={
