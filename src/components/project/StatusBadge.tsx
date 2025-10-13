@@ -7,6 +7,7 @@ interface StatusBadgeProps {
 export const StatusBadge = ({ status }: StatusBadgeProps) => {
   switch (status) {
     case 'pending_activation':
+    case 'pending':
       return (
         <Badge className="bg-[#FEF3C7] text-[#92400E] hover:bg-[#FEF3C7]">
           Pending Activation
@@ -16,12 +17,6 @@ export const StatusBadge = ({ status }: StatusBadgeProps) => {
       return (
         <Badge className="bg-[#DBEAFE] text-[#1D4ED8] hover:bg-[#DBEAFE]">
           Activation in Progress
-        </Badge>
-      );
-    case 'pending':
-      return (
-        <Badge className="bg-[#E0E7FF] text-[#4338CA] hover:bg-[#E0E7FF]">
-          Draft Created
         </Badge>
       );
     case 'awaiting_setup_call':

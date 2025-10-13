@@ -39,8 +39,10 @@ const formatCandidateSource = (source?: string | null) => {
 
 const formatProofLevel = (tierName?: string | null) => tierName || "Proof level not selected";
 
-const statusIsPendingActivation = (status?: string | null) => status === "pending_activation";
-const statusIsActivationInProgress = (status?: string | null) => status === "activation_in_progress";
+const statusIsPendingActivation = (status?: string | null) =>
+  status === "pending_activation" || status === "pending";
+const statusIsActivationInProgress = (status?: string | null) =>
+  status === "activation_in_progress" || status === "awaiting_setup_call";
 
 const ProjectDetailPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -121,7 +123,11 @@ const ProjectDetailPage = () => {
     );
   }
 
-  const statusForBadge = (project.status as StatusValue) ?? "pending_activation";
+  const statusForBadge: StatusValue = statusIsPendingActivation(project.status)
+    ? "pending_activation"
+    : statusIsActivationInProgress(project.status)
+      ? "activation_in_progress"
+      : ((project.status as StatusValue) ?? "pending_activation");
 
   return (
     <div className="min-h-screen bg-background">
