@@ -8,6 +8,23 @@ import { useProjectWizard } from "@/hooks/useProjectWizard";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
+const normalizeStringField = (
+  payload: Record<string, unknown>,
+  keys: string[]
+): string | undefined => {
+  for (const key of keys) {
+    const value = payload[key];
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (trimmed.length > 0) {
+        return trimmed;
+      }
+    }
+  }
+
+  return undefined;
+};
+
 export default function JdUpload() {
   const navigate = useNavigate();
   const { saveWizardState, wizardState } = useProjectWizard();
@@ -65,22 +82,36 @@ export default function JdUpload() {
         throw new Error(parsedPayload.error);
       }
 
-      const roleTitle = parsedPayload.role_title;
-      const jobSummary = parsedPayload.job_summary;
+      const roleTitle = normalizeStringField(parsedPayload, [
+        "role_title",
+        "roleTitle",
+        "job_title",
+        "jobTitle",
+      ]);
+      const jobSummary = normalizeStringField(parsedPayload, [
+        "job_summary",
+        "jobSummary",
+        "summary",
+      ]);
 
-      if (typeof roleTitle !== "string" || typeof jobSummary !== "string") {
+      if (!roleTitle || !jobSummary) {
         throw new Error("Invalid response from JD parser");
       }
 
-      const companyName =
-        typeof parsedPayload.company_name === "string" ? parsedPayload.company_name : undefined;
-      const keySkills = Array.isArray(parsedPayload.key_skills)
-        ? (parsedPayload.key_skills as string[])
-        : undefined;
-      const experienceLevel =
-        typeof parsedPayload.experience_level === "string"
-          ? parsedPayload.experience_level
+      const companyName = normalizeStringField(parsedPayload, ["company_name", "companyName"]);
+      const keySkillsSource = Array.isArray(parsedPayload.key_skills)
+        ? parsedPayload.key_skills
+        : Array.isArray(parsedPayload.keySkills)
+          ? parsedPayload.keySkills
           : undefined;
+      const keySkillsList = keySkillsSource
+        ?.map((skill) => (typeof skill === "string" ? skill.trim() : ""))
+        .filter((skill) => skill.length > 0);
+      const keySkills = keySkillsList && keySkillsList.length > 0 ? keySkillsList : undefined;
+      const experienceLevel = normalizeStringField(parsedPayload, [
+        "experience_level",
+        "experienceLevel",
+      ]);
       // Save parsed data to wizard state
       saveWizardState({
         jobDescription: jd,

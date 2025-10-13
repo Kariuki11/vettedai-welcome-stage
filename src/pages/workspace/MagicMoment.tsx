@@ -9,8 +9,8 @@ export default function MagicMoment() {
   const navigate = useNavigate();
   const { wizardState } = useProjectWizard();
 
-  const roleTitle = wizardState.roleTitle || "Pending Role Title";
-  const companyName = wizardState.companyName || "";
+  const roleTitle = wizardState.roleTitle?.trim() || "Pending Role Title";
+  const companyName = wizardState.companyName?.trim() || "";
   const selectedTier = wizardState.selectedTier;
   const candidateSource = wizardState.candidateSource;
   const candidateCount = wizardState.candidateCount || 0;

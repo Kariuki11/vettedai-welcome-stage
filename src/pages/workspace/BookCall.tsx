@@ -79,7 +79,7 @@ export default function BookCall() {
     }
 
     const roleTitle = wizardState.roleTitle?.trim() || 'Pending Role Title';
-    const jobSummary = wizardState.jobSummary || '';
+    const jobSummary = wizardState.jobSummary?.trim() || '';
     const jobDescription = jdContent || '';
     const candidateSource = wizardState.candidateSource || 'network';
     const candidateCount = candidateSource === 'own'
