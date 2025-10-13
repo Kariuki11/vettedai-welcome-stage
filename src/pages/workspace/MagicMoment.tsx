@@ -3,17 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useProjectWizard } from "@/hooks/useProjectWizard";
-import { Sparkles, Target, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Briefcase, Building, Target, Users, Upload, Network } from "lucide-react";
 
 export default function MagicMoment() {
   const navigate = useNavigate();
   const { wizardState } = useProjectWizard();
 
+  const roleTitle = wizardState.roleTitle || "Pending Role Title";
+  const companyName = wizardState.companyName || "";
   const selectedTier = wizardState.selectedTier;
-  const proofLevelName = selectedTier?.name || "Proof Level";
-  const bestForCopy = selectedTier?.bestFor || "We'll guide you to the right candidates for this role.";
-  const whatItIsCopy = selectedTier?.whatItIs || "Gemini will tailor the Proof of Work experience based on the role you shared.";
-  const outputCopy = selectedTier?.output || "Expect a clear snapshot of how candidates perform against your must-have skills.";
+  const candidateSource = wizardState.candidateSource;
+  const candidateCount = wizardState.candidateCount || 0;
 
   const handleBack = () => {
     navigate('/workspace/new/tier-selection');
@@ -28,7 +28,7 @@ export default function MagicMoment() {
       <Card className="w-full max-w-4xl">
         <CardHeader className="space-y-3">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">Step 4 of 5</div>
+            <div className="text-sm text-muted-foreground">Step 4 of 4</div>
             <Button
               variant="ghost"
               size="sm"
@@ -37,91 +37,98 @@ export default function MagicMoment() {
               ← Exit Setup
             </Button>
           </div>
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <CardTitle className="text-3xl">
-              Gemini mapped your {proofLevelName} experience for {wizardState.roleTitle || "this role"}
-            </CardTitle>
-          </div>
+          <CardTitle className="text-3xl">
+            Your Proof of Work Setup for {roleTitle}
+          </CardTitle>
           <p className="text-muted-foreground">
-            Here's the snapshot it created from your job description and the proof level you just selected.
+            Review your project details before booking your setup call.
           </p>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Proof Level Summary */}
-          <div className="rounded-lg border bg-card p-6 space-y-3">
-            <div className="grid gap-4 md:grid-cols-3">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase">Best for</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">{bestForCopy}</p>
+          {/* Role & Company Info */}
+          <div className="rounded-lg border bg-card p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Briefcase className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase">What it is</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">{whatItIsCopy}</p>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase">What you'll learn</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">{outputCopy}</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase">Role Title</p>
+                <p className="font-semibold text-lg">{roleTitle}</p>
               </div>
             </div>
+            
+            {companyName && (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Building className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase">Company</p>
+                  <p className="font-semibold text-lg">{companyName}</p>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Proof of Work Task Card */}
-          <div className="rounded-lg border bg-card p-6 space-y-3">
-            <div className="flex items-center gap-2">
-              <Target className="w-5 h-5 text-primary" />
-              <h4 className="font-semibold text-lg">Suggested Proof of Work Task</h4>
-            </div>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {wizardState.proofOfWorkTask || "No task generated"}
-            </p>
-          </div>
-
-          {/* Key Skills Card */}
-          {wizardState.keySkills && wizardState.keySkills.length > 0 && (
+          {/* Selected Proof Level */}
+          {selectedTier && (
             <div className="rounded-lg border bg-card p-6 space-y-3">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-primary" />
-                <h4 className="font-semibold text-lg">Key Skills Being Evaluated</h4>
+                <Target className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-lg">Proof of Work Level</h4>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {wizardState.keySkills.map((skill, index) => (
-                  <Badge key={index} variant="secondary" className="text-sm px-3 py-1">
-                    {skill}
-                  </Badge>
-                ))}
+              <div className="space-y-2">
+                <Badge variant="secondary" className="text-sm px-3 py-1">
+                  {selectedTier.name}
+                </Badge>
+                <p className="text-sm text-muted-foreground">{selectedTier.bestFor || selectedTier.description}</p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">What it is:</span> {selectedTier.whatItIs || selectedTier.description}
+                </p>
               </div>
             </div>
           )}
 
-          {/* Evaluation Rubric Card */}
-          {wizardState.evaluationCriteria && wizardState.evaluationCriteria.length > 0 && (
-            <div className="rounded-lg border bg-card p-6 space-y-4">
-              <h4 className="font-semibold text-lg">Evaluation Criteria</h4>
-              <div className="space-y-3">
-                {wizardState.evaluationCriteria.map((criterion, index) => (
-                  <div key={index} className="flex gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-semibold">
-                      {index + 1}
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm">{criterion.name}</p>
-                      <p className="text-sm text-muted-foreground">{criterion.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {/* Candidate Source */}
+          <div className="rounded-lg border bg-card p-6 space-y-3">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-primary" />
+              <h4 className="font-semibold text-lg">Candidate Source</h4>
             </div>
-          )}
+            <div className="flex items-center gap-3">
+              {candidateSource === 'own' ? (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Upload className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">Your Own Candidates</p>
+                    <p className="text-sm text-muted-foreground">{candidateCount} candidate{candidateCount !== 1 ? 's' : ''} uploaded</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Network className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium">VettedAI Network</p>
+                    <p className="text-sm text-muted-foreground">We'll source qualified candidates for you</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
 
           {/* CTA Section */}
           <div className="flex flex-col sm:flex-row gap-3 justify-between pt-4">
             <Button onClick={handleBack} variant="outline" size="lg">
-              ← Back
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
             </Button>
             <Button onClick={handleContinue} size="lg" className="sm:w-auto w-full">
-              Continue to Final Step →
+              Book Your Setup Call →
             </Button>
           </div>
         </CardContent>

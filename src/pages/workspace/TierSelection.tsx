@@ -80,7 +80,7 @@ export default function TierSelection() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-6xl">
         <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 3 of 5</div>
+          <div className="mb-2 text-sm text-muted-foreground">Step 3 of 4</div>
           <CardTitle className="text-3xl">How much proof do you need before you shortlist?</CardTitle>
           <CardDescription>
             Pick the experience that matches the level of certainty you want before moving candidates forward.
@@ -147,7 +147,7 @@ export default function TierSelection() {
               disabled={!selectedTier}
               size="lg"
             >
-              See the Gemini Snapshot →
+              Continue to Review →
             </Button>
           </div>
         </CardContent>

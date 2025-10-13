@@ -64,7 +64,7 @@ export default function CandidateSource() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-4xl">
         <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 2 of 5</div>
+          <div className="mb-2 text-sm text-muted-foreground">Step 2 of 4</div>
           <CardTitle className="text-3xl">Where should we source your candidates from?</CardTitle>
           <CardDescription>
             Let us know if you're bringing your own pipeline or want the VettedAI Network to supply talent for this project.

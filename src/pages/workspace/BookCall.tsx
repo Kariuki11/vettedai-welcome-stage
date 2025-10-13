@@ -186,13 +186,13 @@ export default function BookCall() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-2xl text-center shadow-lg">
         <CardHeader className="space-y-4">
-          <div className="text-sm text-muted-foreground">Step 5 of 5</div>
+          <div className="text-sm text-muted-foreground">Final Step</div>
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#5A4FCF] text-white">
             <Check className="h-8 w-8" />
           </div>
           <CardTitle className="text-3xl">Let's Build Your High-Confidence Shortlist</CardTitle>
           <p className="text-lg text-muted-foreground">
-            Gemini has your {wizardState.selectedTier?.name?.toLowerCase() || 'proof'} experience ready for {wizardState.roleTitle || 'this role'}. Choose how you'd like to kick things off.
+            We're ready to build your {wizardState.selectedTier?.name?.toLowerCase() || 'proof'} experience for {wizardState.roleTitle || 'this role'}. Book a call to finalize your proof of work details.
           </p>
         </CardHeader>
 
@@ -208,7 +208,7 @@ export default function BookCall() {
             </Avatar>
           </div>
           <p className="text-sm text-muted-foreground">
-            Every option keeps your selections intact — we're simply aligning the rollout to your hiring plan.
+            During the call, we'll discuss your proof of work task and evaluation criteria to ensure the perfect fit for your role.
           </p>
 
           <div className="space-y-3">

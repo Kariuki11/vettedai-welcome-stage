@@ -81,14 +81,6 @@ export default function JdUpload() {
         typeof parsedPayload.experience_level === "string"
           ? parsedPayload.experience_level
           : undefined;
-      const proofOfWorkTask =
-        typeof parsedPayload.proof_of_work_task === "string"
-          ? parsedPayload.proof_of_work_task
-          : undefined;
-      const evaluationCriteria = Array.isArray(parsedPayload.evaluation_criteria)
-        ? (parsedPayload.evaluation_criteria as Array<{ name: string; description: string }>)
-        : undefined;
-
       // Save parsed data to wizard state
       saveWizardState({
         jobDescription: jd,
@@ -98,8 +90,6 @@ export default function JdUpload() {
         companyName,
         keySkills,
         experienceLevel,
-        proofOfWorkTask,
-        evaluationCriteria,
       });
 
       navigate("/workspace/new/candidate-source");
@@ -123,7 +113,7 @@ export default function JdUpload() {
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-muted-foreground">Step 1 of 5</div>
+            <div className="text-sm text-muted-foreground">Step 1 of 4</div>
             <Button
               variant="ghost"
               size="sm"
@@ -179,10 +169,10 @@ export default function JdUpload() {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing JD...
+                  Processing Job Description...
                 </>
               ) : (
-                'Analyze JD →'
+                'Continue →'
               )}
             </Button>
           </div>

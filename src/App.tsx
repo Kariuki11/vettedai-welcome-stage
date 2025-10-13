@@ -11,10 +11,11 @@ import Signup from "./pages/Signup";
 import SignupContext from "./pages/SignupContext";
 import Dashboard from "./pages/Dashboard";
 import JdUpload from "./pages/workspace/JdUpload";
-import JdConfirm from "./pages/workspace/JdConfirm";
+// Archived - see src/pages/workspace/_archive/
+// import JdConfirm from "./pages/workspace/JdConfirm";
+// import CandidatePreview from "./pages/workspace/CandidatePreview";
 import MagicMoment from "./pages/workspace/MagicMoment";
 import CandidateSource from "./pages/workspace/CandidateSource";
-import CandidatePreview from "./pages/workspace/CandidatePreview";
 import BookCall from "./pages/workspace/BookCall";
 import TierSelection from "./pages/workspace/TierSelection";
 import Checkout from "./pages/Checkout";
@@ -62,12 +63,7 @@ const App = () => {
               <MagicMoment />
             </ProtectedRoute>
           } />
-          {/* Legacy routes - kept for backward compatibility */}
-          <Route path="/workspace/new/jd-confirm" element={
-            <ProtectedRoute>
-              <JdConfirm />
-            </ProtectedRoute>
-          } />
+          {/* Active wizard routes */}
           <Route path="/workspace/new/candidate-source" element={
             <ProtectedRoute>
               <CandidateSource />
@@ -78,11 +74,9 @@ const App = () => {
               <TierSelection />
             </ProtectedRoute>
           } />
-          <Route path="/workspace/new/candidate-preview" element={
-            <ProtectedRoute>
-              <CandidatePreview />
-            </ProtectedRoute>
-          } />
+          {/* Archived routes - commented out, see src/pages/workspace/_archive/ */}
+          {/* <Route path="/workspace/new/jd-confirm" element={<ProtectedRoute><JdConfirm /></ProtectedRoute>} /> */}
+          {/* <Route path="/workspace/new/candidate-preview" element={<ProtectedRoute><CandidatePreview /></ProtectedRoute>} /> */}
           <Route path="/workspace/new/book-call" element={
             <ProtectedRoute>
               <BookCall />
