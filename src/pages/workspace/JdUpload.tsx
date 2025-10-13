@@ -102,7 +102,7 @@ export default function JdUpload() {
         evaluationCriteria,
       });
 
-      navigate("/workspace/new/magic-moment");
+      navigate("/workspace/new/candidate-source");
     } catch (error) {
       console.error("Failed to parse JD:", error);
       setErrorMessage(
@@ -123,7 +123,7 @@ export default function JdUpload() {
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <div className="flex items-center justify-between mb-2">
-            <div className="text-sm text-muted-foreground">Step 1 of 2</div>
+            <div className="text-sm text-muted-foreground">Step 1 of 5</div>
             <Button
               variant="ghost"
               size="sm"
