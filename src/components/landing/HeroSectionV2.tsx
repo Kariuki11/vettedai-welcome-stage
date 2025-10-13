@@ -66,79 +66,97 @@ export const HeroSectionV2 = ({ onCtaClick }: HeroSectionV2Props) => {
             </div>
           </div>
 
-          {/* Right: Two-column board with animation */}
-          <div 
-            className="bg-card border border-border/50 rounded-lg p-6 shadow-sm"
-            aria-label="Applicants moving into Shortlist based on task results"
-          >
-            <div className="grid grid-cols-2 gap-6">
-              {/* Left column: Applicants */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground">
-                  Applicants
-                </h3>
-                <div className="space-y-2">
-                  {applicants.map((applicant, index) => (
-                    <div
-                      key={applicant.id}
-                      className={cn(
-                        "bg-muted/30 border border-border/30 rounded-lg p-3 space-y-2",
-                        index < 3 && "motion-safe:animate-slide-right opacity-100"
-                      )}
-                      style={index < 3 ? { 
-                        animationDelay: `${300 + index * 200}ms`,
-                        animationFillMode: 'forwards'
-                      } : undefined}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-muted text-muted-foreground text-xs">
-                            {applicant.initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="h-2 bg-muted rounded flex-1" />
+          {/* Right: Static two-column board */}
+          <div className="space-y-4">
+            <p className="text-xs md:text-sm text-muted-foreground">
+              VettedAI in action: From 100 CVs to the few that pass the proof test.
+            </p>
+            <div 
+              className="bg-card border border-border/50 rounded-lg p-6 shadow-sm"
+              aria-label="Static view of VettedAI shortlisting: 6 applicants and 3 shortlisted candidates with proof metrics"
+            >
+              <div className="grid grid-cols-2 gap-6">
+                {/* Left column: Applicants */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-muted-foreground">
+                    Applicants
+                  </h3>
+                  <div className="space-y-2">
+                    {applicants.map((applicant) => (
+                      <div
+                        key={applicant.id}
+                        className="bg-muted/30 border border-border/30 rounded-lg p-3 space-y-2"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="bg-muted text-muted-foreground text-xs">
+                              {applicant.initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="h-2 bg-muted rounded flex-1" />
+                        </div>
+                        <div className="flex gap-1.5">
+                          {applicant.chips.map((chip, i) => (
+                            <div key={i} className="px-2 py-0.5 bg-muted/50 rounded-full text-xs text-muted-foreground">
+                              {chip}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="flex gap-1.5">
-                        {applicant.chips.map((chip, i) => (
-                          <div key={i} className="px-2 py-0.5 bg-muted/50 rounded-full text-xs text-muted-foreground">
-                            {chip}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Right column: Shortlist (Proof met) */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold">
-                  Shortlist <span className="text-success">(Proof met)</span>
-                </h3>
-                <div className="space-y-2">
-                  {[0, 1, 2].map((index) => (
-                    <div
-                      key={index}
-                      className="bg-background border border-primary/30 rounded-lg p-3 space-y-2 motion-safe:animate-slide-right opacity-0"
-                      style={{ 
-                        animationDelay: `${300 + index * 200}ms`,
-                        animationFillMode: 'forwards'
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                            {applicants[index].initials}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="h-2 bg-foreground/80 rounded flex-1" />
+                {/* Right column: Shortlist (Proof met) */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold">
+                    Shortlist <span className="text-success">(Proof met)</span>
+                  </h3>
+                  <div className="space-y-2">
+                    {[
+                      { initials: "AM" },
+                      { initials: "SK" },
+                      { initials: "RL" }
+                    ].map((candidate, index) => (
+                      <div
+                        key={index}
+                        className="bg-background border border-primary/30 rounded-lg p-3 space-y-2 shadow-elegant"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                              {candidate.initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="h-2 bg-foreground/80 rounded flex-1" />
+                        </div>
+                        <BadgeGroup 
+                          animated={false}
+                          className="pt-1"
+                        />
+                        {/* Proof strip */}
+                        <div 
+                          className="flex items-center gap-2 pt-2 border-t border-border/50"
+                          aria-label="Proof metrics: Performance, Communication, Speed"
+                        >
+                          <div className="flex items-center gap-1">
+                            <div className="h-1.5 w-12 bg-success rounded-full" />
+                            <span className="text-[10px] text-muted-foreground">Performance</span>
+                          </div>
+                          <span className="text-muted-foreground text-[10px]">·</span>
+                          <div className="flex items-center gap-1">
+                            <div className="h-1.5 w-10 bg-primary rounded-full" />
+                            <span className="text-[10px] text-muted-foreground">Communication</span>
+                          </div>
+                          <span className="text-muted-foreground text-[10px]">·</span>
+                          <div className="flex items-center gap-1">
+                            <div className="h-1.5 w-8 bg-success rounded-full" />
+                            <span className="text-[10px] text-muted-foreground">Speed</span>
+                          </div>
+                        </div>
                       </div>
-                      <BadgeGroup 
-                        animated={true}
-                        className="pt-1"
-                      />
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
