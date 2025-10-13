@@ -1,19 +1,14 @@
-const founders = [
-  {
-    initials: "TL",
-    name: "Tobi Lafinhan",
-    role: "Co-founder & CEO",
-  },
-  {
-    initials: "AA",
-    name: "Aanu Adediran",
-    role: "Co-founder & COO",
-  },
-];
-
+const founders = [{
+  initials: "TL",
+  name: "Tobi Lafinhan",
+  role: "Co-founder & CEO"
+}, {
+  initials: "AA",
+  name: "Aanu Adediran",
+  role: "Co-founder & COO"
+}];
 export const FoundersNoteSection = () => {
-  return (
-    <section className="px-6 py-24 bg-white">
+  return <section className="px-6 py-24 bg-white">
       <div className="max-w-5xl mx-auto">
         <div className="rounded-3xl border border-border/60 bg-muted/20 p-10 md:p-14 shadow-sm">
           <div className="flex flex-col gap-10 lg:flex-row lg:items-start">
@@ -28,19 +23,7 @@ export const FoundersNoteSection = () => {
                 We’re not theorists. We’ve spent years hiring across Africa’s fastest-growing teams, feeling the same pain recruiters still face today. VettedAI is the product we needed in those rooms.
               </p>
 
-              <div className="flex flex-col gap-4 sm:flex-row">
-                {founders.map((founder) => (
-                  <div key={founder.name} className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm">
-                    <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                      {founder.initials}
-                    </span>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">{founder.name}</p>
-                      <p className="text-xs text-muted-foreground">{founder.role}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              
             </div>
 
             <div className="lg:w-3/5">
@@ -52,6 +35,5 @@ export const FoundersNoteSection = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
