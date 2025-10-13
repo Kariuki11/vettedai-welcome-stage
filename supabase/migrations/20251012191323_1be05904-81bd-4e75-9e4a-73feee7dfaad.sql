@@ -26,7 +26,8 @@ CREATE OR REPLACE FUNCTION public.create_project_for_current_user(
   _anchor_price numeric,
   _pilot_price numeric,
   _candidate_source text,
-  _candidate_count integer
+  _candidate_count integer,
+  _user_id uuid DEFAULT NULL
 )
 RETURNS uuid
 LANGUAGE plpgsql
@@ -41,7 +42,7 @@ BEGIN
   -- Get recruiter_id for current user
   SELECT id INTO _recruiter_id
   FROM public.recruiters
-  WHERE user_id = auth.uid();
+  WHERE user_id = COALESCE(_user_id, auth.uid());
 
   -- Validate recruiter exists
   IF _recruiter_id IS NULL THEN

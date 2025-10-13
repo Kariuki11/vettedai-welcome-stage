@@ -12,8 +12,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { normalizeProject, type Project, userProjectsQueryKey } from "@/hooks/useUserProjects";
 import type { Database } from "@/integrations/supabase/types";
 
-const LEMUEL_CALENDLY_URL = "https://calendly.com/lemuel-vettedai/30min";
-const TOBI_CALENDLY_URL = "https://calendly.com/tobi-vettedai/30min";
+const LEMUEL_CALENDLY_URL = "https://calendly.com/lemuelabishua";
+const TOBI_CALENDLY_URL = "https://cal.mixmax.com/ventureforafrica/antler_30";
 
 const DEFAULT_TIER = {
   id: 1,
@@ -47,7 +47,7 @@ export default function BookCall() {
       return wizardState.projectId;
     }
 
-    if (!user) {
+    if (!user?.id) {
       throw new Error('You need to be signed in to save your project.');
     }
 
@@ -61,6 +61,7 @@ export default function BookCall() {
 
     const { data: projectId, error } = await supabase
       .rpc('create_project_for_current_user', {
+        _user_id: user.id,
         _role_title: roleTitle,
         _job_description: jobDescription,
         _job_summary: jobSummary,
@@ -89,12 +90,17 @@ export default function BookCall() {
     setLoadingAction(action);
 
     try {
+      if (!user?.id) {
+        throw new Error('You need to be signed in to complete this action.');
+      }
+
       const projectId = await ensureProject();
 
       const { error: statusError } = await supabase
-        .from('projects')
-        .update({ status: 'awaiting_setup_call' })
-        .eq('id', projectId);
+        .rpc('mark_project_awaiting_setup_call', {
+          _project_id: projectId,
+          _user_id: user.id,
+        });
 
       if (statusError) {
         throw new Error(statusError.message || 'Failed to update project status.');
