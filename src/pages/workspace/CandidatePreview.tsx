@@ -9,7 +9,7 @@ export default function CandidatePreview() {
   const { wizardState } = useProjectWizard();
 
   const handleContinue = () => {
-    navigate('/workspace/new/tier-selection');
+    navigate('/workspace/new/book-call');
   };
 
   const handleBack = () => {
@@ -20,7 +20,7 @@ export default function CandidatePreview() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-5xl">
         <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 4 of 6</div>
+          <div className="mb-2 text-sm text-muted-foreground">Step 4 of 5</div>
           <CardTitle className="text-3xl">Preview the Candidate Experience</CardTitle>
           <CardDescription>
             See exactly what your candidates will receive when we send them their Proof of Work task.

@@ -10,7 +10,7 @@ interface RoleSummaryCardProps {
   candidateSource: 'own' | 'network';
   candidateCount: number;
   paymentStatus: 'paid' | 'pending';
-  status: 'awaiting' | 'scoring' | 'ready';
+  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready';
   progress: {
     hoursElapsed: number;
     totalHours: 48;
@@ -31,6 +31,10 @@ export const RoleSummaryCard = ({
   const sourceText = candidateSource === 'own' 
     ? `${candidateCount} Candidates Uploaded`
     : 'VettedAI Network';
+
+  const paymentStatusText = paymentStatus === 'paid'
+    ? `Paid ($${tier.pilotPrice})`
+    : 'Pending setup call';
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 shadow-md space-y-6">
@@ -54,7 +58,7 @@ export const RoleSummaryCard = ({
           <CheckCircle2 className="w-5 h-5 text-green-500" />
           <div className="flex-1">
             <p className="text-sm font-medium">Payment Status</p>
-            <p className="text-sm text-green-600 font-medium">Paid (${tier.pilotPrice})</p>
+            <p className="text-sm text-muted-foreground font-medium">{paymentStatusText}</p>
           </div>
         </div>
       </div>

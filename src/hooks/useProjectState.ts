@@ -15,7 +15,7 @@ export interface ProjectState {
   candidateSource: 'own' | 'network';
   candidateCount: number;
   uploadedCandidates: CandidateInfo[];
-  status: 'awaiting' | 'scoring' | 'ready';
+  status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready';
   progress: {
     hoursElapsed: number;
     totalHours: 48;
@@ -32,7 +32,7 @@ export const useProjectState = (initialState?: Partial<ProjectState>) => {
     candidateSource: initialState?.candidateSource || 'own',
     candidateCount: initialState?.candidateCount || 0,
     uploadedCandidates: initialState?.uploadedCandidates || [],
-    status: initialState?.status || 'awaiting',
+    status: initialState?.status || 'pending',
     progress: initialState?.progress || {
       hoursElapsed: 0,
       totalHours: 48,
@@ -41,7 +41,7 @@ export const useProjectState = (initialState?: Partial<ProjectState>) => {
     paymentStatus: initialState?.paymentStatus || 'pending',
   });
 
-  const updateProjectStatus = (status: 'awaiting' | 'scoring' | 'ready') => {
+  const updateProjectStatus = (status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready') => {
     setProject(prev => ({ ...prev, status }));
   };
 
