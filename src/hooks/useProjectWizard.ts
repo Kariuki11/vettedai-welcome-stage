@@ -21,6 +21,9 @@ export interface WizardState {
   jdContent?: string;
   roleTitle?: string;
   jobSummary?: string;
+  companyName?: string;
+  keySkills?: string[];
+  experienceLevel?: string;
   candidateSource?: 'own' | 'network';
   uploadedResumes?: UploadedFile[];
   candidateCount?: number;
