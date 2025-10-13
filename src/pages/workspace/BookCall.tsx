@@ -42,6 +42,39 @@ export default function BookCall() {
     }
   }, [jdContent, navigate]);
 
+  const ensureRecruiterProfile = async () => {
+    if (!user?.id) {
+      throw new Error('You need to be signed in.');
+    }
+
+    // Check if recruiter profile exists
+    const { data: recruiter, error: checkError } = await supabase
+      .from('recruiters')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (checkError) {
+      console.error('Error checking recruiter profile:', checkError);
+    }
+
+    // If no recruiter profile, create one
+    if (!recruiter) {
+      const { error: createError } = await supabase
+        .from('recruiters')
+        .insert({
+          user_id: user.id,
+          email: user.email || '',
+          full_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+          status: 'active',
+        });
+
+      if (createError) {
+        throw new Error('Failed to create recruiter profile. Please contact support.');
+      }
+    }
+  };
+
   const ensureProject = async (): Promise<string> => {
     if (wizardState.projectId) {
       return wizardState.projectId;
@@ -61,7 +94,6 @@ export default function BookCall() {
 
     const { data: projectId, error } = await supabase
       .rpc('create_project_for_current_user', {
-        _user_id: user.id,
         _role_title: roleTitle,
         _job_description: jobDescription,
         _job_summary: jobSummary,
@@ -94,13 +126,16 @@ export default function BookCall() {
         throw new Error('You need to be signed in to complete this action.');
       }
 
+      // Ensure recruiter profile exists before creating project
+      await ensureRecruiterProfile();
+
       const projectId = await ensureProject();
 
+      // Update project status directly
       const { error: statusError } = await supabase
-        .rpc('mark_project_awaiting_setup_call', {
-          _project_id: projectId,
-          _user_id: user.id,
-        });
+        .from('projects')
+        .update({ status: 'awaiting_setup_call' })
+        .eq('id', projectId);
 
       if (statusError) {
         throw new Error(statusError.message || 'Failed to update project status.');

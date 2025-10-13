@@ -28,7 +28,7 @@ export const useProjectState = (initialState?: Partial<ProjectState>) => {
   const [project, setProject] = useState<ProjectState>({
     projectId: initialState?.projectId || generateProjectId(),
     roleTitle: initialState?.roleTitle || '',
-    tier: initialState?.tier || { id: 2, name: 'Scenario Fit', description: '', anchorPrice: 200, pilotPrice: 20 },
+    tier: initialState?.tier || { id: 2, name: 'Scenario Fit', description: '', anchorPrice: 200, pilotPrice: 20, features: [] },
     candidateSource: initialState?.candidateSource || 'own',
     candidateCount: initialState?.candidateCount || 0,
     uploadedCandidates: initialState?.uploadedCandidates || [],

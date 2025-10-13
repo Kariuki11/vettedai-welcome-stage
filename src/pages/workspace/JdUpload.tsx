@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Upload, Loader2 } from "lucide-react";
 import { useProjectWizard } from "@/hooks/useProjectWizard";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function JdUpload() {
   const navigate = useNavigate();
@@ -13,32 +14,6 @@ export default function JdUpload() {
   const { toast } = useToast();
   const [jd, setJd] = useState(wizardState.jdContent || wizardState.jobDescription || "");
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const derivedRoleTitle = useMemo(() => {
-    const firstMeaningfulLine = jd
-      .split('\n')
-      .map(line => line.trim())
-      .find(line => line.length > 0);
-
-    if (!firstMeaningfulLine) {
-      return 'Pending Role Title';
-    }
-
-    return firstMeaningfulLine.length > 80
-      ? `${firstMeaningfulLine.slice(0, 77)}...`
-      : firstMeaningfulLine;
-  }, [jd]);
-
-  const derivedSummary = useMemo(() => {
-    const normalized = jd.replace(/\s+/g, ' ').trim();
-    if (!normalized) {
-      return '';
-    }
-
-    return normalized.length > 240
-      ? `${normalized.slice(0, 237)}...`
-      : normalized;
-  }, [jd]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -64,19 +39,39 @@ export default function JdUpload() {
 
     setIsProcessing(true);
     
-    // Save JD to wizard state
-    saveWizardState({
-      jobDescription: jd,
-      jdContent: jd,
-      roleTitle: derivedRoleTitle,
-      jobSummary: derivedSummary,
-    });
-    
-    // Simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    setIsProcessing(false);
-    navigate('/workspace/new/jd-confirm');
+    try {
+      // Call AI parsing edge function
+      const { data, error } = await supabase.functions.invoke('parse-job-description', {
+        body: { jd_text: jd }
+      });
+
+      if (error) {
+        console.error('AI parsing error:', error);
+        throw error;
+      }
+
+      // Save parsed data to wizard state
+      saveWizardState({
+        jobDescription: jd,
+        jdContent: jd,
+        roleTitle: data.role_title,
+        jobSummary: data.job_summary,
+        companyName: data.company_name,
+        keySkills: data.key_skills,
+        experienceLevel: data.experience_level,
+      });
+      
+      navigate('/workspace/new/jd-confirm');
+    } catch (error) {
+      console.error('Failed to parse JD:', error);
+      toast({
+        title: "Processing failed",
+        description: "Could not analyze the job description. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (

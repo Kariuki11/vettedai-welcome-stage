@@ -11,7 +11,7 @@ export default function CandidatePreview() {
   const { user } = useAuth();
 
   const roleTitle = wizardState.roleTitle?.trim() || "[Role Title]";
-  const companyName =
+  const companyName = wizardState.companyName?.trim() || 
     (typeof user?.user_metadata?.company_name === "string" && user.user_metadata.company_name.trim()) ||
     "[Company Name]";
 
