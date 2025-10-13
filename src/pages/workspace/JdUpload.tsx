@@ -13,7 +13,8 @@ export default function JdUpload() {
   const { saveWizardState, wizardState } = useProjectWizard();
   const { toast } = useToast();
   const [jd, setJd] = useState(wizardState.jdContent || wizardState.jobDescription || "");
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -37,40 +38,74 @@ export default function JdUpload() {
       return;
     }
 
-    setIsProcessing(true);
-    
+    setIsLoading(true);
+    setErrorMessage(null);
+
     try {
       // Call AI parsing edge function
-      const { data, error } = await supabase.functions.invoke('parse-job-description', {
-        body: { jd_text: jd }
+      const { data, error } = await supabase.functions.invoke("parse-job-description", {
+        body: { jd_text: jd },
       });
 
       if (error) {
-        console.error('AI parsing error:', error);
+        console.error("AI parsing error:", error);
         throw error;
       }
+
+      const parsedPayload =
+        typeof data === "string"
+          ? (JSON.parse(data) as Record<string, unknown> | null)
+          : ((data as Record<string, unknown> | null) ?? null);
+
+      if (!parsedPayload) {
+        throw new Error("Empty response from JD parser");
+      }
+
+      if (typeof parsedPayload.error === "string" && parsedPayload.error.trim().length > 0) {
+        throw new Error(parsedPayload.error);
+      }
+
+      const roleTitle = parsedPayload.role_title;
+      const jobSummary = parsedPayload.job_summary;
+
+      if (typeof roleTitle !== "string" || typeof jobSummary !== "string") {
+        throw new Error("Invalid response from JD parser");
+      }
+
+      const companyName =
+        typeof parsedPayload.company_name === "string" ? parsedPayload.company_name : undefined;
+      const keySkills = Array.isArray(parsedPayload.key_skills)
+        ? (parsedPayload.key_skills as string[])
+        : undefined;
+      const experienceLevel =
+        typeof parsedPayload.experience_level === "string"
+          ? parsedPayload.experience_level
+          : undefined;
 
       // Save parsed data to wizard state
       saveWizardState({
         jobDescription: jd,
         jdContent: jd,
-        roleTitle: data.role_title,
-        jobSummary: data.job_summary,
-        companyName: data.company_name,
-        keySkills: data.key_skills,
-        experienceLevel: data.experience_level,
+        roleTitle,
+        jobSummary,
+        companyName,
+        keySkills,
+        experienceLevel,
       });
-      
-      navigate('/workspace/new/jd-confirm');
+
+      navigate("/workspace/new/jd-confirm");
     } catch (error) {
-      console.error('Failed to parse JD:', error);
+      console.error("Failed to parse JD:", error);
+      setErrorMessage(
+        "We couldn't process that Job Description. Please try again or simplify the text."
+      );
       toast({
         title: "Processing failed",
         description: "Could not analyze the job description. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setIsProcessing(false);
+      setIsLoading(false);
     }
   };
 
@@ -120,10 +155,10 @@ export default function JdUpload() {
           <div className="flex justify-end">
             <Button
               onClick={handleContinue}
-              disabled={jd.length < 50 || isProcessing}
+              disabled={jd.length < 50 || isLoading}
               size="lg"
             >
-              {isProcessing ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Analyzing JD...
@@ -133,6 +168,9 @@ export default function JdUpload() {
               )}
             </Button>
           </div>
+          {errorMessage && (
+            <div className="text-sm text-destructive text-right">{errorMessage}</div>
+          )}
         </CardContent>
       </Card>
     </div>
