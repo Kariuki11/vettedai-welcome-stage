@@ -57,84 +57,35 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
               <Sparkles className="h-4 w-4" /> The Talent Intelligence Workspace
             </span>
 
-            <div className="space-y-6">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight">
-                Hire on proof,<span className="text-primary"> not promise.</span>
-              </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                Drowning in perfect resumes that fall apart at interview? VettedAI lets you see how people actually work—so you can move forward with confidence, not guesswork.
-              </p>
-            </div>
+      {/* Content Container */}
+      <div className="max-w-4xl mx-auto text-center space-y-8 animate-fade-in relative z-10">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-subtle border border-primary/20 text-primary text-sm font-medium mb-4">
+          <Sparkles className="h-4 w-4" />
+          The Talent Intelligence Workspace
+        </div>
+        {/* Headline */}
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
+          Hire on proof, <span className="text-primary">not promise.</span>
+        </h1>
 
-            <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-              <Button variant="hero" size="lg" onClick={handleCtaClick} className="h-auto px-8 py-4 text-base">
-                Create my recruiter workspace
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <ShieldCheck className="h-4 w-4 text-primary" />
-                Verifiable proof in 48-72 hours
-              </div>
-            </div>
+        {/* Subheadline */}
+        <p className="text-lg md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed animate-fade-in-delayed">
+          Drowning in perfect resumes that fall apart at interview? VettedAI lets you see how people actually work—so you
+          can move forward with confidence, not guesswork.
+        </p>
 
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-xs uppercase tracking-[0.2em] text-muted-foreground/80">
-              <span>Built for recruiters</span>
-              <span className="hidden h-px w-10 bg-muted-foreground/20 lg:block" />
-              <span>Signals you can trust</span>
-              <span className="hidden h-px w-10 bg-muted-foreground/20 lg:block" />
-              <span>Confident hires</span>
-            </div>
-          </div>
+        {/* CTA Button */}
+        <div className="pt-6 animate-slide-in-up">
+          <Button variant="hero" size="lg" onClick={handleCtaClick} className="text-base px-7 py-4 h-auto">
+            Create my recruiter workspace
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+        </div>
 
-          <div className="relative">
-            <div className="rounded-3xl border border-border/60 bg-white/90 shadow-[0_20px_60px_-30px_rgba(54,35,119,0.4)] backdrop-blur">
-              <div className="border-b border-border/70 p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Shortlist preview</p>
-                    <p className="text-xl font-semibold">Ops Leadership Sprint</p>
-                  </div>
-                  <div className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">Noise removed</div>
-                </div>
-                <div className="mt-4 flex items-center gap-3 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <span className="h-2 w-2 rounded-full bg-emerald-500" /> Confidence signal
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="h-2 w-2 rounded-full bg-slate-300" /> Proof artefacts
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-4 p-6">
-                {shortlist.map((candidate) => (
-                  <div key={candidate.name} className="rounded-2xl border border-border/70 bg-background/60 p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="text-sm font-semibold text-foreground">{candidate.name}</p>
-                        <p className="text-xs text-muted-foreground">{candidate.role}</p>
-                      </div>
-                      <span className={`rounded-full px-3 py-1 text-xs font-medium ${candidate.accent}`}>
-                        Confidence {candidate.confidence}
-                      </span>
-                    </div>
-                    <div className="mt-4 grid gap-2 text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-[0.65rem] font-semibold text-primary shadow-inner">
-                          Proof
-                        </span>
-                        <span className="text-muted-foreground">{candidate.signal}</span>
-                      </div>
-                      <div className="flex items-center justify-between text-[0.7rem]">
-                        <span className="font-medium text-foreground">{candidate.status}</span>
-                        <span className="text-muted-foreground">View work sample →</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* Trust Badge */}
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-4 animate-fade-in-delayed">
+          <ShieldCheck className="h-4 w-4 text-primary" />
+          Verifiable proof in 48-72 hours
         </div>
       </div>
     </section>

@@ -1,11 +1,4 @@
-import { Check, TrendingUp } from "lucide-react";
-
-const metrics = [
-  { label: "Strategic thinking", value: 92 },
-  { label: "Collaboration", value: 88 },
-  { label: "Execution speed", value: 86 },
-  { label: "Quality of insight", value: 90 },
-];
+import { Check } from "lucide-react";
 
 const learnings = [
   "Benchmarked against hires that are already thriving in your org.",
@@ -15,17 +8,27 @@ const learnings = [
 
 export const PerformanceGraphSection = () => {
   return (
-    <section className="px-6 py-24 bg-muted/40">
-      <div className="max-w-6xl mx-auto grid gap-16 lg:grid-cols-[minmax(0,420px),minmax(0,1fr)] items-center">
-        <div className="space-y-6">
-          <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary uppercase tracking-[0.3em]">
+    <section className="px-6 py-32 bg-muted/30">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="text-center space-y-6 mb-16">
+          <span className="inline-flex items-center justify-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-primary">
             Performance Graph
           </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight">
-            Powered by the Performance Graph.
-          </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+          <h2 className="text-4xl md:text-5xl font-bold">Powered by the Performance Graph.</h2>
+          <p className="text-lg md:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             We learn from every assessment your team runs. The Performance Graph combines behavioural signals, work quality, and context so each hire gets easier than the last.
+          </p>
+          <div className="mx-auto grid max-w-3xl gap-3 text-left sm:grid-cols-3">
+            {learnings.map((learning) => (
+              <div key={learning} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <Check className="mt-0.5 h-4 w-4 text-primary" />
+                <span>{learning}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-base font-medium text-primary pt-2">
+            The more you hire with VettedAI, the smarter it gets.
           </p>
           <div className="space-y-3">
             {learnings.map((learning) => (
