@@ -7,10 +7,6 @@ import { PaymentSuccess } from "@/components/checkout/PaymentSuccess";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useQueryClient } from "@tanstack/react-query";
-import { normalizeProject, userProjectsQueryKey, type Project } from "@/hooks/useUserProjects";
-import type { Database } from "@/integrations/supabase/types";
-
-type ProjectRow = Database['public']['Tables']['projects']['Row'];
 
 const Checkout = () => {
   const location = useLocation();
@@ -81,24 +77,55 @@ const Checkout = () => {
       }
 
       // Create project using server-side RPC
-      const { data: projectId, error: projectError } = await supabase
-        .rpc('create_project_for_current_user', {
-          _role_title: roleTitle,
-          _job_description: wizardState.jobDescription || '',
-          _job_summary: wizardState.jobSummary || '',
-          _tier_id: parseInt(selectedTier.id.toString()),
-          _tier_name: selectedTier.name,
-          _anchor_price: parseFloat(selectedTier.anchorPrice.toString()),
-          _pilot_price: parseFloat(selectedTier.pilotPrice.toString()),
-          _candidate_source: candidateSource || 'own',
-          _candidate_count: candidateCount || 0,
+      let projectId;
+      let projectError;
+      
+      const createProjectResult = await supabase.rpc('create_project_for_current_user', {
+        _role_title: roleTitle,
+        _job_description: wizardState.jobDescription || '',
+        _job_summary: wizardState.jobSummary || '',
+        _tier_id: parseInt(selectedTier.id.toString()),
+        _tier_name: selectedTier.name,
+        _anchor_price: parseFloat(selectedTier.anchorPrice.toString()),
+        _pilot_price: parseFloat(selectedTier.pilotPrice.toString()),
+        _candidate_source: candidateSource || 'own',
+        _candidate_count: candidateCount || 0,
+      });
+      
+      projectId = createProjectResult.data;
+      projectError = createProjectResult.error;
+
+      // If recruiter profile missing, create it and retry once
+      if (projectError && projectError.message?.includes('No recruiter profile')) {
+        console.log('Creating missing recruiter profile...');
+        
+        const { error: recruiterError } = await supabase.from('recruiters').insert({
+          user_id: user.id,
+          email: user.email || '',
+          full_name: user.user_metadata?.full_name || 'User',
         });
+
+        if (!recruiterError) {
+          // Retry project creation
+          const retryResult = await supabase.rpc('create_project_for_current_user', {
+            _role_title: roleTitle,
+            _job_description: wizardState.jobDescription || '',
+            _job_summary: wizardState.jobSummary || '',
+            _tier_id: parseInt(selectedTier.id.toString()),
+            _tier_name: selectedTier.name,
+            _anchor_price: parseFloat(selectedTier.anchorPrice.toString()),
+            _pilot_price: parseFloat(selectedTier.pilotPrice.toString()),
+            _candidate_source: candidateSource || 'own',
+            _candidate_count: candidateCount || 0,
+          });
+          projectId = retryResult.data;
+          projectError = retryResult.error;
+        }
+      }
 
       if (projectError) {
         console.error('Error creating project:', projectError);
-        throw new Error(projectError.message.includes('No recruiter profile')
-          ? 'Recruiter profile not found. Please complete your profile setup.'
-          : `Failed to create project: ${projectError.message}`);
+        throw new Error(`Failed to create project: ${projectError.message}`);
       }
 
       if (!projectId) {
@@ -110,28 +137,7 @@ const Checkout = () => {
       setCreatedProjectId(projectId);
 
       // Ensure the recruiter dashboard reflects the new project immediately
-      if (user?.id) {
-        const { data: createdProject, error: fetchProjectError } = await supabase
-          .from('projects')
-          .select('id, role_title, status, payment_status, candidate_count, created_at, tier_name')
-          .eq('id', projectId)
-          .maybeSingle<ProjectRow>();
-
-        if (fetchProjectError) {
-          console.warn('Failed to fetch created project for cache hydration:', fetchProjectError);
-        } else if (createdProject) {
-          queryClient.setQueryData<Project[]>(
-            userProjectsQueryKey(user.id),
-            (existing) => {
-              const normalized = normalizeProject(createdProject);
-              const withoutDuplicate = (existing || []).filter((project) => project.id !== normalized.id);
-              return [normalized, ...withoutDuplicate];
-            }
-          );
-        }
-
-        await queryClient.invalidateQueries({ queryKey: userProjectsQueryKey(user.id), exact: false });
-      }
+      await queryClient.invalidateQueries({ queryKey: ['user-projects'] });
 
       // Log analytics event (non-blocking)
       try {
@@ -162,10 +168,8 @@ const Checkout = () => {
 
   const handleContinueToFolder = async () => {
     sessionStorage.removeItem('project_wizard_state');
-    if (user?.id) {
-      await queryClient.refetchQueries({ queryKey: userProjectsQueryKey(user.id), type: 'all' });
-    }
-
+    // Wait a moment to ensure database transaction completes
+    await new Promise(resolve => setTimeout(resolve, 1000));
     navigate('/workspace', {
       state: {
         refetch: true,
