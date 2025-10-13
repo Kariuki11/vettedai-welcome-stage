@@ -33,6 +33,10 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import {
+  referralSourceEnum,
+  referralSourceOptions,
+} from "@/constants/referralSources";
 
 // Step 1 Schema - Core Account Creation
 const step1Schema = z.object({
@@ -60,7 +64,7 @@ const step2Schema = z.object({
   companySize: z.enum(['1-10', '11-50', '51-200', '201+'], {
     required_error: "Please select your company size"
   }),
-  referralSource: z.enum(['linkedin', 'friend_colleague', 'antler', 'other']).optional()
+  referralSource: referralSourceEnum.optional()
 });
 
 type Step2FormData = z.infer<typeof step2Schema>;
@@ -530,7 +534,9 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
               name="referralSource"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>How did you hear about us? <span className="text-muted-foreground text-xs">(Optional)</span></FormLabel>
+                  <FormLabel>
+                    How did you hear about us? <span className="text-muted-foreground text-xs">(Optional)</span>
+                  </FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -538,10 +544,11 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="linkedin">LinkedIn</SelectItem>
-                      <SelectItem value="friend_colleague">Friend/Colleague</SelectItem>
-                      <SelectItem value="antler">Antler</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      {referralSourceOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

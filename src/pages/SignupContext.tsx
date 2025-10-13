@@ -25,6 +25,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import {
+  referralSourceEnum,
+  referralSourceOptions,
+} from "@/constants/referralSources";
 
 const step2Schema = z.object({
   userRole: z.enum(['in_house', 'hiring_manager', 'founder', 'agency', 'other'], {
@@ -34,7 +38,7 @@ const step2Schema = z.object({
     required_error: "Please select your company size"
   }),
   referralSource: z.object({
-    source: z.enum(['linkedin', 'instagram', 'friend_colleague', 'vfa_newsletter', 'app_newsletter', 'antler', 'google_search', 'other']),
+    source: referralSourceEnum,
     otherDetails: z.string().optional()
   }).refine(data => {
     if (data.source === 'other') {
@@ -288,14 +292,11 @@ const SignupContext = () => {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="linkedin">LinkedIn</SelectItem>
-                        <SelectItem value="instagram">Instagram</SelectItem>
-                        <SelectItem value="friend_colleague">Friend / Colleague</SelectItem>
-                        <SelectItem value="vfa_newsletter">VFA Newsletter</SelectItem>
-                        <SelectItem value="app_newsletter">APP Newsletter</SelectItem>
-                        <SelectItem value="antler">Antler</SelectItem>
-                        <SelectItem value="google_search">Google Search</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        {referralSourceOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
