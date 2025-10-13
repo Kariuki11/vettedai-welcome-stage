@@ -44,7 +44,7 @@ export default function JdConfirm() {
             <div className="grid md:grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Role Title</p>
-                <p className="font-semibold text-base">{wizardState.roleTitle || 'Not extracted'}</p>
+                <p className="font-semibold text-base">{wizardState.roleTitle?.trim() || 'Not extracted'}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground mb-1">Company</p>
