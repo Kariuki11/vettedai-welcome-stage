@@ -13,7 +13,7 @@ import { StatusBadge } from "@/components/project/StatusBadge";
 const STRATEGY_CALL_URL = "https://calendly.com/lemuelabishua";
 const SHORTLIST_URL = "https://cal.mixmax.com/ventureforafrica/antler_30";
 
-type ProjectDetail = Pick<
+type ProjectDetailRow = Pick<
   Database["public"]["Tables"]["projects"]["Row"],
   | "id"
   | "role_title"
@@ -24,6 +24,10 @@ type ProjectDetail = Pick<
   | "candidate_count"
   | "created_at"
 >;
+
+type ProjectDetail = ProjectDetailRow & {
+  proof_tier?: string | null;
+};
 
 type StatusValue = Parameters<typeof StatusBadge>[0]["status"];
 
@@ -39,10 +43,152 @@ const formatCandidateSource = (source?: string | null) => {
 
 const formatProofLevel = (tierName?: string | null) => tierName || "Proof level not selected";
 
-const statusIsPendingActivation = (status?: string | null) =>
-  status === "pending_activation" || status === "pending";
-const statusIsActivationInProgress = (status?: string | null) =>
-  status === "activation_in_progress" || status === "awaiting_setup_call";
+const STATUS_PENDING_ACTIVATION = "pending_activation";
+const STATUS_ACTIVATION_IN_PROGRESS = "activation_in_progress";
+
+type PendingActivationStateProps = {
+  project: ProjectDetail;
+  onConfirmActivation: () => Promise<void>;
+  isUpdating: boolean;
+};
+
+type ActivationInProgressStateProps = {
+  project: ProjectDetail;
+};
+
+const PendingActivationState = ({ project, onConfirmActivation, isUpdating }: PendingActivationStateProps) => (
+  <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr]">
+    <Card className="border border-border shadow-sm">
+      <CardHeader>
+        <CardTitle>Your Project Configuration</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Review the selections you made in the project wizard. These guide our team before the activation call.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Job Summary</h3>
+          <p className="text-base leading-relaxed text-foreground">
+            {project.job_summary?.trim() || "You haven't provided a job summary yet."}
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Candidate Source</h3>
+          <p className="text-base text-foreground">{formatCandidateSource(project.candidate_source)}</p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Proof Level</h3>
+          <p className="text-base text-foreground">{formatProofLevel(project.proof_tier ?? project.tier_name)}</p>
+        </div>
+
+        {typeof project.candidate_count === "number" && (
+          <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Candidate Count</h3>
+            <p className="text-base text-foreground">{project.candidate_count}</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+
+    <Card className="border border-border shadow-sm bg-muted/30">
+      <CardHeader>
+        <CardTitle>Your Project is Ready for Activation</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          The final step is a 15-minute setup call to confirm your evaluation criteria. This ensures the Proof of Work task is
+          perfectly tuned to find your ideal candidate.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-3">
+          <Button asChild className="w-full justify-center" variant="default">
+            <a href={STRATEGY_CALL_URL} target="_blank" rel="noopener noreferrer">
+              Strategy Call with a Product Expert
+            </a>
+          </Button>
+          <Button asChild className="w-full justify-center" variant="outline">
+            <a href={SHORTLIST_URL} target="_blank" rel="noopener noreferrer">
+              Deploy Your First VettedAI Shortlist
+            </a>
+          </Button>
+        </div>
+
+        <div className="rounded-lg border border-dashed border-border bg-background p-4 text-sm text-muted-foreground">
+          Confirm once you've booked your call so we can start preparing your activation.
+        </div>
+
+        <Button className="w-full" onClick={onConfirmActivation} disabled={isUpdating}>
+          {isUpdating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin mr-2" /> Updating status...
+            </>
+          ) : (
+            "I've Scheduled My Call"
+          )}
+        </Button>
+      </CardContent>
+    </Card>
+  </div>
+);
+
+const ActivationInProgressState = ({ project }: ActivationInProgressStateProps) => (
+  <Card className="border border-border shadow-sm">
+    <CardHeader className="space-y-3">
+      <Badge variant="secondary" className="w-fit bg-blue-100 text-blue-700 border-blue-200">
+        Activation in Progress
+      </Badge>
+      <CardTitle className="text-2xl">Your setup call is confirmed.</CardTitle>
+      <p className="text-muted-foreground">
+        We're excited to speak with you. Please check your email for the calendar invite.
+      </p>
+    </CardHeader>
+    <CardContent className="space-y-8">
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold">Why We Start with a Conversation.</h2>
+        <p className="text-muted-foreground leading-relaxed">
+          At VettedAI, "Proof of Work" isn't a generic test. It's a precise simulation of the role, designed to reveal a
+          candidate's true ability. Your setup call is a 15-minute strategy session where we fine-tune the task to ensure it
+          captures the exact signals you care about. This collaborative step is the secret to delivering a high-confidence
+          shortlist.
+        </p>
+      </section>
+
+      <section className="space-y-4">
+        <h3 className="text-lg font-semibold">What happens next</h3>
+        <ol className="relative border-l border-border pl-6 space-y-6">
+          <li className="ml-4">
+            <span className="absolute -left-9 flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-700">
+              <CheckCircle2 className="h-4 w-4" />
+            </span>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-green-700">Step 1 · Setup Call</p>
+              <p className="text-sm text-muted-foreground">✓ Completed</p>
+            </div>
+          </li>
+          <li className="ml-4">
+            <span className="absolute -left-9 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+              <Clock3 className="h-4 w-4" />
+            </span>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-blue-700">Step 2 · Task Deployment &amp; Vetting</p>
+              <p className="text-sm text-muted-foreground">In progress now</p>
+            </div>
+          </li>
+          <li className="ml-4">
+            <span className="absolute -left-9 flex h-6 w-6 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <ListChecks className="h-4 w-4" />
+            </span>
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-foreground">Step 3 · Shortlist Delivered</p>
+              <p className="text-sm text-muted-foreground">We'll send your curated shortlist once vetting is complete.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+    </CardContent>
+  </Card>
+);
 
 const ProjectDetailPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -60,15 +206,17 @@ const ProjectDetailPage = () => {
 
       const { data, error } = await supabase
         .from("projects")
-        .select("id, role_title, status, job_summary, candidate_source, tier_name, candidate_count, created_at")
+        .select(
+          "id, role_title, status, job_summary, candidate_source, tier_name, candidate_count, created_at"
+        )
         .eq("id", projectId)
-        .single<ProjectDetail>();
+        .single<ProjectDetailRow>();
 
       if (error) {
         throw error;
       }
 
-      return data;
+      return { ...data, proof_tier: data.tier_name } satisfies ProjectDetail;
     },
   });
 
@@ -123,11 +271,10 @@ const ProjectDetailPage = () => {
     );
   }
 
-  const statusForBadge: StatusValue = statusIsPendingActivation(project.status)
-    ? "pending_activation"
-    : statusIsActivationInProgress(project.status)
-      ? "activation_in_progress"
-      : ((project.status as StatusValue) ?? "pending_activation");
+  const statusForBadge: StatusValue =
+    project.status === STATUS_PENDING_ACTIVATION || project.status === STATUS_ACTIVATION_IN_PROGRESS
+      ? (project.status as StatusValue)
+      : ((project.status as StatusValue) ?? STATUS_PENDING_ACTIVATION);
 
   return (
     <div className="min-h-screen bg-background">
@@ -148,140 +295,14 @@ const ProjectDetailPage = () => {
           <StatusBadge status={statusForBadge} />
         </header>
 
-        {statusIsPendingActivation(project.status) ? (
-          <div className="grid gap-8 lg:grid-cols-[1.15fr_1fr]">
-            <Card className="border border-border shadow-sm">
-              <CardHeader>
-                <CardTitle>Your Project Configuration</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Review the selections you made in the project wizard. These guide our team before the activation call.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Job Summary</h3>
-                  <p className="text-base leading-relaxed text-foreground">
-                    {project.job_summary?.trim() || "You haven't provided a job summary yet."}
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Candidate Source</h3>
-                  <p className="text-base text-foreground">{formatCandidateSource(project.candidate_source)}</p>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Proof Level</h3>
-                  <p className="text-base text-foreground">{formatProofLevel(project.tier_name)}</p>
-                </div>
-
-                {typeof project.candidate_count === "number" && (
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Candidate Count</h3>
-                    <p className="text-base text-foreground">{project.candidate_count}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="border border-border shadow-sm bg-muted/30">
-              <CardHeader>
-                <CardTitle>Your Project is Ready for Activation</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  The final step is a 15-minute setup call to confirm your evaluation criteria. This ensures the Proof of Work task
-                  is perfectly tuned to find your ideal candidate.
-                </p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <Button asChild className="w-full justify-center" variant="default">
-                    <a href={STRATEGY_CALL_URL} target="_blank" rel="noopener noreferrer">
-                      Strategy Call with a Product Expert
-                    </a>
-                  </Button>
-                  <Button asChild className="w-full justify-center" variant="outline">
-                    <a href={SHORTLIST_URL} target="_blank" rel="noopener noreferrer">
-                      Deploy Your First VettedAI Shortlist
-                    </a>
-                  </Button>
-                </div>
-
-                <div className="rounded-lg border border-dashed border-border bg-background p-4 text-sm text-muted-foreground">
-                  Confirm once you've booked your call so we can start preparing your activation.
-                </div>
-
-                <Button
-                  className="w-full"
-                  onClick={handleStatusConfirmation}
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" /> Updating status...
-                    </>
-                  ) : (
-                    "I've Scheduled My Call"
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        ) : statusIsActivationInProgress(project.status) ? (
-          <Card className="border border-border shadow-sm">
-            <CardHeader className="space-y-3">
-              <Badge variant="secondary" className="w-fit bg-green-100 text-green-700 border-green-200">
-                Setup Call Confirmed
-              </Badge>
-              <CardTitle className="text-2xl">Your setup call is confirmed.</CardTitle>
-              <p className="text-muted-foreground">
-                We're excited to speak with you. Please check your email for the calendar invite.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-8">
-              <section className="space-y-3">
-                <h2 className="text-xl font-semibold">Why We Start with a Conversation.</h2>
-                <p className="text-muted-foreground leading-relaxed">
-                  At VettedAI, "Proof of Work" isn't a generic test. It's a precise simulation of the role, designed to reveal a
-                  candidate's true ability. Your setup call is a 15-minute strategy session where we fine-tune the task to ensure it
-                  captures the exact signals you care about. This collaborative step is the secret to delivering a high-confidence
-                  shortlist.
-                </p>
-              </section>
-
-              <section className="space-y-4">
-                <h3 className="text-lg font-semibold">What happens next</h3>
-                <ol className="relative border-l border-border pl-6 space-y-6">
-                  <li className="ml-4">
-                    <span className="absolute -left-9 flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-700">
-                      <CheckCircle2 className="h-4 w-4" />
-                    </span>
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-green-700">Step 1 · Setup Call</p>
-                      <p className="text-sm text-muted-foreground">✓ Completed</p>
-                    </div>
-                  </li>
-                  <li className="ml-4">
-                    <span className="absolute -left-9 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-700">
-                      <Clock3 className="h-4 w-4" />
-                    </span>
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-blue-700">Step 2 · Task Deployment &amp; Vetting</p>
-                      <p className="text-sm text-muted-foreground">In progress now</p>
-                    </div>
-                  </li>
-                  <li className="ml-4">
-                    <span className="absolute -left-9 flex h-6 w-6 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                      <ListChecks className="h-4 w-4" />
-                    </span>
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold text-foreground">Step 3 · Shortlist Delivered</p>
-                      <p className="text-sm text-muted-foreground">We'll send your curated shortlist once vetting is complete.</p>
-                    </div>
-                  </li>
-                </ol>
-              </section>
-            </CardContent>
-          </Card>
+        {project.status === STATUS_PENDING_ACTIVATION ? (
+          <PendingActivationState
+            project={project}
+            onConfirmActivation={handleStatusConfirmation}
+            isUpdating={isUpdating}
+          />
+        ) : project.status === STATUS_ACTIVATION_IN_PROGRESS ? (
+          <ActivationInProgressState project={project} />
         ) : (
           <Card className="border border-border shadow-sm">
             <CardHeader className="space-y-2">
