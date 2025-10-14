@@ -34,7 +34,7 @@ const ActivationInProgressView = ({ project, onBack }: ActivationInProgressViewP
           <CardContent className="space-y-8">
             <section className="space-y-2">
               <h2 className="text-2xl font-semibold text-foreground">
-                Setup call confirmed. Thanks for confirming—your activation is underway.
+                Your setup call is confirmed. We're excited to speak with you.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
                 Keep an eye on your inbox—we'll share calendar details and any prep materials there.

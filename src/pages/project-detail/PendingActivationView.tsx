@@ -82,14 +82,7 @@ const PendingActivationView = ({ project, onBack, onConfirmActivation, isConfirm
           </Card>
 
           <Card className="border border-border bg-muted/30 shadow-sm">
-            <CardHeader>
-              <CardTitle>Your Project is Ready for Activation</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                The final step is a 15-minute setup call to confirm your evaluation criteria. This ensures the Proof of Work
-                task is perfectly tuned to find your ideal candidate.
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="space-y-3">
                 <Button asChild className="w-full justify-center" variant="default">
                   <a href={STRATEGY_CALL_URL} target="_blank" rel="noopener noreferrer">

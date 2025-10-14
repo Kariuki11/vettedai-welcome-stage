@@ -58,10 +58,10 @@ const ProjectDetailPage = () => {
     if (!projectId) return;
 
     setIsUpdating(true);
-    const { error } = await supabase.rpc("update_project_status", {
-      project_id: projectId,
-      new_status: STATUS_ACTIVATION_IN_PROGRESS,
-    });
+    const { error } = await supabase
+      .from("projects")
+      .update({ status: STATUS_ACTIVATION_IN_PROGRESS })
+      .eq("id", projectId);
 
     if (error) {
       toast({
@@ -119,23 +119,9 @@ const ProjectDetailPage = () => {
     return <ActivationInProgressView project={project} onBack={() => navigate("/workspace")} />;
   }
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6">
-      <Card className="max-w-md border border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-xl">This project is already underway</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 text-muted-foreground">
-          <p>
-            Status updates are only required for activation. Continue monitoring progress from your dashboard.
-          </p>
-          <Button onClick={() => navigate("/workspace")} variant="secondary">
-            Return to Workspace
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  // Unknown status - redirect to workspace
+  navigate("/workspace");
+  return null;
 };
 
 export default ProjectDetailPage;
