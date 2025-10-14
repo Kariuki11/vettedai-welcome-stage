@@ -58,7 +58,7 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { toast } = useToast();
-  const { setStep1Data, step1Data } = useSignupFlow();
+  const { setStep1Data, step1Data, password: storedPassword, setPassword } = useSignupFlow();
   const navigate = useNavigate();
 
   const form = useForm<Step1FormData>({
@@ -68,7 +68,7 @@ const Signup = () => {
       fullName: step1Data?.fullName ?? "",
       companyName: step1Data?.companyName ?? "",
       email: step1Data?.email ?? "",
-      password: step1Data?.password ?? "",
+      password: storedPassword ?? "",
       confirmPassword: "",
     },
   });
@@ -81,19 +81,20 @@ const Signup = () => {
         fullName: step1Data.fullName,
         companyName: step1Data.companyName,
         email: step1Data.email,
-        password: step1Data.password,
+        password: storedPassword ?? "",
         confirmPassword: "",
       });
     }
-  }, [reset, step1Data]);
+  }, [reset, step1Data, storedPassword]);
 
   const password = form.watch("password");
   const passwordStrength = password ? calculatePasswordStrength(password) : null;
 
   const onSubmit = async (data: Step1FormData) => {
     try {
-      const { confirmPassword: _confirmPassword, ...sanitizedData } = data;
-      setStep1Data(sanitizedData);
+      const { confirmPassword: _confirmPassword, password: passwordValue, ...profileData } = data;
+      setStep1Data(profileData);
+      setPassword(passwordValue);
       navigate("/signup/context");
     } catch (error: any) {
       toast({

@@ -61,13 +61,13 @@ const SignupContext = () => {
   const { completeSignUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { step1Data, clearStep1Data } = useSignupFlow();
+  const { step1Data, password, clearStep1Data } = useSignupFlow();
 
   useEffect(() => {
-    if (!step1Data) {
+    if (!step1Data || !password) {
       navigate("/signup");
     }
-  }, [navigate, step1Data]);
+  }, [navigate, step1Data, password]);
 
   const form = useForm<Step2FormData>({
     resolver: zodResolver(step2Schema),
@@ -85,7 +85,16 @@ const SignupContext = () => {
   });
 
   const onSubmit = async (data: Step2FormData) => {
-    if (!step1Data) return;
+    if (!step1Data || !password) {
+      toast({
+        title: "Session expired",
+        description: "Please restart the signup process to continue.",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      navigate("/signup");
+      return;
+    }
 
     setIsSubmitting(true);
     
@@ -95,7 +104,7 @@ const SignupContext = () => {
 
       const { data: authData, error } = await completeSignUp(
         step1Data.email,
-        step1Data.password,
+        password,
         step1Data.fullName,
         step1Data.companyName,
         data.userRole,
@@ -153,7 +162,7 @@ const SignupContext = () => {
     );
   }
 
-  if (!step1Data) {
+  if (!step1Data || !password) {
     return null;
   }
 
