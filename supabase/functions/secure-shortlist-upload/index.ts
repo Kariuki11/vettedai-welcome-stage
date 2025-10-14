@@ -129,7 +129,11 @@ serve(async (req) => {
       throw new Error("Unable to verify project access");
     }
 
-    if (!project || !project.recruiter || project.recruiter.user_id !== user.id) {
+    const recruiterRecord = Array.isArray(project?.recruiter)
+      ? project.recruiter[0]
+      : project?.recruiter ?? null;
+
+    if (!project || !recruiterRecord || recruiterRecord.user_id !== user.id) {
       return new Response(JSON.stringify({ error: "Project not found or access denied" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
