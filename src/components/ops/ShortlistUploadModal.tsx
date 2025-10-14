@@ -23,13 +23,27 @@ export const ShortlistUploadModal = ({ projectId, onClose }: ShortlistUploadModa
 
     setUploading(true);
     try {
-      // Upload file to storage
-      const filePath = `${projectId}/shortlist_${Date.now()}.csv`;
-      const { error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(filePath, file);
+      const formData = new FormData();
+      formData.append('project_id', projectId);
+      formData.append('file', file);
 
-      if (uploadError) throw uploadError;
+      const { data, error: functionError } = await supabase.functions.invoke(
+        'secure-shortlist-upload',
+        {
+          body: formData,
+        }
+      );
+
+      if (functionError) {
+        throw new Error(functionError.message || 'Failed to upload shortlist');
+      }
+
+      const filePath = data?.file_path as string | undefined;
+      const sanitizedFileName = data?.sanitized_name as string | undefined;
+
+      if (!filePath) {
+        throw new Error('Upload failed: missing file path');
+      }
 
       // Create evaluation record
       const { error: evalError } = await supabase.from('evaluations').insert({
@@ -47,7 +61,10 @@ export const ShortlistUploadModal = ({ projectId, onClose }: ShortlistUploadModa
       await supabase.from('analytics_events').insert({
         event_type: 'ops_shortlist_uploaded',
         project_id: projectId,
-        metadata: { file_name: file.name }
+        metadata: {
+          file_name: sanitizedFileName || file.name,
+          original_file_name: file.name,
+        }
       });
 
       toast.success('Shortlist uploaded successfully!');
