@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
 import {
   Form,
@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useSignupFlow } from "@/hooks/useSignupFlow";
 import {
   referralSourceEnum,
   referralSourceOptions,
@@ -53,40 +54,20 @@ const step2Schema = z.object({
 
 type Step2FormData = z.infer<typeof step2Schema>;
 
-interface Step1Data {
-  fullName: string;
-  companyName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
 const SignupContext = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [step1Data, setStep1Data] = useState<Step1Data | null>(null);
-  
+
   const { completeSignUp } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const location = useLocation();
+  const { step1Data, clearStep1Data } = useSignupFlow();
 
   useEffect(() => {
-    const stateData = location.state?.step1Data;
-    const sessionData = sessionStorage.getItem("signup.step1");
-    
-    if (stateData) {
-      setStep1Data(stateData);
-    } else if (sessionData) {
-      try {
-        setStep1Data(JSON.parse(sessionData));
-      } catch {
-        navigate("/signup");
-      }
-    } else {
+    if (!step1Data) {
       navigate("/signup");
     }
-  }, [location, navigate]);
+  }, [navigate, step1Data]);
 
   const form = useForm<Step2FormData>({
     resolver: zodResolver(step2Schema),
@@ -132,9 +113,9 @@ const SignupContext = () => {
         return;
       }
       
-      sessionStorage.removeItem("signup.step1");
-      
       setIsSuccess(true);
+
+      clearStep1Data();
       
       setTimeout(() => {
         navigate('/workspace');
