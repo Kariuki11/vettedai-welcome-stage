@@ -86,15 +86,18 @@ export default function BookCall() {
       ? wizardState.candidateCount || wizardState.uploadedResumes?.length || 0
       : wizardState.candidateCount || 0;
 
+    // Use tier from wizard state if available, otherwise fallback to default
+    const selectedTier = wizardState.selectedTier || DEFAULT_TIER;
+    
     const { data: projectId, error } = await supabase
       .rpc('create_project_for_current_user', {
         _role_title: roleTitle,
         _job_description: jobDescription,
         _job_summary: jobSummary,
-        _tier_id: DEFAULT_TIER.id,
-        _tier_name: DEFAULT_TIER.name,
-        _anchor_price: DEFAULT_TIER.anchorPrice,
-        _pilot_price: DEFAULT_TIER.pilotPrice,
+        _tier_id: selectedTier.id,
+        _tier_name: selectedTier.name,
+        _anchor_price: selectedTier.anchorPrice,
+        _pilot_price: selectedTier.pilotPrice,
         _candidate_source: candidateSource,
         _candidate_count: candidateCount,
       });

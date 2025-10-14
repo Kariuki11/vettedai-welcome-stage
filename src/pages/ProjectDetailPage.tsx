@@ -25,9 +25,7 @@ type ProjectDetailRow = Pick<
   | "created_at"
 >;
 
-type ProjectDetail = ProjectDetailRow & {
-  proof_tier?: string | null;
-};
+type ProjectDetail = ProjectDetailRow;
 
 type StatusValue = Parameters<typeof StatusBadge>[0]["status"];
 
@@ -80,7 +78,7 @@ const PendingActivationState = ({ project, onConfirmActivation, isUpdating }: Pe
 
         <div className="space-y-2">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Proof Level</h3>
-          <p className="text-base text-foreground">{formatProofLevel(project.proof_tier ?? project.tier_name)}</p>
+          <p className="text-base text-foreground">{formatProofLevel(project.tier_name)}</p>
         </div>
 
         {typeof project.candidate_count === "number" && (
@@ -216,7 +214,7 @@ const ProjectDetailPage = () => {
         throw error;
       }
 
-      return { ...data, proof_tier: data.tier_name } satisfies ProjectDetail;
+      return data satisfies ProjectDetail;
     },
   });
 
@@ -224,10 +222,10 @@ const ProjectDetailPage = () => {
     if (!projectId) return;
 
     setIsUpdating(true);
-    const { error } = await supabase.rpc("update_project_status", {
-      project_id: projectId,
-      new_status: "activation_in_progress",
-    });
+    const { error } = await supabase
+      .from("projects")
+      .update({ status: "activation_in_progress" })
+      .eq("id", projectId);
 
     if (error) {
       toast({

@@ -432,7 +432,6 @@ export type Database = {
           _role_title: string
           _tier_id: number
           _tier_name: string
-          _user_id?: string
         }
         Returns: string
       }
@@ -466,13 +465,6 @@ export type Database = {
       is_email_whitelisted: {
         Args: { _email: string }
         Returns: boolean
-      }
-      update_project_status: {
-        Args: {
-          new_status: string
-          project_id: string
-        }
-        Returns: undefined
       }
     }
     Enums: {
