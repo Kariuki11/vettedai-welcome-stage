@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.1";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -12,6 +13,78 @@ serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Supabase environment variables are not configured');
+    }
+
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { Authorization: authHeader },
+      },
+    });
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabaseClient.auth.getUser();
+
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const upstashUrl = Deno.env.get('UPSTASH_REDIS_REST_URL');
+    const upstashToken = Deno.env.get('UPSTASH_REDIS_REST_TOKEN');
+    if (!upstashUrl || !upstashToken) {
+      throw new Error('Rate limiting environment variables are not configured');
+    }
+
+    const rateLimitKey = `parse-job-description:${user.id}`;
+    const rateLimitResponse = await fetch(`${upstashUrl}/pipeline`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${upstashToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify([
+        ['INCR', rateLimitKey],
+        ['EXPIRE', rateLimitKey, 60],
+      ]),
+    });
+
+    if (!rateLimitResponse.ok) {
+      console.error('Failed to enforce rate limit:', rateLimitResponse.status, await rateLimitResponse.text());
+      throw new Error('Unable to enforce rate limit');
+    }
+
+    const rateLimitData = await rateLimitResponse.json();
+    const requestCount = Array.isArray(rateLimitData?.result)
+      ? Number(rateLimitData.result[0])
+      : undefined;
+
+    if (Number.isNaN(requestCount) || requestCount === undefined) {
+      throw new Error('Unexpected rate limit response');
+    }
+
+    if (requestCount > 10) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please wait before retrying.' }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { jd_text } = await req.json();
 
     if (!jd_text || jd_text.trim().length < 50) {
