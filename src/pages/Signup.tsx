@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useSignupFlow } from "@/hooks/useSignupFlow";
 import { cn } from "@/lib/utils";
 
 const step1Schema = z.object({
@@ -58,27 +58,43 @@ const Signup = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { toast } = useToast();
+  const { setStep1Data, step1Data } = useSignupFlow();
   const navigate = useNavigate();
 
   const form = useForm<Step1FormData>({
     resolver: zodResolver(step1Schema),
     mode: "onChange",
     defaultValues: {
-      fullName: "",
-      companyName: "",
-      email: "",
-      password: "",
+      fullName: step1Data?.fullName ?? "",
+      companyName: step1Data?.companyName ?? "",
+      email: step1Data?.email ?? "",
+      password: step1Data?.password ?? "",
       confirmPassword: "",
     },
   });
+
+  const { reset } = form;
+
+  useEffect(() => {
+    if (step1Data) {
+      reset({
+        fullName: step1Data.fullName,
+        companyName: step1Data.companyName,
+        email: step1Data.email,
+        password: step1Data.password,
+        confirmPassword: "",
+      });
+    }
+  }, [reset, step1Data]);
 
   const password = form.watch("password");
   const passwordStrength = password ? calculatePasswordStrength(password) : null;
 
   const onSubmit = async (data: Step1FormData) => {
     try {
-      sessionStorage.setItem("signup.step1", JSON.stringify(data));
-      navigate("/signup/context", { state: { step1Data: data } });
+      const { confirmPassword: _confirmPassword, ...sanitizedData } = data;
+      setStep1Data(sanitizedData);
+      navigate("/signup/context");
     } catch (error: any) {
       toast({
         title: "Error",

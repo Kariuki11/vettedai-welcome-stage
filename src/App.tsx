@@ -27,6 +27,7 @@ import OpsConsole from "./pages/OpsConsole";
 import ActiveProjects from "./pages/admin/ActiveProjects";
 import NotFound from "./pages/NotFound";
 import { ProjectWizardProvider } from "./hooks/useProjectWizard";
+import { SignupFlowProvider } from "./hooks/useSignupFlow";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient({
@@ -44,7 +45,8 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
+            <SignupFlowProvider>
+              <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
@@ -125,7 +127,8 @@ const App = () => {
 
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
+              </Routes>
+            </SignupFlowProvider>
           </BrowserRouter>
         </TooltipProvider>
       </ProjectWizardProvider>
