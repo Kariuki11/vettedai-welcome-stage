@@ -34,6 +34,8 @@ const adminLoginSchema = z.object({
   password: z.string().min(1, "Password is required")
 });
 
+const GENERIC_SIGNUP_MESSAGE = "If your email is authorized, you will receive a confirmation link.";
+
 export default function AdminAuth() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
@@ -131,26 +133,18 @@ export default function AdminAuth() {
 
       console.log('Starting admin signup for:', normalizedEmail);
 
-      // Check if email is whitelisted using RPC
-      const { data: isWhitelisted, error: whitelistError } = await supabase
-        .rpc('is_email_whitelisted', { _email: normalizedEmail });
-
-      if (whitelistError) {
-        console.error('Whitelist check error:', whitelistError);
-        throw new Error('Failed to verify email authorization');
-      }
-
-      if (!isWhitelisted) {
+      const showGenericSignupMessage = () =>
         toast({
-          title: "Access denied",
-          description: "This email is not authorized for admin access. Contact tobi@venturefor.africa to request access.",
-          variant: "destructive",
+          title: "Check your email",
+          description: GENERIC_SIGNUP_MESSAGE,
         });
-        setIsLoading(false);
-        return;
-      }
 
-      console.log('Email whitelisted, creating auth user...');
+      const handleGenericSuccessResponse = () => {
+        showGenericSignupMessage();
+        navigate('/admin/login');
+      };
+
+      console.log('Creating auth user...');
 
       // Create auth user with validated data
       const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -166,6 +160,11 @@ export default function AdminAuth() {
 
       if (authError) {
         console.error('Auth signup error:', authError);
+        const errorMessage = authError.message?.toLowerCase() || "";
+        if (errorMessage.includes('already registered') || errorMessage.includes('already exists')) {
+          handleGenericSuccessResponse();
+          return;
+        }
         throw new Error(`Signup failed: ${authError.message}`);
       }
 
@@ -174,6 +173,23 @@ export default function AdminAuth() {
       }
 
       console.log('User created successfully:', authData.user.id);
+
+      // Check if email is whitelisted using RPC after user creation
+      const { data: isWhitelisted, error: whitelistError } = await supabase
+        .rpc('is_email_whitelisted', { _email: normalizedEmail });
+
+      if (whitelistError) {
+        console.error('Whitelist check error:', whitelistError);
+        throw new Error('Failed to verify email authorization');
+      }
+
+      if (!isWhitelisted) {
+        console.log('Email not whitelisted; skipping admin provisioning.');
+        handleGenericSuccessResponse();
+        return;
+      }
+
+      console.log('Email whitelisted, provisioning admin access...');
 
       // Create recruiter profile for admin (so they can test features)
       const { error: recruiterError } = await supabase.from('recruiters').insert({
@@ -224,21 +240,11 @@ export default function AdminAuth() {
 
         console.log('Admin role verified successfully');
 
-        toast({
-          title: "Account created!",
-          description: "Your admin account has been created successfully.",
-        });
-
-        navigate('/admin/dashboard');
+        handleGenericSuccessResponse();
       } else {
         console.log('No active session returned after signup; relying on automatic whitelist trigger.');
 
-        toast({
-          title: "Account created!",
-          description: "Check your inbox to confirm your email. Admin access will activate automatically once verified.",
-        });
-
-        navigate('/admin/login');
+        handleGenericSuccessResponse();
       }
     } catch (error: any) {
       console.error('Signup error:', error);
