@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import vettedLandscapeLogo from "@/assets/vetted-landscape-logo-hero.svg";
+import vettedLandscapeLogo from "@/assets/vetted-landscape-logo.png";
 
 interface HeroSectionProps {
   onCtaClick?: () => void;
