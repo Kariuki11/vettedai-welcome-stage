@@ -54,10 +54,11 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
       <div className="max-w-6xl mx-auto px-6 py-24 lg:py-28">
         <div className="grid lg:grid-cols-[minmax(0,1.1fr),minmax(0,420px)] gap-16 items-center">
           <div className="space-y-8">
-            <img 
-              src={vettedLandscapeLogo} 
-              alt="VettedAI" 
-              className="h-14 w-auto"
+            <img
+              src={vettedLandscapeLogo}
+              alt="VettedAI"
+              className="w-auto"
+              style={{ minWidth: "45px", height: "auto" }}
             />
             
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-sm font-medium text-primary shadow-sm">
