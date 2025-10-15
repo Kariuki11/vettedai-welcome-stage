@@ -92,8 +92,13 @@ const Signup = () => {
 
   const onSubmit = async (data: Step1FormData) => {
     try {
-      const { confirmPassword: _confirmPassword, password: passwordValue, ...profileData } = data;
-      setStep1Data(profileData);
+      const { confirmPassword: _confirmPassword, password: passwordValue } = data;
+      setStep1Data({
+        fullName: data.fullName,
+        companyName: data.companyName,
+        email: data.email,
+        password: data.password,
+      });
       setPassword(passwordValue);
       navigate("/signup/context");
     } catch (error: any) {
