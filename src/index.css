@@ -161,6 +161,17 @@ All colors MUST be HSL.
 }
 
 @layer components {
+  .landing-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: transparent;
+    box-shadow: none;
+    transition: all 0.3s ease-in-out;
+  }
+
   .nav-scrolled {
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);

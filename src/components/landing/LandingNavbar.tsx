@@ -23,12 +23,8 @@ export const LandingNavbar = () => {
   }, []);
 
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ease-in-out ${
-        isScrolled ? "nav-scrolled" : "bg-transparent shadow-none"
-      }`}
-    >
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <header className={`landing-navbar${isScrolled ? " nav-scrolled" : ""}`}>
+      <div className="max-w-6xl mx-auto px-6 h-[72px] flex items-center justify-between">
         <button
           onClick={() => navigate("/")}
           className="flex items-center hover:opacity-80 transition-opacity"
