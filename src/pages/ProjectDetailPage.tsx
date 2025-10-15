@@ -213,7 +213,6 @@ const ProjectDetailPage = () => {
               tier={{ name: project.tier_name } as any}
               candidateSource={project.candidate_source as 'own' | 'network'}
               candidateCount={project.candidate_count || 0}
-              paymentStatus={project.payment_status as 'paid' | 'pending'}
               status={project.status as any}
               progress={{
                 hoursElapsed: project.hours_elapsed || 0,

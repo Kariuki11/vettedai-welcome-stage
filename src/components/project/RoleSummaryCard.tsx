@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Upload, Network } from "lucide-react";
+import { Upload, Network } from "lucide-react";
 import { TierInfo } from "@/hooks/useChatFlow";
 import { StatusBadge } from "./StatusBadge";
 import { ProgressTimeline } from "./ProgressTimeline";
@@ -9,7 +9,6 @@ interface RoleSummaryCardProps {
   tier: TierInfo;
   candidateSource: 'own' | 'network';
   candidateCount: number;
-  paymentStatus: 'paid' | 'pending';
   status: 'pending' | 'awaiting_setup_call' | 'awaiting' | 'scoring' | 'ready' | 'pending_activation' | 'activation_in_progress' | 'in_progress' | 'completed';
   progress: {
     hoursElapsed: number;
@@ -23,7 +22,6 @@ export const RoleSummaryCard = ({
   tier,
   candidateSource,
   candidateCount,
-  paymentStatus,
   status,
   progress,
 }: RoleSummaryCardProps) => {
@@ -31,10 +29,6 @@ export const RoleSummaryCard = ({
   const sourceText = candidateSource === 'own' 
     ? `${candidateCount} Candidates Uploaded`
     : 'VettedAI Network';
-
-  const paymentStatusText = paymentStatus === 'paid'
-    ? `Paid ($${tier.pilotPrice})`
-    : 'Pending setup call';
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 shadow-md space-y-6">
@@ -51,14 +45,6 @@ export const RoleSummaryCard = ({
           <div className="flex-1">
             <p className="text-sm font-medium">Candidate Source</p>
             <p className="text-sm text-muted-foreground">{sourceText}</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-green-500" />
-          <div className="flex-1">
-            <p className="text-sm font-medium">Payment Status</p>
-            <p className="text-sm text-muted-foreground font-medium">{paymentStatusText}</p>
           </div>
         </div>
       </div>

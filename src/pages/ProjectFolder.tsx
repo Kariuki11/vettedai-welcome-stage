@@ -166,7 +166,6 @@ const ProjectFolder = () => {
               tier={displayProject?.tier || project.tier}
               candidateSource={displayProject?.candidate_source || displayProject?.candidateSource}
               candidateCount={displayProject?.candidate_count || displayProject?.candidateCount}
-              paymentStatus={displayProject?.payment_status || displayProject?.paymentStatus}
               status={displayProject?.status}
               progress={displayProject?.progress || project.progress}
             />
