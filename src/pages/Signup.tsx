@@ -96,8 +96,7 @@ const Signup = () => {
       setStep1Data({
         fullName: data.fullName,
         companyName: data.companyName,
-        email: data.email,
-        password: data.password,
+        email: data.email
       });
       setPassword(passwordValue);
       navigate("/signup/context");

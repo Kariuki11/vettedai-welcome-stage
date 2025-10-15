@@ -10,4 +10,9 @@ export type ProjectDetail = Pick<
   | "tier_name"
   | "candidate_count"
   | "created_at"
+  | "payment_status"
+  | "hours_elapsed"
+  | "candidates_completed"
+  | "total_candidates"
+  | "completion_percentage"
 >;
