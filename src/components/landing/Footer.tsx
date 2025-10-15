@@ -1,11 +1,17 @@
+import vettedLandscapeLogo from "@/assets/vetted-landscape-logo.png";
+
 export const Footer = () => {
   return (
     <footer className="px-6 py-12 border-t border-border/50 bg-background">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo */}
-          <div className="space-y-2">
-            <h3 className="text-lg font-semibold text-primary">VettedAI</h3>
+          <div className="space-y-3">
+            <img 
+              src={vettedLandscapeLogo} 
+              alt="VettedAI" 
+              className="h-8 w-auto"
+            />
             <p className="text-sm text-muted-foreground">
               The Talent Intelligence Workspace
             </p>

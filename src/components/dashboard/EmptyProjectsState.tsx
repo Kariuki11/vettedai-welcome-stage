@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { FolderOpen } from "lucide-react";
+import { FolderOpen, Plus } from "lucide-react";
 
 interface EmptyProjectsStateProps {
   onStartProject: () => void;
@@ -21,7 +21,8 @@ export const EmptyProjectsState = ({ onStartProject }: EmptyProjectsStateProps) 
       </p>
       
       <Button onClick={onStartProject} size="lg">
-        Start Your First Project
+        <Plus className="w-5 h-5 mr-2" />
+        Start New Project
       </Button>
     </div>
   );

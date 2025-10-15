@@ -1,3 +1,4 @@
+import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { WhyItMattersSection } from "@/components/landing/WhyItMattersSection";
 import { PerformanceGraphSection } from "@/components/landing/PerformanceGraphSection";
@@ -9,6 +10,7 @@ import { Footer } from "@/components/landing/Footer";
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <LandingNavbar />
       <HeroSection />
       <WhyItMattersSection />
       <PerformanceGraphSection />

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Check } from "lucide-react";
+import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import {
   Form,
   FormControl,
@@ -142,7 +143,9 @@ const SignupContext = () => {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-b from-background to-muted/30">
+      <>
+        <LandingNavbar />
+        <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-b from-background to-muted/30">
         <div className="w-full max-w-md">
           <div className="bg-card border rounded-lg p-12 shadow-sm">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
@@ -158,7 +161,8 @@ const SignupContext = () => {
             </div>
           </div>
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
@@ -167,8 +171,10 @@ const SignupContext = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/30">
-      <div className="w-full max-w-md space-y-8">
+    <>
+      <LandingNavbar />
+      <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/30">
+        <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">A Little More About You</h1>
           <p className="text-muted-foreground">This helps us tailor your VettedAI experience. Step 2 of 2</p>
@@ -330,8 +336,9 @@ const SignupContext = () => {
             </form>
           </Form>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,8 +1,16 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FolderOpen, Settings, CreditCard, Users, LogOut } from "lucide-react";
+import { FolderOpen, Settings, CreditCard, Users, LogOut, ChevronDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -10,9 +18,6 @@ import vettedLogo from "@/assets/vetted-logo.png";
 
 const navigationItems = [
   { name: "All Projects", href: "/workspace", icon: FolderOpen, enabled: true },
-  { name: "Account Settings", href: "/settings", icon: Settings, enabled: true },
-  { name: "Billing History", href: "/billing", icon: CreditCard, enabled: false },
-  { name: "Invite Team Members", href: "/team", icon: Users, enabled: false },
 ];
 
 export const DashboardSidebar = () => {
@@ -108,21 +113,49 @@ export const DashboardSidebar = () => {
         })}
       </nav>
 
-      <div className="mt-auto pt-6 border-t border-border/60 space-y-4">
-        <div className="flex items-center gap-3">
-          <Avatar className="h-10 w-10">
-            <AvatarFallback>{initials}</AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="text-sm font-medium text-foreground">{fullName}</p>
-            <p className="text-xs text-muted-foreground">Signed in</p>
-          </div>
-        </div>
-
-        <Button variant="outline" className="w-full justify-start gap-2" onClick={handleSignOut}>
-          <LogOut className="w-4 h-4" />
-          Sign out
-        </Button>
+      <div className="mt-auto pt-6 border-t border-border/60">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" className="w-full justify-start gap-3 px-3 h-auto py-2">
+              <Avatar className="h-9 w-9">
+                <AvatarFallback>{initials}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-medium">{fullName}</p>
+                <p className="text-xs text-muted-foreground">Manage account</p>
+              </div>
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            
+            <DropdownMenuItem onClick={() => navigate('/settings')}>
+              <Settings className="h-4 w-4 mr-2" />
+              Account Settings
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem disabled>
+              <CreditCard className="h-4 w-4 mr-2" />
+              Billing History
+              <span className="ml-auto text-xs">Soon</span>
+            </DropdownMenuItem>
+            
+            <DropdownMenuItem disabled>
+              <Users className="h-4 w-4 mr-2" />
+              Invite Team
+              <span className="ml-auto text-xs">Soon</span>
+            </DropdownMenuItem>
+            
+            <DropdownMenuSeparator />
+            
+            <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </aside>
   );

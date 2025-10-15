@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff, Check, X, ArrowRight } from "lucide-react";
+import { LandingNavbar } from "@/components/landing/LandingNavbar";
 import {
   Form,
   FormControl,
@@ -110,8 +111,10 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/30">
-      <div className="w-full max-w-md space-y-8">
+    <>
+      <LandingNavbar />
+      <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-b from-background to-muted/30">
+        <div className="w-full max-w-md space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Create Your Workspace</h1>
           <p className="text-muted-foreground">Step 1 of 2</p>
@@ -320,8 +323,9 @@ const Signup = () => {
             Sign in
           </Link>
         </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
