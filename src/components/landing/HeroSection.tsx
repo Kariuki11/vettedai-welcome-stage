@@ -58,9 +58,9 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
               src={vettedLandscapeLogo}
               alt="VettedAI"
               className="w-auto"
-              style={{ minWidth: "45px", height: "auto" }}
+              style={{ minWidth: "25px", height: "auto" }}
             />
-            
+
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-sm font-medium text-primary shadow-sm">
               <Sparkles className="h-4 w-4" /> The Talent Intelligence Workspace
             </span>
