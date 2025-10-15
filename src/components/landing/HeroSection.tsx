@@ -46,7 +46,7 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-background via-white to-muted/40">
+    <section className="relative overflow-hidden bg-gradient-to-b from-background via-white to-muted/40 pt-[72px]">
       <div className="absolute inset-x-0 top-0 h-64 bg-gradient-to-b from-primary/10 via-transparent to-transparent" />
       <div className="absolute -top-16 -right-24 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
       <div className="absolute -bottom-32 -left-12 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
