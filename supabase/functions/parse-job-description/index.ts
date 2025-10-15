@@ -1,11 +1,14 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.1";
+import { stripHtml } from "https://esm.sh/string-strip-html@9.0.4?deno";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+const MAX_PAYLOAD_LENGTH = 10_000;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -13,6 +16,15 @@ serve(async (req) => {
   }
 
   try {
+    const rawBody = await req.text();
+
+    if (rawBody.length > MAX_PAYLOAD_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: 'Payload too large. Maximum size is 10,000 characters.' }),
+        { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
       return new Response(
@@ -85,9 +97,28 @@ serve(async (req) => {
       );
     }
 
-    const { jd_text } = await req.json();
+    let parsedBody: unknown;
+    try {
+      parsedBody = rawBody ? JSON.parse(rawBody) : {};
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON payload' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    if (!jd_text || jd_text.trim().length < 50) {
+    const { jd_text } = (parsedBody ?? {}) as { jd_text?: unknown };
+
+    if (typeof jd_text !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Job description text is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const sanitizedJdText = stripHtml(jd_text).result.trim();
+
+    if (sanitizedJdText.length < 50) {
       return new Response(
         JSON.stringify({ error: 'Job description text is required and must be at least 50 characters' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -125,7 +156,7 @@ Return structured data with these exact fields.`
           },
           {
             role: 'user',
-            content: `Extract structured data from this job description:\n\n${jd_text}`
+            content: `Extract structured data from this job description:\n\n${sanitizedJdText}`
           }
         ],
         tools: [
