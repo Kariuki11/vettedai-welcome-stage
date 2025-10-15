@@ -60,7 +60,7 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
               className="w-auto"
               style={{ maxWidth: "250px", height: "auto" }}
             />
-            
+
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-sm font-medium text-primary shadow-sm">
               <Sparkles className="h-4 w-4" /> The Talent Intelligence Workspace
             </span>
