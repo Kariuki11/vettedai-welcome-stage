@@ -137,7 +137,7 @@ export const OnboardingWizard = ({ open, onOpenChange }: OnboardingWizardProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader className="space-y-3">
-          <DialogTitle className="text-2xl">Create Your Recruiter Workspace</DialogTitle>
+          <DialogTitle className="text-2xl">Create Your VettedAI Workspace</DialogTitle>
           <DialogDescription>
             Get started in less than a minute. No credit card required.
           </DialogDescription>

@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
+import vettedLogo from "@/assets/vetted-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,9 +21,16 @@ export const ProjectLayout = ({ children }: ProjectLayoutProps) => {
     <div className="min-h-screen bg-[#F9F9F7] flex flex-col">
       <header className="sticky top-0 z-20 bg-white border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold">Recruiter Workspace</h1>
-            <p className="text-xs text-muted-foreground">VettedAI Validation Build</p>
+          <div className="flex items-center gap-3">
+            <img 
+              src={vettedLogo} 
+              alt="VettedAI" 
+              className="h-8 w-auto"
+            />
+            <div>
+              <h1 className="text-xl font-bold">VettedAI</h1>
+              <p className="text-xs text-muted-foreground">Validation Build</p>
+            </div>
           </div>
           
           <DropdownMenu>

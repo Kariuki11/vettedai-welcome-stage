@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import vettedLogo from "@/assets/vetted-logo.png";
 
 export const WorkspaceHeader = () => {
   const navigate = useNavigate();
@@ -64,11 +65,13 @@ export const WorkspaceHeader = () => {
       <div className="max-w-[960px] mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">V</span>
-            </div>
+            <img 
+              src={vettedLogo} 
+              alt="VettedAI" 
+              className="h-8 w-auto"
+            />
             <span className="text-foreground font-semibold">
-              Recruiter GPT <span className="text-muted-foreground font-normal">• Validation Build</span>
+              VettedAI <span className="text-muted-foreground font-normal">• Validation Build</span>
             </span>
           </div>
 

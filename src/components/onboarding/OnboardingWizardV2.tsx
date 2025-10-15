@@ -219,7 +219,7 @@ export const OnboardingWizardV2 = ({ open, onOpenChange }: OnboardingWizardV2Pro
       <Dialog open={open} onOpenChange={handleOpenChange} modal={true}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader className="space-y-2">
-            <DialogTitle className="text-2xl">Create Your Recruiter Workspace</DialogTitle>
+            <DialogTitle className="text-2xl">Create Your VettedAI Workspace</DialogTitle>
             <DialogDescription className="text-muted-foreground">
               Step 1 of 2
             </DialogDescription>
