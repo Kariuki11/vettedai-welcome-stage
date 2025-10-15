@@ -58,7 +58,7 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
               src={vettedLandscapeLogo}
               alt="VettedAI"
               className="w-auto"
-              style={{ minWidth: "25px", height: "auto" }}
+              style={{ maxWidth: "25px", height: "auto" }}
             />
 
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-sm font-medium text-primary shadow-sm">
@@ -70,8 +70,8 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                 Hire on proof,<span className="text-primary"> not promise.</span>
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                Traditional resumes are noise. Forget what candidates say they can do — see what they’ve proven through
-                real tasks designed for your role.
+                Drowning in perfect resumes that fall apart at interview? VettedAI lets you see how people actually
+                work—so you can move forward with confidence, not guesswork.
               </p>
             </div>
 
