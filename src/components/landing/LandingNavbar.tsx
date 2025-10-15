@@ -30,10 +30,10 @@ export const LandingNavbar = () => {
           className="flex items-center hover:opacity-80 transition-opacity"
           aria-label="Go to home"
         >
-          <img 
-            src={vettedLandscapeLogo} 
-            alt="VettedAI" 
-            className="h-8 w-auto"
+          <img
+            src={vettedLandscapeLogo}
+            alt="VettedAI"
+            className="h-12 w-auto"
           />
         </button>
 
