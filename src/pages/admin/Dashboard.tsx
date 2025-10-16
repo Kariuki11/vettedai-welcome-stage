@@ -18,9 +18,22 @@ interface AdminDashboardMetrics {
   awaiting_activation: number;
 }
 
+const DEFAULT_METRICS: AdminDashboardMetrics = {
+  total_signups: 0,
+  projects_created: 0,
+  calls_booked: 0,
+  awaiting_activation: 0,
+};
+
 const numberFormatter = new Intl.NumberFormat("en-US");
 
+const percentageFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 1,
+  minimumFractionDigits: 1,
+});
+
 const formatCount = (value?: number) => numberFormatter.format(value ?? 0);
+const formatPercentage = (value: number) => `${percentageFormatter.format(value)}%`;
 
 const StatCard = ({
   title,
@@ -61,14 +74,7 @@ export default function Dashboard() {
         throw error;
       }
 
-      return (
-        (data as AdminDashboardMetrics) ?? {
-          total_signups: 0,
-          projects_created: 0,
-          calls_booked: 0,
-          awaiting_activation: 0,
-        }
-      );
+      return data ?? DEFAULT_METRICS;
     },
     refetchOnWindowFocus: false,
   });
@@ -80,6 +86,8 @@ export default function Dashboard() {
 
     return (metrics.calls_booked / metrics.projects_created) * 100;
   }, [metrics]);
+
+  const metricsData = metrics ?? DEFAULT_METRICS;
 
   if (isLoading) {
     return (
@@ -137,19 +145,19 @@ export default function Dashboard() {
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               title="Total Signups"
-              value={formatCount(metrics?.total_signups)}
+              value={formatCount(metricsData.total_signups)}
             />
             <StatCard
               title="Projects Created"
-              value={formatCount(metrics?.projects_created)}
+              value={formatCount(metricsData.projects_created)}
             />
             <StatCard
               title="Setup Calls Booked"
-              value={formatCount(metrics?.calls_booked)}
+              value={formatCount(metricsData.calls_booked)}
             />
             <StatCard
               title="Project-to-Call Rate %"
-              value={`${projectToCallRate.toFixed(1)}%`}
+              value={formatPercentage(projectToCallRate)}
               description="Calculated from projects created versus activation calls booked."
             />
           </div>
@@ -168,11 +176,11 @@ export default function Dashboard() {
           <div className="grid gap-6 sm:grid-cols-2">
             <StatCard
               title="Projects Awaiting Activation"
-              value={formatCount(metrics?.awaiting_activation)}
+              value={formatCount(metricsData.awaiting_activation)}
             />
             <StatCard
               title="Projects in Progress"
-              value={formatCount(metrics?.calls_booked)}
+              value={formatCount(metricsData.calls_booked)}
               description="Projects where activation calls are already booked."
             />
           </div>
