@@ -1,27 +1,53 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Project {
   id: string;
   role_title: string;
-  candidates_completed: number;
-  total_candidates: number;
+  candidates_completed: number | null;
+  total_candidates: number | null;
   status: string;
   created_at: string;
+  tier_name?: string | null;
+  sla_deadline?: string | null;
+  recruiter?: {
+    email: string | null;
+  } | null;
 }
+
+const formatStatusLabel = (status: string) => {
+  return status
+    .split("_")
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(" ");
+};
+
+const formatSla = (deadline?: string | null) => {
+  if (!deadline) {
+    return "Coming Soon";
+  }
+
+  const date = new Date(deadline);
+  if (Number.isNaN(date.getTime())) {
+    return "Coming Soon";
+  }
+
+  return date.toLocaleDateString();
+};
 
 export default function ActiveProjects() {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [updates, setUpdates] = useState<Record<string, { completed: number; total: number }>>({});
-  const { toast } = useToast();
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,99 +56,85 @@ export default function ActiveProjects() {
 
   const fetchProjects = async () => {
     const { data, error } = await supabase
-      .from('projects')
-      .select('id, role_title, candidates_completed, total_candidates, status, created_at')
-      .in('status', ['awaiting', 'scoring'])
-      .order('created_at', { ascending: false });
+      .from("projects")
+      .select(
+        "id, role_title, candidates_completed, total_candidates, status, created_at, tier_name, sla_deadline, recruiter:recruiters(email)"
+      )
+      .order("created_at", { ascending: false });
 
     if (error) {
-      console.error('Error fetching projects:', error);
+      console.error("Error fetching projects:", error);
       return;
     }
 
     setProjects(data || []);
-    
-    const initialUpdates: Record<string, { completed: number; total: number }> = {};
-    data?.forEach(project => {
-      initialUpdates[project.id] = {
-        completed: project.candidates_completed || 0,
-        total: project.total_candidates || 0
-      };
+  };
+
+  const filteredProjects = useMemo(() => {
+    return projects.filter((project) => {
+      const matchesSearch = project.role_title
+        .toLowerCase()
+        .includes(searchTerm.trim().toLowerCase());
+      const matchesStatus = statusFilter === "all" || project.status === statusFilter;
+      return matchesSearch && matchesStatus;
     });
-    setUpdates(initialUpdates);
-  };
+  }, [projects, searchTerm, statusFilter]);
 
-  const handleUpdate = async (projectId: string) => {
-    const update = updates[projectId];
-    
-    if (!update || update.completed > update.total) {
-      toast({
-        title: "Invalid values",
-        description: "Completed candidates cannot exceed total candidates",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    const { error } = await supabase
-      .from('projects')
-      .update({
-        candidates_completed: update.completed,
-        total_candidates: update.total
-      })
-      .eq('id', projectId);
-
-    if (error) {
-      toast({
-        title: "Update failed",
-        description: error.message,
-        variant: "destructive"
-      });
-      return;
-    }
-
-    toast({
-      title: "Project updated",
-      description: "Candidate engagement has been updated successfully"
-    });
-
-    fetchProjects();
-  };
-
-  const handleInputChange = (projectId: string, field: 'completed' | 'total', value: string) => {
-    const numValue = parseInt(value) || 0;
-    setUpdates(prev => ({
-      ...prev,
-      [projectId]: {
-        ...prev[projectId],
-        [field]: numValue
-      }
-    }));
-  };
+  const statusOptions = useMemo(() => {
+    const uniqueStatuses = new Set(projects.map((project) => project.status));
+    return ["all", ...Array.from(uniqueStatuses)];
+  }, [projects]);
 
   return (
     <div className="min-h-screen bg-background p-8">
       <div className="max-w-7xl mx-auto">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/workspace')}
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/workspace")}
           className="mb-4"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Workspace
         </Button>
-        
+
         <Card className="p-6">
-          <h1 className="text-3xl font-bold mb-2">Active Projects - Admin Panel</h1>
-          <p className="text-muted-foreground mb-6">
-            Update candidate engagement for active projects
-          </p>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold">Active Projects Ops Console</h1>
+              <p className="text-muted-foreground">
+                Search, filter, and review project progress in one place
+              </p>
+            </div>
+            <div className="flex flex-col gap-4 md:flex-row md:items-center">
+              <Input
+                placeholder="Search by role title"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                className="md:w-64"
+              />
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="md:w-48">
+                  <SelectValue placeholder="Filter by status" />
+                </SelectTrigger>
+                <SelectContent>
+                  {statusOptions.map((statusValue) => (
+                    <SelectItem key={statusValue} value={statusValue}>
+                      {statusValue === "all" ? "All Statuses" : formatStatusLabel(statusValue)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
 
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Project</TableHead>
+                <TableHead>Recruiter</TableHead>
+                <TableHead>Tier</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>SLA</TableHead>
                 <TableHead>Created</TableHead>
                 <TableHead>Completed</TableHead>
                 <TableHead>Total</TableHead>
@@ -130,47 +142,31 @@ export default function ActiveProjects() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {projects.length === 0 ? (
+              {filteredProjects.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                    No active projects found
+                  <TableCell colSpan={9} className="text-center text-muted-foreground py-8">
+                    No projects match the selected filters
                   </TableCell>
                 </TableRow>
               ) : (
-                projects.map((project) => (
+                filteredProjects.map((project) => (
                   <TableRow key={project.id}>
                     <TableCell className="font-medium">{project.role_title}</TableCell>
-                    <TableCell>
-                      <Badge>{project.status}</Badge>
+                    <TableCell className="text-muted-foreground">
+                      {project.recruiter?.email || "—"}
                     </TableCell>
+                    <TableCell>{project.tier_name || "—"}</TableCell>
+                    <TableCell>
+                      <Badge>{formatStatusLabel(project.status)}</Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{formatSla(project.sla_deadline)}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {new Date(project.created_at).toLocaleDateString()}
                     </TableCell>
+                    <TableCell>{project.candidates_completed ?? 0}</TableCell>
+                    <TableCell>{project.total_candidates ?? 0}</TableCell>
                     <TableCell>
-                      <Input
-                        type="number"
-                        min="0"
-                        max={updates[project.id]?.total || 50}
-                        value={updates[project.id]?.completed || 0}
-                        onChange={(e) => handleInputChange(project.id, 'completed', e.target.value)}
-                        className="w-20"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="50"
-                        value={updates[project.id]?.total || 0}
-                        onChange={(e) => handleInputChange(project.id, 'total', e.target.value)}
-                        className="w-20"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={() => handleUpdate(project.id)}
-                        size="sm"
-                      >
+                      <Button size="sm" variant="secondary">
                         Update
                       </Button>
                     </TableCell>
