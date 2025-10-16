@@ -14,7 +14,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import vettedLogo from "@/assets/vetted-logo.png";
 
 const navigationItems = [
   { name: "All Projects", href: "/workspace", icon: FolderOpen, enabled: true },
@@ -56,14 +55,14 @@ export const DashboardSidebar = () => {
   return (
     <aside className="w-64 border-r border-border bg-card p-6 flex flex-col">
       <div className="mb-8 flex items-center gap-3">
-        <img 
-          src={vettedLogo} 
-          alt="VettedAI" 
+        <img
+          src="/favicon.png"
+          alt="VettedAI"
           className="h-10 w-auto"
         />
         <div>
           <h2 className="text-xl font-bold text-primary">VettedAI</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">Validation Build</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Recruiter Workspace</p>
         </div>
       </div>
 
