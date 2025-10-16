@@ -2,30 +2,20 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
 import { useProjectWizard, TierInfo } from "@/hooks/useProjectWizard";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 
 const MicrophoneIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
-    fill="none"
-    strokeWidth={1.5}
-    stroke="currentColor"
+    fill="currentColor"
     className={className}
   >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M8.25 6.75v3a3.75 3.75 0 0 0 7.5 0v-3a3.75 3.75 0 0 0-7.5 0Z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 16.5v4.125M15.75 21H8.25M19.5 10.5v.75a7.5 7.5 0 0 1-15 0v-.75"
-    />
+    <path d="M8.25 4.5a3.75 3.75 0 1 1 7.5 0v6a3.75 3.75 0 1 1-7.5 0v-6Z" />
+    <path d="M5.25 10.5a.75.75 0 0 0-1.5 0v.75a7.5 7.5 0 0 0 6.75 7.47V21H8.25a.75.75 0 0 0 0 1.5h7.5a.75.75 0 0 0 0-1.5h-2.25v-2.28a7.5 7.5 0 0 0 6.75-7.47v-.75a.75.75 0 0 0-1.5 0v.75a6 6 0 1 1-12 0v-.75Z" />
   </svg>
 );
 
@@ -33,17 +23,15 @@ const LightBulbIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
-    fill="none"
-    strokeWidth={1.5}
-    stroke="currentColor"
+    fill="currentColor"
     className={className}
   >
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M9.348 16.155a3.75 3.75 0 0 1-1.848-3.21 4.5 4.5 0 1 1 9 0 3.75 3.75 0 0 1-1.848 3.21c-.788.49-1.152 1.366-1.152 2.115v.18a1.5 1.5 0 0 1-1.5 1.5h-1.5a1.5 1.5 0 0 1-1.5-1.5v-.18c0-.749-.364-1.625-1.152-2.115Z"
+      fillRule="evenodd"
+      d="M12 2.25a7.5 7.5 0 0 0-4.41 13.59c.535.413.91.935 1.114 1.51h6.592c.204-.575.579-1.097 1.114-1.51A7.5 7.5 0 0 0 12 2.25Z"
+      clipRule="evenodd"
     />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 21h6" />
+    <path d="M9.528 18h4.944a1.5 1.5 0 0 1 1.5 1.5v.75A1.5 1.5 0 0 1 14.472 21h-4.944A1.5 1.5 0 0 1 8.028 20.25v-.75A1.5 1.5 0 0 1 9.528 18Z" />
   </svg>
 );
 
@@ -51,20 +39,13 @@ const ShieldCheckIcon = ({ className }: { className?: string }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
-    fill="none"
-    strokeWidth={1.5}
-    stroke="currentColor"
+    fill="currentColor"
     className={className}
   >
     <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M12 3.75 4.5 6v6.75a9 9 0 0 0 5.4 8.28l1.35.57 1.35-.57a9 9 0 0 0 5.4-8.28V6L12 3.75Z"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="m9 12.75 2.25 2.25 4.5-4.5"
+      fillRule="evenodd"
+      d="M11.484 2.132a.75.75 0 0 1 .532 0l7.5 2.75a.75.75 0 0 1 .484.705v6.472a11.25 11.25 0 0 1-7.136 10.455l-1.546.6a.75.75 0 0 1-.552 0l-1.546-.6A11.25 11.25 0 0 1 3 12.059V5.587a.75.75 0 0 1 .484-.705l7.5-2.75Zm3.842 7.222a.75.75 0 0 0-1.06-1.06l-3.546 3.545-1.474-1.474a.75.75 0 1 0-1.06 1.06l2.004 2.005a.75.75 0 0 0 1.06 0l4.076-4.076Z"
+      clipRule="evenodd"
     />
   </svg>
 );
@@ -190,25 +171,25 @@ export default function TierSelection() {
                   <div className="flex h-full flex-col">
                     <div className="flex min-h-[80px] flex-col items-start gap-3">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                        <Icon className="h-6 w-6 text-primary" />
+                        <Icon className="h-6 w-6 text-primary" aria-hidden="true" />
                       </div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-primary">Level</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[#6B7280]">Level</p>
                     </div>
 
-                    <h3 className="mb-4 mt-4 text-xl font-bold">{tier.name}</h3>
+                    <h3 className="mb-4 mt-4 text-xl font-bold text-[#111827]">{tier.name}</h3>
 
                     <div className="space-y-3">
                       <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase">Best for</p>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{bestFor}</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[#6B7280]">Best for</p>
+                        <p className="text-sm text-[#374151] leading-[1.5]">{bestFor}</p>
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase">What it is</p>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{whatItIs}</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[#6B7280]">What it is</p>
+                        <p className="text-sm text-[#374151] leading-[1.5]">{whatItIs}</p>
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase">Output</p>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{output}</p>
+                        <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[#6B7280]">Output</p>
+                        <p className="text-sm text-[#374151] leading-[1.5]">{output}</p>
                       </div>
                     </div>
                   </div>
