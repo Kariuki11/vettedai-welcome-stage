@@ -167,7 +167,7 @@ export default function TierSelection() {
                   onClick={() => setSelectedTier(tier)}
                   aria-pressed={isSelected}
                   className={cn(
-                    "relative group h-full rounded-xl border-2 p-6 text-left shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                    "relative group flex h-full flex-col rounded-xl border-2 p-6 text-left shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                     isSelected
                       ? "border-primary bg-primary/10 shadow-lg"
                       : "bg-card hover:border-primary/70 hover:shadow-md",
@@ -187,15 +187,15 @@ export default function TierSelection() {
                       Recommended
                     </span>
                   )}
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-primary" />
+                  <div className="flex h-full flex-col">
+                    <div className="flex min-h-[80px] flex-col items-start gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                        <Icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-primary">Level</p>
                     </div>
 
-                    <div>
-                      <p className="text-xs font-semibold text-primary uppercase tracking-wide">Level</p>
-                      <h3 className="font-bold text-xl">{tier.name}</h3>
-                    </div>
+                    <h3 className="mb-4 mt-4 text-xl font-bold">{tier.name}</h3>
 
                     <div className="space-y-3">
                       <div>
