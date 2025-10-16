@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FolderOpen, Settings, CreditCard, Users, LogOut, ChevronDown } from "lucide-react";
+import { FolderOpen, Settings, CreditCard, Users, LogOut, ChevronDown, Shield } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ export const DashboardSidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAdmin } = useAuth();
 
   const metadataName = user?.user_metadata && typeof user.user_metadata.full_name === "string"
     ? user.user_metadata.full_name
@@ -36,6 +36,10 @@ export const DashboardSidebar = () => {
     .map((part) => part[0]?.toUpperCase())
     .join("")
     .slice(0, 2) || "V";
+
+  const handleAdminPanel = () => {
+    navigate('/admin/dashboard');
+  };
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -134,7 +138,14 @@ export const DashboardSidebar = () => {
               <Settings className="h-4 w-4 mr-2" />
               Account Settings
             </DropdownMenuItem>
-            
+
+            {isAdmin && (
+              <DropdownMenuItem onClick={handleAdminPanel}>
+                <Shield className="h-4 w-4 mr-2" />
+                Admin Panel
+              </DropdownMenuItem>
+            )}
+
             <DropdownMenuItem disabled>
               <CreditCard className="h-4 w-4 mr-2" />
               Billing History
