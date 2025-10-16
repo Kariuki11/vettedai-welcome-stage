@@ -31,7 +31,7 @@ export default function Dashboard() {
       <main className="flex-1 p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-4xl font-bold text-foreground">Your VettedAI Workspace</h1>
+            <h1 className="text-3xl font-bold text-foreground">Your VettedAI workspace</h1>
             <Button onClick={handleStartNewProject} size="lg" className="gap-2">
               <Plus className="w-5 h-5" />
               Start New Project
