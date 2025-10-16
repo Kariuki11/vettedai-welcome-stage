@@ -1,7 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AdminHeader } from "@/components/admin/AdminHeader";
 
 interface Project {
   id: string;
@@ -48,7 +46,6 @@ export default function ActiveProjects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProjects();
@@ -86,21 +83,14 @@ export default function ActiveProjects() {
   }, [projects]);
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-7xl mx-auto">
-        <Button
-          variant="ghost"
-          onClick={() => navigate("/workspace")}
-          className="mb-4"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Back to Workspace
-        </Button>
-
+    <div className="min-h-screen bg-background">
+      <AdminHeader />
+      
+      <div className="max-w-7xl mx-auto px-6 py-8">
         <Card className="p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-bold">Active Projects Ops Console</h1>
+              <h1 className="text-2xl font-semibold">Active Projects</h1>
               <p className="text-muted-foreground">
                 Search, filter, and review project progress in one place
               </p>
@@ -150,23 +140,23 @@ export default function ActiveProjects() {
                 </TableRow>
               ) : (
                 filteredProjects.map((project) => (
-                  <TableRow key={project.id}>
+                  <TableRow key={project.id} className="hover:bg-muted/50 transition-colors">
                     <TableCell className="font-medium">{project.role_title}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {project.recruiter?.email || "—"}
                     </TableCell>
                     <TableCell>{project.tier_name || "—"}</TableCell>
                     <TableCell>
-                      <Badge>{formatStatusLabel(project.status)}</Badge>
+                      <Badge variant="outline">{formatStatusLabel(project.status)}</Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">{formatSla(project.sla_deadline)}</TableCell>
                     <TableCell className="text-muted-foreground">
                       {new Date(project.created_at).toLocaleDateString()}
                     </TableCell>
-                    <TableCell>{project.candidates_completed ?? 0}</TableCell>
-                    <TableCell>{project.total_candidates ?? 0}</TableCell>
+                    <TableCell className="text-center">{project.candidates_completed ?? 0}</TableCell>
+                    <TableCell className="text-center">{project.total_candidates ?? 0}</TableCell>
                     <TableCell>
-                      <Button size="sm" variant="secondary">
+                      <Button size="sm" variant="secondary" className="hover:bg-primary hover:text-primary-foreground transition-colors">
                         Update
                       </Button>
                     </TableCell>
