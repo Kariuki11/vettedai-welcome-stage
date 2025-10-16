@@ -18,7 +18,7 @@ import vettedLogo from "@/assets/vetted-logo.png";
 export const WorkspaceHeader = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
 
   const { fullName, initials, email } = useMemo(() => {
     const metadataName = user?.user_metadata && typeof user.user_metadata.full_name === "string"
@@ -43,6 +43,10 @@ export const WorkspaceHeader = () => {
 
   const handleAccountSettings = () => {
     navigate("/settings");
+  };
+
+  const handleAdminPanel = () => {
+    navigate("/admin/dashboard");
   };
 
   const handleSignOut = async () => {
@@ -97,6 +101,11 @@ export const WorkspaceHeader = () => {
                 <Settings className="h-4 w-4" />
                 Account settings
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem onSelect={handleAdminPanel} className="cursor-pointer gap-2">
+                  Admin Panel
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem onSelect={handleSignOut} className="cursor-pointer gap-2 text-destructive">
                 <LogOut className="h-4 w-4" />
                 Sign out
