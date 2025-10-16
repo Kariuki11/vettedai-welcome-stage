@@ -2,10 +2,72 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Target, Zap, Crown } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useProjectWizard, TierInfo } from "@/hooks/useProjectWizard";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+
+const MicrophoneIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className={className}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M8.25 6.75v3a3.75 3.75 0 0 0 7.5 0v-3a3.75 3.75 0 0 0-7.5 0Z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 16.5v4.125M15.75 21H8.25M19.5 10.5v.75a7.5 7.5 0 0 1-15 0v-.75"
+    />
+  </svg>
+);
+
+const LightBulbIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className={className}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M9.348 16.155a3.75 3.75 0 0 1-1.848-3.21 4.5 4.5 0 1 1 9 0 3.75 3.75 0 0 1-1.848 3.21c-.788.49-1.152 1.366-1.152 2.115v.18a1.5 1.5 0 0 1-1.5 1.5h-1.5a1.5 1.5 0 0 1-1.5-1.5v-.18c0-.749-.364-1.625-1.152-2.115Z"
+    />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 21h6" />
+  </svg>
+);
+
+const ShieldCheckIcon = ({ className }: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className={className}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M12 3.75 4.5 6v6.75a9 9 0 0 0 5.4 8.28l1.35.57 1.35-.57a9 9 0 0 0 5.4-8.28V6L12 3.75Z"
+    />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="m9 12.75 2.25 2.25 4.5-4.5"
+    />
+  </svg>
+);
 
 const tiers: TierInfo[] = [
   {
@@ -44,18 +106,19 @@ const tiers: TierInfo[] = [
 ];
 
 const tierIcons = {
-  1: Target,
-  2: Zap,
-  3: Crown
+  1: MicrophoneIcon,
+  2: LightBulbIcon,
+  3: ShieldCheckIcon
 };
 
 export default function TierSelection() {
   const navigate = useNavigate();
   const { saveWizardState, wizardState } = useProjectWizard();
   const { toast } = useToast();
-  
+
+  const recommendedTierId = 2;
   const [selectedTier, setSelectedTier] = useState<TierInfo | null>(
-    wizardState.selectedTier || null
+    wizardState.selectedTier || tiers.find((tier) => tier.id === recommendedTierId) || null
   );
 
   const handleContinue = () => {
@@ -92,6 +155,7 @@ export default function TierSelection() {
             {tiers.map((tier) => {
               const Icon = tierIcons[tier.id as keyof typeof tierIcons];
               const isSelected = selectedTier?.id === tier.id;
+              const isRecommended = tier.id === recommendedTierId;
               const bestFor = tier.bestFor ?? tier.description;
               const whatItIs = tier.whatItIs ?? tier.description;
               const output = tier.output ?? "We'll summarize the signal you can expect at this level.";
@@ -99,23 +163,39 @@ export default function TierSelection() {
               return (
                 <button
                   key={tier.id}
+                  type="button"
                   onClick={() => setSelectedTier(tier)}
+                  aria-pressed={isSelected}
                   className={cn(
-                    "p-6 rounded-lg border-2 transition-all text-left h-full",
+                    "relative group flex h-full flex-col rounded-xl border-2 p-6 text-left shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                     isSelected
-                      ? "border-primary bg-primary/5 shadow-lg"
-                      : "border-border hover:border-primary/50"
+                      ? "border-primary bg-primary/10 shadow-lg"
+                      : "bg-card hover:border-primary/70 hover:shadow-md",
+                    !isSelected && !isRecommended && "border-border",
+                    !isSelected && isRecommended && "border-primary/40"
                   )}
                 >
-                  <div className="space-y-4">
-                    <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                      <Icon className="w-6 h-6 text-primary" />
+                  {isRecommended && (
+                    <span
+                      className={cn(
+                        "absolute right-4 top-4 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide",
+                        isSelected
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-primary/40 bg-primary/5 text-primary"
+                      )}
+                    >
+                      Recommended
+                    </span>
+                  )}
+                  <div className="flex h-full flex-col">
+                    <div className="flex min-h-[80px] flex-col items-start gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                        <Icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <p className="text-xs font-semibold uppercase tracking-wide text-primary">Level</p>
                     </div>
 
-                    <div>
-                      <p className="text-xs font-semibold text-primary uppercase tracking-wide">Level</p>
-                      <h3 className="font-bold text-xl">{tier.name}</h3>
-                    </div>
+                    <h3 className="mb-4 mt-4 text-xl font-bold">{tier.name}</h3>
 
                     <div className="space-y-3">
                       <div>
