@@ -121,17 +121,17 @@ export default function TierSelection() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-6xl">
-        <CardHeader>
-          <div className="mb-2 text-sm text-muted-foreground">Step 3 of 4</div>
-          <CardTitle className="text-3xl">How much proof do you need before you shortlist?</CardTitle>
-          <CardDescription>
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <Card className="w-full max-w-7xl shadow-elegant">
+        <CardHeader className="space-y-3 pb-8">
+          <div className="text-sm font-medium text-muted-foreground">Step 3 of 4</div>
+          <CardTitle className="text-3xl font-bold tracking-tight">How much proof do you need before you shortlist?</CardTitle>
+          <CardDescription className="text-base">
             Pick the experience that matches the level of certainty you want before moving candidates forward.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8">
           <div className="grid md:grid-cols-3 gap-6">
             {tiers.map((tier) => {
               const Icon = tierIcons[tier.id as keyof typeof tierIcons];
@@ -148,48 +148,48 @@ export default function TierSelection() {
                   onClick={() => setSelectedTier(tier)}
                   aria-pressed={isSelected}
                   className={cn(
-                    "relative group flex h-full flex-col rounded-xl border-2 p-6 text-left shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                    "relative group flex h-full flex-col rounded-xl border-2 p-6 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     isSelected
-                      ? "border-primary bg-primary/10 shadow-lg"
-                      : "bg-card hover:border-primary/70 hover:shadow-md",
+                      ? "border-primary bg-primary/5 shadow-lg scale-[1.02]"
+                      : "bg-card hover:border-primary/50 hover:shadow-md hover:scale-[1.01]",
                     !isSelected && !isRecommended && "border-border",
-                    !isSelected && isRecommended && "border-primary/40"
+                    !isSelected && isRecommended && "border-primary/30 bg-primary/[0.02]"
                   )}
                 >
                   {isRecommended && (
-                    <span
+                    <div
                       className={cn(
-                        "absolute right-4 top-4 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide",
+                        "absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider shadow-sm transition-colors",
                         isSelected
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-primary/40 bg-primary/5 text-primary"
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-primary/90 text-primary-foreground"
                       )}
                     >
                       Recommended
-                    </span>
+                    </div>
                   )}
-                  <div className="flex h-full flex-col">
-                    <div className="flex min-h-[80px] flex-col items-start gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                        <Icon className="h-6 w-6 text-primary" aria-hidden="true" />
+                  <div className="flex h-full flex-col gap-6">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-sm">
+                        <Icon className="h-7 w-7 text-primary" aria-hidden="true" />
                       </div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[#6B7280]">Level</p>
+                      <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Level</div>
                     </div>
 
-                    <h3 className="mb-4 mt-4 text-xl font-bold text-[#111827]">{tier.name}</h3>
+                    <h3 className="text-2xl font-bold text-foreground">{tier.name}</h3>
 
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[#6B7280]">Best for</p>
-                        <p className="text-sm text-[#374151] leading-[1.5]">{bestFor}</p>
+                    <div className="flex-1 space-y-4">
+                      <div className="space-y-1.5">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Best for</div>
+                        <p className="text-sm text-foreground/80 leading-relaxed">{bestFor}</p>
                       </div>
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[#6B7280]">What it is</p>
-                        <p className="text-sm text-[#374151] leading-[1.5]">{whatItIs}</p>
+                      <div className="space-y-1.5">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">What it is</div>
+                        <p className="text-sm text-foreground/80 leading-relaxed">{whatItIs}</p>
                       </div>
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.05em] text-[#6B7280]">Output</p>
-                        <p className="text-sm text-[#374151] leading-[1.5]">{output}</p>
+                      <div className="space-y-1.5">
+                        <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Output</div>
+                        <p className="text-sm text-foreground/80 leading-relaxed">{output}</p>
                       </div>
                     </div>
                   </div>
@@ -198,15 +198,16 @@ export default function TierSelection() {
             })}
           </div>
 
-          <div className="flex justify-between">
-            <Button onClick={handleBack} variant="outline" size="lg">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+          <div className="flex justify-between pt-4">
+            <Button onClick={handleBack} variant="outline" size="lg" className="gap-2">
+              <ArrowLeft className="w-4 h-4" />
               Back
             </Button>
             <Button
               onClick={handleContinue}
               disabled={!selectedTier}
               size="lg"
+              className="gap-2"
             >
               Continue to Review →
             </Button>

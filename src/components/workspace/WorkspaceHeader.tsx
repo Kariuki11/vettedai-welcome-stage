@@ -80,34 +80,34 @@ export const WorkspaceHeader = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="gap-3 px-2">
-                <Avatar className="h-9 w-9">
+              <Button variant="ghost" className="gap-3 px-2 max-w-[280px]">
+                <Avatar className="h-9 w-9 flex-shrink-0">
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
-                <div className="hidden sm:flex flex-col items-start">
-                  <span className="text-sm font-medium leading-none">{fullName}</span>
+                <div className="hidden sm:flex flex-col items-start min-w-0 flex-1">
+                  <span className="text-sm font-medium leading-none truncate w-full">{fullName}</span>
                   {email && (
-                    <span className="text-xs text-muted-foreground leading-none">{email}</span>
+                    <span className="text-xs text-muted-foreground leading-none truncate w-full mt-1">{email}</span>
                   )}
                 </div>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>{fullName}</DropdownMenuLabel>
-              {email && <p className="text-xs text-muted-foreground px-2 pb-2">{email}</p>}
+            <DropdownMenuContent align="end" className="w-64">
+              <DropdownMenuLabel className="truncate">{fullName}</DropdownMenuLabel>
+              {email && <p className="text-xs text-muted-foreground px-2 pb-2 truncate">{email}</p>}
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={handleAccountSettings} className="cursor-pointer gap-2">
-                <Settings className="h-4 w-4" />
-                Account settings
+                <Settings className="h-4 w-4 flex-shrink-0" />
+                <span>Account settings</span>
               </DropdownMenuItem>
               {isAdmin && (
                 <DropdownMenuItem onSelect={handleAdminPanel} className="cursor-pointer gap-2">
-                  Admin Panel
+                  <span>Admin Panel</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem onSelect={handleSignOut} className="cursor-pointer gap-2 text-destructive">
-                <LogOut className="h-4 w-4" />
-                Sign out
+                <LogOut className="h-4 w-4 flex-shrink-0" />
+                <span>Sign out</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
