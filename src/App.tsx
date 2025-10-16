@@ -28,6 +28,7 @@ import ActiveProjects from "./pages/admin/ActiveProjects";
 import NotFound from "./pages/NotFound";
 import { ProjectWizardProvider } from "./hooks/useProjectWizard";
 import { SignupFlowProvider } from "./hooks/useSignupFlow";
+import AdminContextBanner from "./components/admin/AdminContextBanner";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient({
@@ -46,87 +47,88 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <SignupFlowProvider>
+              <AdminContextBanner />
               <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/signup/context" element={<SignupContext />} />
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/signup/context" element={<SignupContext />} />
 
-              <Route path="/workspace" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/workspace/new/jd-upload" element={
-                <ProtectedRoute>
-                  <JdUpload />
-                </ProtectedRoute>
-              } />
-              <Route path="/workspace/new/magic-moment" element={
-                <ProtectedRoute>
-                  <MagicMoment />
-                </ProtectedRoute>
-              } />
-              {/* Active wizard routes */}
-              <Route path="/workspace/new/candidate-source" element={
-                <ProtectedRoute>
-                  <CandidateSource />
-                </ProtectedRoute>
-              } />
-              <Route path="/workspace/new/tier-selection" element={
-                <ProtectedRoute>
-                  <TierSelection />
-                </ProtectedRoute>
-              } />
-              {/* Archived routes - commented out, see src/pages/workspace/_archive/ */}
-              {/* <Route path="/workspace/new/jd-confirm" element={<ProtectedRoute><JdConfirm /></ProtectedRoute>} /> */}
-              {/* <Route path="/workspace/new/candidate-preview" element={<ProtectedRoute><CandidatePreview /></ProtectedRoute>} /> */}
-              <Route path="/workspace/new/book-call" element={
-                <ProtectedRoute>
-                  <BookCall />
-                </ProtectedRoute>
-              } />
+                <Route path="/workspace" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/workspace/new/jd-upload" element={
+                  <ProtectedRoute>
+                    <JdUpload />
+                  </ProtectedRoute>
+                } />
+                <Route path="/workspace/new/magic-moment" element={
+                  <ProtectedRoute>
+                    <MagicMoment />
+                  </ProtectedRoute>
+                } />
+                {/* Active wizard routes */}
+                <Route path="/workspace/new/candidate-source" element={
+                  <ProtectedRoute>
+                    <CandidateSource />
+                  </ProtectedRoute>
+                } />
+                <Route path="/workspace/new/tier-selection" element={
+                  <ProtectedRoute>
+                    <TierSelection />
+                  </ProtectedRoute>
+                } />
+                {/* Archived routes - commented out, see src/pages/workspace/_archive/ */}
+                {/* <Route path="/workspace/new/jd-confirm" element={<ProtectedRoute><JdConfirm /></ProtectedRoute>} /> */}
+                {/* <Route path="/workspace/new/candidate-preview" element={<ProtectedRoute><CandidatePreview /></ProtectedRoute>} /> */}
+                <Route path="/workspace/new/book-call" element={
+                  <ProtectedRoute>
+                    <BookCall />
+                  </ProtectedRoute>
+                } />
 
-              <Route path="/checkout" element={
-                <ProtectedRoute>
-                  <Checkout />
-                </ProtectedRoute>
-              } />
+                <Route path="/checkout" element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                } />
 
-              <Route path="/workspace/project/:projectId" element={
-                <ProtectedRoute>
-                  <ProjectDetailPage />
-                </ProtectedRoute>
-              } />
+                <Route path="/workspace/project/:projectId" element={
+                  <ProtectedRoute>
+                    <ProjectDetailPage />
+                  </ProtectedRoute>
+                } />
 
-              <Route path="/settings" element={
-                <ProtectedRoute>
-                  <AccountSettings />
-                </ProtectedRoute>
-              } />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <AccountSettings />
+                  </ProtectedRoute>
+                } />
 
-              <Route path="/admin/login" element={<AdminAuth />} />
+                <Route path="/admin/login" element={<AdminAuth />} />
 
-              <Route path="/admin/dashboard" element={
-                <ProtectedRoute requireAdmin={true}>
-                  <AdminDashboard />
-                </ProtectedRoute>
-              } />
+                <Route path="/admin/dashboard" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } />
 
-              <Route path="/ops" element={
-                <ProtectedRoute requireAdmin={true}>
-                  <OpsConsole />
-                </ProtectedRoute>
-              } />
+                <Route path="/ops" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <OpsConsole />
+                  </ProtectedRoute>
+                } />
 
-              <Route path="/admin/projects" element={
-                <ProtectedRoute requireAdmin={true}>
-                  <ActiveProjects />
-                </ProtectedRoute>
-              } />
+                <Route path="/admin/projects" element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <ActiveProjects />
+                  </ProtectedRoute>
+                } />
 
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </SignupFlowProvider>
           </BrowserRouter>
