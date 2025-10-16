@@ -10,10 +10,18 @@ DECLARE
   _metrics jsonb;
 BEGIN
   SELECT jsonb_build_object(
-    'total_signups', (SELECT COUNT(*) FROM auth.users),
-    'projects_created', (SELECT COUNT(*) FROM public.projects),
-    'calls_booked', (SELECT COUNT(*) FROM public.projects WHERE status = 'activation_in_progress'),
-    'awaiting_activation', (SELECT COUNT(*) FROM public.projects WHERE status = 'pending_activation')
+    'total_signups', COALESCE((SELECT COUNT(*) FROM auth.users), 0),
+    'projects_created', COALESCE((SELECT COUNT(*) FROM public.projects), 0),
+    'calls_booked',
+      COALESCE(
+        (SELECT COUNT(*) FROM public.projects WHERE status = 'activation_in_progress'),
+        0
+      ),
+    'awaiting_activation',
+      COALESCE(
+        (SELECT COUNT(*) FROM public.projects WHERE status = 'pending_activation'),
+        0
+      )
   )
   INTO _metrics;
 
