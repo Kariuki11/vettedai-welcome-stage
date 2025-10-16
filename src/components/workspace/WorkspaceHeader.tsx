@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import vettedLogo from "@/assets/vetted-logo.png";
 
 export const WorkspaceHeader = () => {
   const navigate = useNavigate();
@@ -69,13 +68,13 @@ export const WorkspaceHeader = () => {
       <div className="max-w-[960px] mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img 
-              src={vettedLogo} 
-              alt="VettedAI" 
-              className="h-8 w-auto"
+            <img
+              src="/favicon.png"
+              alt="VettedAI"
+              className="h-8 w-8"
             />
             <span className="text-foreground font-semibold">
-              VettedAI <span className="text-muted-foreground font-normal">• Validation Build</span>
+              VettedAI <span className="text-muted-foreground font-normal">• Recruiter Workspace</span>
             </span>
           </div>
 
