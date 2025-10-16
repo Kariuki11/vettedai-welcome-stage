@@ -68,7 +68,7 @@ export default function Dashboard() {
   } = useQuery<AdminDashboardMetrics>({
     queryKey: ["admin-dashboard-metrics"],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_admin_dashboard_metrics");
+      const { data, error } = await supabase.rpc("get_admin_dashboard_metrics" as any);
 
       if (error) {
         throw error;
