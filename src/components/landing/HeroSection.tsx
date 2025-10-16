@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ShieldCheck, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import vettedLandscapeLogo from "@/assets/vetted-landscape-logo-hero.svg";
+import vettedLandscapeLogo from "@/assets/vetted-landscape-logo.png";
 
 interface HeroSectionProps {
   onCtaClick?: () => void;
@@ -57,8 +57,7 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
             <img
               src={vettedLandscapeLogo}
               alt="VettedAI"
-              className="w-auto"
-              style={{ maxWidth: "250px", height: "auto" }}
+              className="h-auto w-full min-w-[25px] max-w-[75px]"
             />
 
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-white/80 px-4 py-2 text-sm font-medium text-primary shadow-sm">
