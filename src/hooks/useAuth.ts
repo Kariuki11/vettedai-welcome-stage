@@ -3,6 +3,40 @@ import { supabase } from '@/integrations/supabase/client';
 import { isReferralSource } from '@/constants/referralSources';
 import type { User } from '@supabase/supabase-js';
 
+const ADMIN_ROLES = new Set(['admin', 'ops_manager']);
+
+const deriveAdminFromMetadata = (user: User | null) => {
+  if (!user) {
+    return false;
+  }
+
+  const appMetadataRoles = user.app_metadata?.roles;
+  if (Array.isArray(appMetadataRoles)) {
+    if (appMetadataRoles.some((role) => typeof role === 'string' && ADMIN_ROLES.has(role))) {
+      return true;
+    }
+  }
+
+  const userMetadataRoles = user.user_metadata?.roles;
+  if (Array.isArray(userMetadataRoles)) {
+    if (userMetadataRoles.some((role) => typeof role === 'string' && ADMIN_ROLES.has(role))) {
+      return true;
+    }
+  }
+
+  const appMetadataRole = user.app_metadata?.role;
+  if (typeof appMetadataRole === 'string' && ADMIN_ROLES.has(appMetadataRole)) {
+    return true;
+  }
+
+  const userMetadataRole = user.user_metadata?.role;
+  if (typeof userMetadataRole === 'string' && ADMIN_ROLES.has(userMetadataRole)) {
+    return true;
+  }
+
+  return false;
+};
+
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -11,29 +45,49 @@ export const useAuth = () => {
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      checkAdminRole(session?.user?.id);
+      const sessionUser = session?.user ?? null;
+      setUser(sessionUser);
+      checkAdminRole(sessionUser);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      checkAdminRole(session?.user?.id);
+      const sessionUser = session?.user ?? null;
+      setUser(sessionUser);
+      checkAdminRole(sessionUser);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const checkAdminRole = async (userId?: string) => {
-    if (!userId) {
+  const checkAdminRole = async (sessionUser: User | null) => {
+    setLoading(true);
+
+    if (!sessionUser) {
       setIsAdmin(false);
       setLoading(false);
       return;
     }
 
-    const { data, error } = await supabase.rpc('is_admin');
-    setIsAdmin(data === true);
-    setLoading(false);
+    const metadataAdmin = deriveAdminFromMetadata(sessionUser);
+    setIsAdmin(metadataAdmin);
+
+    try {
+      const { data, error } = await supabase.rpc('is_admin');
+
+      if (error) {
+        console.error('Failed to check admin role via RPC', error);
+        setIsAdmin(metadataAdmin);
+        return;
+      }
+
+      setIsAdmin(Boolean(data) || metadataAdmin);
+    } catch (error) {
+      console.error('Unexpected error checking admin role', error);
+      setIsAdmin(metadataAdmin);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const signIn = async (email: string, password: string) => {
