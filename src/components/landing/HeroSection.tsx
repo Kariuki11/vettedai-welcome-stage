@@ -12,7 +12,8 @@ const shortlist = [
     name: "Aisha Mwangi",
     role: "Operations Lead",
     confidence: "92%",
-    signal: "Process signal is strong",
+    signal:
+      "Streamlined a messy workflow in minutes — clear logic, confident execution.",
     status: "Decision: Advance",
     accent: "bg-emerald-50 text-emerald-700",
   },
@@ -20,7 +21,8 @@ const shortlist = [
     name: "Luis Martins",
     role: "Customer Success",
     confidence: "88%",
-    signal: "Noise removed • Scope clarity",
+    signal:
+      "Navigated a live customer issue — asked sharp questions before resolving calmly.",
     status: "Decision: Advance",
     accent: "bg-sky-50 text-sky-700",
   },
@@ -28,7 +30,8 @@ const shortlist = [
     name: "Tara Singh",
     role: "Chief of Staff",
     confidence: "84%",
-    signal: "Proof of work delivered",
+    signal:
+      "Built a focused strategy outline while toggling data sources in real time.",
     status: "Decision: Review",
     accent: "bg-amber-50 text-amber-700",
   },
@@ -69,8 +72,8 @@ export const HeroSection = ({ onCtaClick }: HeroSectionProps) => {
                 Hire on proof,<span className="text-primary"> not promise.</span>
               </h1>
               <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                Drowning in perfect resumes that fall apart at interview? VettedAI lets you see how people actually
-                work—so you can move forward with confidence, not guesswork.
+                Resumes and tests don’t tell the full story. VettedAI verifies real work, so you know exactly who can
+                deliver. Paste your job description - get a verified shortlist in hours.
               </p>
             </div>
 
