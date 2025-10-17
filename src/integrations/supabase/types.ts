@@ -435,6 +435,15 @@ export type Database = {
         }
         Returns: string
       }
+      get_admin_dashboard_metrics: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          awaiting_activation: number
+          calls_booked: number
+          projects_created: number
+          total_signups: number
+        }[]
+      }
       get_projects_for_current_user: {
         Args: Record<PropertyKey, never>
         Returns: {

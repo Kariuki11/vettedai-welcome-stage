@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, RefreshCcw } from "lucide-react";
+import { AdminHeader } from "@/components/admin/AdminHeader";
 
 interface AdminDashboardMetrics {
   total_signups: number;
@@ -91,19 +92,24 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
+      <>
+        <AdminHeader />
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-6 md:p-10">
-      <div className="max-w-6xl mx-auto space-y-10">
+    <div className="min-h-screen bg-background">
+      <AdminHeader />
+      
+      <div className="max-w-6xl mx-auto px-6 py-10 space-y-10">
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-3xl font-semibold text-foreground">
-              Admin Dashboard
+              Dashboard Overview
             </h1>
             <p className="text-muted-foreground">
               Core metrics that power the validation experiment and operational
