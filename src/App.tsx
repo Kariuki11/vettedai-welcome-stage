@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
@@ -24,7 +24,6 @@ import AccountSettings from "./pages/AccountSettings";
 import AdminAuth from "./pages/AdminAuth";
 import AdminDashboard from "./pages/admin/Dashboard";
 import OpsConsole from "./pages/OpsConsole";
-import ActiveProjects from "./pages/admin/ActiveProjects";
 import NotFound from "./pages/NotFound";
 import { ProjectWizardProvider } from "./hooks/useProjectWizard";
 import { SignupFlowProvider } from "./hooks/useSignupFlow";
@@ -117,13 +116,19 @@ const App = () => {
 
                 <Route path="/ops" element={
                   <ProtectedRoute requireAdmin={true}>
+                    <Navigate to="/admin/ops" replace />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/admin/ops" element={
+                  <ProtectedRoute requireAdmin={true}>
                     <OpsConsole />
                   </ProtectedRoute>
                 } />
 
                 <Route path="/admin/projects" element={
                   <ProtectedRoute requireAdmin={true}>
-                    <ActiveProjects />
+                    <Navigate to="/admin/ops" replace />
                   </ProtectedRoute>
                 } />
 
