@@ -71,3 +71,7 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Ops Console access
+
+The admin Ops Console is now available at `/admin/ops`. Legacy links to `/ops` or `/admin/projects` automatically redirect to the new canonical route.
