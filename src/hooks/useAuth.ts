@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { isReferralSource } from '@/constants/referralSources';
-import type { User } from '@supabase/supabase-js';
+
+// User interface for MongoDB
+interface User {
+  id: string;
+  email: string;
+  user_metadata?: { full_name?: string };
+  app_metadata?: { roles?: string[] };
+}
 
 const ADMIN_ROLES = new Set(['admin', 'ops_manager']);
 
@@ -22,16 +29,6 @@ const deriveAdminFromMetadata = (user: User | null) => {
     if (userMetadataRoles.some((role) => typeof role === 'string' && ADMIN_ROLES.has(role))) {
       return true;
     }
-  }
-
-  const appMetadataRole = user.app_metadata?.role;
-  if (typeof appMetadataRole === 'string' && ADMIN_ROLES.has(appMetadataRole)) {
-    return true;
-  }
-
-  const userMetadataRole = user.user_metadata?.role;
-  if (typeof userMetadataRole === 'string' && ADMIN_ROLES.has(userMetadataRole)) {
-    return true;
   }
 
   return false;
