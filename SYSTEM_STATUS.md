@@ -137,3 +137,4 @@ Your application is now ready for:
 Your VettedAI application is now successfully running on MongoDB Atlas with full feature parity to the original Supabase implementation. All systems are operational and ready for development!
 
 **Access your application at: http://localhost:8081**
+

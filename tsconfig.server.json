@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "include": [
+    "server.ts",
+    "src/integrations/mongodb/**/*"
+  ],
+  "exclude": [
+    "src/components/**/*",
+    "src/pages/**/*",
+    "src/hooks/**/*"
+  ]
+}

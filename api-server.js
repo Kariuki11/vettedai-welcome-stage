@@ -92,8 +92,8 @@ const AnalyticsEvent = mongoose.model('AnalyticsEvent', analyticsEventSchema);
 
 // MongoDB connection
 mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB Atlas'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+  .then(() => console.log('Connected to MongoDB Atlas'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Auth middleware
 const authenticateToken = (req, res, next) => {
@@ -283,7 +283,8 @@ function generateProjectCode() {
 }
 
 app.listen(PORT, () => {
-  console.log(`🚀 VettedAI API server running on port ${PORT}`);
-  console.log(`📊 MongoDB Atlas connected successfully`);
-  console.log(`🔗 API endpoints available at http://localhost:${PORT}/api`);
+  console.log(`VettedAI API server running on port ${PORT}`);
+  console.log(`MongoDB Atlas connected successfully`);
+  console.log(`API endpoints available at http://localhost:${PORT}/api`);
 });
+

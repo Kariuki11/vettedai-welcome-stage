@@ -1,9 +1,20 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import multer from 'multer';
+import dotenv from 'dotenv';
+
+// Extend Request interface to include user
+interface AuthenticatedRequest extends Request {
+  user?: any;
+}
+
+// Load environment variables
+dotenv.config();
+
+// Import models (these will be compiled TypeScript)
 import { 
   User, 
   Recruiter, 
@@ -11,13 +22,9 @@ import {
   TalentProfile, 
   AnalyticsEvent,
   AdminWhitelist 
-} from './src/integrations/mongodb/models.ts';
+} from './src/integrations/mongodb/models.js';
 
 const app = express();
-// Load environment variables
-import dotenv from 'dotenv';
-dotenv.config();
-
 const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -33,7 +40,7 @@ mongoose.connect(MONGODB_URI)
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Auth middleware
-const authenticateToken = (req, res, next) => {
+const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -41,7 +48,7 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ error: 'Access token required' });
   }
 
-  jwt.verify(token, JWT_SECRET, (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err: any, user: any) => {
     if (err) {
       return res.status(403).json({ error: 'Invalid token' });
     }
@@ -51,7 +58,7 @@ const authenticateToken = (req, res, next) => {
 };
 
 // Admin middleware
-const requireAdmin = async (req, res, next) => {
+const requireAdmin = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const user = await User.findById(req.user.userId);
     if (!user || !user.roles.includes('admin') && !user.roles.includes('ops_manager')) {
@@ -65,8 +72,18 @@ const requireAdmin = async (req, res, next) => {
 
 // Routes
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    mongodb: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Parse job description (replaces Supabase Edge Function)
-app.post('/api/parse-job-description', authenticateToken, async (req, res) => {
+app.post('/api/parse-job-description', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { jd_text } = req.body;
 
@@ -95,7 +112,7 @@ app.post('/api/parse-job-description', authenticateToken, async (req, res) => {
 });
 
 // Secure file upload (replaces Supabase Edge Function)
-app.post('/api/upload-shortlist', authenticateToken, async (req, res) => {
+app.post('/api/upload-shortlist', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { project_id } = req.body;
 
@@ -135,7 +152,7 @@ app.post('/api/upload-shortlist', authenticateToken, async (req, res) => {
 });
 
 // Create project
-app.post('/api/projects', authenticateToken, async (req, res) => {
+app.post('/api/projects', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const user = await User.findById(req.user.userId);
     const recruiter = await Recruiter.findOne({ userId: user?._id });
@@ -168,7 +185,7 @@ app.post('/api/projects', authenticateToken, async (req, res) => {
 });
 
 // Get user projects
-app.get('/api/projects', authenticateToken, async (req, res) => {
+app.get('/api/projects', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const user = await User.findById(req.user.userId);
     const recruiter = await Recruiter.findOne({ userId: user?._id });
@@ -190,7 +207,7 @@ app.get('/api/projects', authenticateToken, async (req, res) => {
 });
 
 // Admin dashboard metrics
-app.get('/api/admin/metrics', authenticateToken, requireAdmin, async (req, res) => {
+app.get('/api/admin/metrics', authenticateToken, requireAdmin, async (req: AuthenticatedRequest, res: Response) => {
   try {
     const totalSignups = await User.countDocuments();
     const projectsCreated = await Project.countDocuments();
@@ -210,23 +227,23 @@ app.get('/api/admin/metrics', authenticateToken, requireAdmin, async (req, res) 
 });
 
 // Helper functions
-function extractJobTitle(text) {
+function extractJobTitle(text: string): string {
   const lines = text.split('\n');
   const firstLine = lines[0].trim();
   return firstLine.length > 60 ? firstLine.substring(0, 60) : firstLine;
 }
 
-function extractCompanyName(text) {
+function extractCompanyName(text: string): string {
   const companyMatch = text.match(/(?:at|@)\s+([A-Z][a-zA-Z\s&]+)/i);
   return companyMatch ? companyMatch[1].trim() : 'Company';
 }
 
-function extractJobSummary(text) {
+function extractJobSummary(text: string): string {
   const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 20);
   return sentences.slice(0, 2).join('. ').trim() + '.';
 }
 
-function extractSkills(text) {
+function extractSkills(text: string): string[] {
   const skills = [
     'JavaScript', 'TypeScript', 'React', 'Node.js', 'Python', 'Java', 'C++',
     'SQL', 'MongoDB', 'PostgreSQL', 'AWS', 'Docker', 'Kubernetes', 'Git'
@@ -239,7 +256,7 @@ function extractSkills(text) {
   return foundSkills.slice(0, 7);
 }
 
-function extractExperienceLevel(text) {
+function extractExperienceLevel(text: string): string {
   if (text.toLowerCase().includes('senior') || text.toLowerCase().includes('5+')) {
     return '5+ years';
   } else if (text.toLowerCase().includes('mid') || text.toLowerCase().includes('3+')) {
@@ -250,10 +267,11 @@ function extractExperienceLevel(text) {
   return 'Mid-level';
 }
 
-function generateProjectCode() {
+function generateProjectCode(): string {
   return 'PRJ-' + Date.now().toString(36).toUpperCase();
 }
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Health check: http://localhost:${PORT}/api/health`);
 });

@@ -19,14 +19,14 @@ const User = mongoose.model('User', userSchema);
 
 async function testConnection() {
   try {
-    console.log('🔌 Testing MongoDB Atlas connection...');
+    console.log('Testing MongoDB Atlas connection...');
     
     // Connect to MongoDB Atlas
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ Successfully connected to MongoDB Atlas!');
+    console.log('Successfully connected to MongoDB Atlas!');
     
     // Test database operations
-    console.log('📊 Testing database operations...');
+    console.log('Testing database operations...');
     
     // Test user creation
     const hashedPassword = await bcrypt.hash('testpassword123', 12);
@@ -38,33 +38,33 @@ async function testConnection() {
     });
     
     await testUser.save();
-    console.log('✅ User created successfully:', testUser.email);
+    console.log('User created successfully:', testUser.email);
     
     // Test user query
     const foundUser = await User.findOne({ email: 'test@vettedai.com' });
-    console.log('✅ User query successful:', foundUser.fullName);
+    console.log('User query successful:', foundUser.fullName);
     
     // Test password verification
     const isValidPassword = await bcrypt.compare('testpassword123', foundUser.password);
-    console.log('✅ Password verification:', isValidPassword ? 'PASSED' : 'FAILED');
+    console.log('Password verification:', isValidPassword ? 'PASSED' : 'FAILED');
     
     // Clean up test data
     await User.deleteOne({ _id: testUser._id });
-    console.log('✅ Test data cleaned up');
+    console.log('Test data cleaned up');
     
     // Get database stats
     const userCount = await User.countDocuments();
-    console.log('📈 Current users in database:', userCount);
+    console.log('Current users in database:', userCount);
     
-    console.log('🎉 MongoDB Atlas connection test completed successfully!');
-    console.log('🚀 Your VettedAI application is ready to run!');
+    console.log('MongoDB Atlas connection test completed successfully!');
+    console.log('Your VettedAI application is ready to run!');
     
   } catch (error) {
-    console.error('❌ Connection test failed:', error.message);
-    console.error('💡 Make sure your MongoDB Atlas cluster is running and accessible');
+    console.error('Connection test failed:', error.message);
+    console.error('Make sure your MongoDB Atlas cluster is running and accessible');
   } finally {
     await mongoose.disconnect();
-    console.log('🔌 Disconnected from MongoDB Atlas');
+    console.log('Disconnected from MongoDB Atlas');
     process.exit(0);
   }
 }

@@ -28,6 +28,7 @@ import NotFound from "./pages/NotFound";
 import { ProjectWizardProvider } from "./hooks/useProjectWizard";
 import { SignupFlowProvider } from "./hooks/useSignupFlow";
 import AdminContextBanner from "./components/admin/AdminContextBanner";
+import TestConnectionPage from "./pages/TestConnection";
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient({
@@ -130,6 +131,11 @@ const App = () => {
                   <ProtectedRoute requireAdmin={true}>
                     <Navigate to="/admin/ops" replace />
                   </ProtectedRoute>
+                } />
+
+                {/* Test route for demo */}
+                <Route path="/test-connection" element={
+                  <TestConnectionPage />
                 } />
 
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

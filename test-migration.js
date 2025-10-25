@@ -9,7 +9,7 @@ async function testMigration() {
     
     // Connect to MongoDB Atlas
     await connectDB();
-    console.log('✅ Connected to MongoDB Atlas');
+    console.log('Connected to MongoDB Atlas');
 
     // Test user creation
     const hashedPassword = await bcrypt.hash('testpassword', 12);
@@ -21,7 +21,7 @@ async function testMigration() {
     });
     
     await user.save();
-    console.log('✅ User created:', user.email);
+    console.log('User created:', user.email);
 
     // Test recruiter creation
     const recruiter = new Recruiter({
@@ -32,7 +32,7 @@ async function testMigration() {
     });
     
     await recruiter.save();
-    console.log('✅ Recruiter created:', recruiter.email);
+    console.log('Recruiter created:', recruiter.email);
 
     // Test project creation
     const project = new Project({
@@ -47,14 +47,14 @@ async function testMigration() {
     });
     
     await project.save();
-    console.log('✅ Project created:', project.projectCode);
+    console.log('Project created:', project.projectCode);
 
     // Test queries
     const userCount = await User.countDocuments();
     const recruiterCount = await Recruiter.countDocuments();
     const projectCount = await Project.countDocuments();
     
-    console.log('📊 Database stats:');
+    console.log('Database stats:');
     console.log(`   Users: ${userCount}`);
     console.log(`   Recruiters: ${recruiterCount}`);
     console.log(`   Projects: ${projectCount}`);
@@ -63,12 +63,12 @@ async function testMigration() {
     await Project.deleteOne({ _id: project._id });
     await Recruiter.deleteOne({ _id: recruiter._id });
     await User.deleteOne({ _id: user._id });
-    console.log('✅ Test data cleaned up');
+    console.log('Test data cleaned up');
 
-    console.log('🎉 MongoDB migration test completed successfully!');
+    console.log('MongoDB migration test completed successfully!');
     
   } catch (error) {
-    console.error('❌ Migration test failed:', error);
+    console.error('Migration test failed:', error);
   } finally {
     process.exit(0);
   }

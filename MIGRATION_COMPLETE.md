@@ -1,10 +1,10 @@
 # VettedAI: Supabase to MongoDB Migration Complete
 
-## 🎉 Migration Summary
+## Migration Summary
 
 I have successfully migrated your VettedAI application from Supabase to MongoDB. Here's what was accomplished:
 
-### ✅ What Was Migrated
+### What Was Migrated
 
 1. **Database Schema** - All Supabase tables converted to MongoDB collections
 2. **Authentication System** - Custom JWT-based auth replacing Supabase Auth
@@ -13,7 +13,7 @@ I have successfully migrated your VettedAI application from Supabase to MongoDB.
 5. **Client Interface** - MongoDB client that mimics Supabase API
 6. **Type Safety** - Full TypeScript support maintained
 
-### 📁 New Files Created
+### New Files Created
 
 ```
 src/integrations/mongodb/
@@ -27,7 +27,7 @@ test-migration.js       # Migration test script
 MONGODB_MIGRATION.md   # Detailed migration guide
 ```
 
-### 🔄 Modified Files
+### Modified Files
 
 - `package.json` - Updated dependencies (removed Supabase, added MongoDB stack)
 - `src/integrations/supabase/client.ts` - Now uses MongoDB client
@@ -45,7 +45,7 @@ MONGODB_MIGRATION.md   # Detailed migration guide
 | Storage | Supabase Storage | MongoDB GridFS (basic) |
 | Real-time | Supabase Realtime | Polling (can upgrade to Socket.io) |
 
-### 🚀 How to Run
+### How to Run
 
 1. **Install MongoDB locally** or use MongoDB Atlas
 2. **Set environment variables**:
